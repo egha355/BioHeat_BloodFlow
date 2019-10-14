@@ -50,6 +50,13 @@
 import numpy,sys,os,time,math,cmath,csv
 from shutil import copyfile
 from opencmiss.iron import iron
+
+#coupled1D0D
+from scipy.fftpack import fft,ifft
+from scipy.sparse  import linalg
+from scipy.linalg  import inv,eig
+from scipy.special import jn
+
 t=time.time()
 # Diagnostics
 #iron.DiagnosticsSetOn(iron.DiagnosticTypes.IN,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"])
