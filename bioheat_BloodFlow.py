@@ -1220,7 +1220,88 @@ meshTissue.CreateFinish()
 
 # =================================
 # F L O W
-#if (CoupleFlowEnergy):
+if (CoupleFlowEnergy):
+  if (ProgressDiagnostics):
+      print( " == >> MESH << == ")
+
+  # Start the creation of SPACE mesh
+  Mesh = iron.Mesh()
+  Mesh.CreateStart(MeshUserNumber,Region,numberOfDimensionsFlow)
+  Mesh.NumberOfElementsSet(totalNumberOfElements)
+  if (coupledAdvection):
+      meshNumberOfComponents = 2
+      Mesh.NumberOfComponentsSet(meshNumberOfComponents)
+      # Specify the mesh components
+      MeshElementsSpace = iron.MeshElements()
+      MeshElementsConc  = iron.MeshElements()
+      meshComponentNumberSpace = 1
+      meshComponentNumberConc  = 2
+  else:
+      meshNumberOfComponents = 1
+      # Specify the mesh components
+      Mesh.NumberOfComponentsSet(meshNumberOfComponents)
+      # Specify the mesh components
+      MeshElementsSpace = iron.MeshElements()
+      meshComponentNumberSpace = 1
+
+  #------------------
+
+  # Specify the SPACE mesh component
+  MeshElementsSpace.CreateStart(Mesh,meshComponentNumberSpace,BasisSpace)
+  for elemIdx in range(1,totalNumberOfElements+1):
+      MeshElementsSpace.NodesSet(elemIdx,elementNodes[elemIdx])
+  for bifIdx in range(1,numberOfBifurcations+1):
+      nodeIdx = bifurcationNodeNumber[bifIdx-1]
+      if (Tp[nodeIdx] == 'Artery'):
+          MeshElementsSpace.LocalElementNodeVersionSet(int(bifurcationElements[bifIdx][0]),1,1,3)
+          MeshElementsSpace.LocalElementNodeVersionSet(int(bifurcationElements[bifIdx][1]),2,1,1)
+          MeshElementsSpace.LocalElementNodeVersionSet(int(bifurcationElements[bifIdx][2]),3,1,1)
+      elif (Tp[nodeIdx] == 'Vein'):
+          MeshElementsSpace.LocalElementNodeVersionSet(int(bifurcationElements[bifIdx][0]),1,1,1)
+          MeshElementsSpace.LocalElementNodeVersionSet(int(bifurcationElements[bifIdx][1]),2,1,3)
+          MeshElementsSpace.LocalElementNodeVersionSet(int(bifurcationElements[bifIdx][2]),3,1,3)
+  for trifIdx in range(1,numberOfTrifurcations+1):
+      nodeIdx = trifurcationNodeNumber[trifIdx-1]
+      if (Tp[nodeIdx] == 'Artery'):
+          MeshElementsSpace.LocalElementNodeVersionSet(int(trifurcationElements[trifIdx][0]),1,1,3)
+          MeshElementsSpace.LocalElementNodeVersionSet(int(trifurcationElements[trifIdx][1]),2,1,1)
+          MeshElementsSpace.LocalElementNodeVersionSet(int(trifurcationElements[trifIdx][2]),3,1,1)
+          MeshElementsSpace.LocalElementNodeVersionSet(int(trifurcationElements[trifIdx][3]),4,1,1)
+      elif (Tp[nodeIdx] == 'Vein'):
+          MeshElementsSpace.LocalElementNodeVersionSet(int(trifurcationElements[trifIdx][0]),1,1,1)
+          MeshElementsSpace.LocalElementNodeVersionSet(int(trifurcationElements[trifIdx][1]),2,1,3)
+          MeshElementsSpace.LocalElementNodeVersionSet(int(trifurcationElements[trifIdx][2]),3,1,3)
+          MeshElementsSpace.LocalElementNodeVersionSet(int(trifurcationElements[trifIdx][3]),4,1,3)
+  MeshElementsSpace.CreateFinish()
+
+  #------------------
+
+  # Specify the CONCENTRATION mesh component
+  if (coupledAdvection):
+      MeshElementsConc.CreateStart(Mesh,meshComponentNumberConc,BasisSpace)
+      for elemIdx in range(1,totalNumberOfElements+1):
+          MeshElementsConc.NodesSet(elemIdx,elementNodes[elemIdx])
+      MeshElementsConc.CreateFinish()
+
+  # Finish the creation of the mesh
+  Mesh.CreateFinish()
+
+  #------------------
+
+  if (streeBoundaries):
+      # Start the creation of TIME mesh
+      MeshTime = iron.Mesh()
+      MeshTime.CreateStart(MeshUserNumber2,RegionStree,numberOfDimensionsFlow)
+      MeshTime.NumberOfElementsSet(timePeriod)
+      MeshTime.NumberOfComponentsSet(1)
+      # Specify the mesh components
+      MeshElementsTime = iron.MeshElements()
+      meshComponentNumberTime = 1
+      MeshElementsTime.CreateStart(MeshTime,meshComponentNumberTime,BasisTime)
+      for elemIdx in range(1,timePeriod+1):
+          MeshElementsTime.NodesSet(elemIdx,[elemIdx,elemIdx+1])
+      MeshElementsTime.CreateFinish()
+      MeshTime.CreateFinish()
 # =================================
 
 print('\033[1;32m'+'Mesh              COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
