@@ -1715,7 +1715,117 @@ dependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.Fie
 
 # =================================
 # F L O W
-#if (CoupleFlowEnergy):
+if (CoupleFlowEnergy):
+  if (ProgressDiagnostics):
+    print( " == >> DEPENDENT FIELD << == ")
+
+  # STREE
+  if (streeBoundaries):
+      # Create the equations set dependent field variables
+      DependentFieldStree = iron.Field()
+      EquationsSetStree.DependentCreateStart(DependentFieldUserNumber3,DependentFieldStree)
+      DependentFieldStree.VariableLabelSet(iron.FieldVariableTypes.U,'Stree 1st Variable')
+      DependentFieldStree.VariableLabelSet(iron.FieldVariableTypes.DELUDELN,'Stree 2nd Variable')
+      EquationsSetStree.DependentCreateFinish()
+
+  #------------------
+
+  # CHARACTERISTIC
+  # Create the equations set dependent field variables
+  DependentFieldNavierStokes = iron.Field()
+  EquationsSetCharacteristic.DependentCreateStart(DependentFieldUserNumber,DependentFieldNavierStokes)
+  DependentFieldNavierStokes.VariableLabelSet(iron.FieldVariableTypes.U,'General')
+  DependentFieldNavierStokes.VariableLabelSet(iron.FieldVariableTypes.DELUDELN,'Derivatives')
+  DependentFieldNavierStokes.VariableLabelSet(iron.FieldVariableTypes.V,'Characteristics')
+  if (RCRBoundaries or Heart):
+      DependentFieldNavierStokes.VariableLabelSet(iron.FieldVariableTypes.U1,'CellML Q and P')
+  DependentFieldNavierStokes.VariableLabelSet(iron.FieldVariableTypes.U2,'Pressure')
+  # Set the mesh component to be used by the field components.
+  # Flow & Area
+  DependentFieldNavierStokes.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,meshComponentNumberSpace)
+  DependentFieldNavierStokes.ComponentMeshComponentSet(iron.FieldVariableTypes.U,2,meshComponentNumberSpace)
+  # Derivatives
+  DependentFieldNavierStokes.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN,1,meshComponentNumberSpace)
+  DependentFieldNavierStokes.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN,2,meshComponentNumberSpace)
+  # Riemann
+  DependentFieldNavierStokes.ComponentMeshComponentSet(iron.FieldVariableTypes.V,1,meshComponentNumberSpace)
+  DependentFieldNavierStokes.ComponentMeshComponentSet(iron.FieldVariableTypes.V,2,meshComponentNumberSpace)
+  # qCellML & pCellml
+  if (RCRBoundaries or Heart):
+      DependentFieldNavierStokes.ComponentMeshComponentSet(iron.FieldVariableTypes.U1,1,meshComponentNumberSpace)
+      DependentFieldNavierStokes.ComponentMeshComponentSet(iron.FieldVariableTypes.U1,2,meshComponentNumberSpace)
+  # Pressure
+  DependentFieldNavierStokes.ComponentMeshComponentSet(iron.FieldVariableTypes.U2,1,meshComponentNumberSpace)
+  DependentFieldNavierStokes.ComponentMeshComponentSet(iron.FieldVariableTypes.U2,2,meshComponentNumberSpace)
+
+  EquationsSetCharacteristic.DependentCreateFinish()
+
+  #------------------
+
+  # NAVIER-STOKES
+  EquationsSetNavierStokes.DependentCreateStart(DependentFieldUserNumber,DependentFieldNavierStokes)
+  EquationsSetNavierStokes.DependentCreateFinish()
+
+  DependentFieldNavierStokes.ParameterSetCreate(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.PREVIOUS_VALUES)
+
+  # Initialise the dependent field variables
+  for nodeIdx in range (1,numberOfNodesSpace+1):
+      nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+      if (nodeDomain == computationalNodeNumber):
+          if (nodeIdx in trifurcationNodeNumber):
+              versions = [1,2,3,4]
+          elif (nodeIdx in bifurcationNodeNumber):
+              versions = [1,2,3]
+          else:
+              versions = [1]
+          for versionIdx in versions:
+              # U variables
+              DependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              versionIdx,derivIdx,nodeIdx,1,Q[nodeIdx][versionIdx-1])
+              DependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              versionIdx,derivIdx,nodeIdx,2,A[nodeIdx][versionIdx-1])
+              DependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.PREVIOUS_VALUES,
+              versionIdx,derivIdx,nodeIdx,1,Q[nodeIdx][versionIdx-1])
+              DependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.PREVIOUS_VALUES,
+              versionIdx,derivIdx,nodeIdx,2,A[nodeIdx][versionIdx-1])
+              # delUdelN variables
+              DependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.DELUDELN,iron.FieldParameterSetTypes.VALUES,
+              versionIdx,derivIdx,nodeIdx,1,dQ[nodeIdx][versionIdx-1])
+              DependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.DELUDELN,iron.FieldParameterSetTypes.VALUES,
+              versionIdx,derivIdx,nodeIdx,2,dA[nodeIdx][versionIdx-1])
+
+  # revert default version to 1
+  versionIdx = 1
+
+  # Finish the parameter update
+  DependentFieldNavierStokes.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  DependentFieldNavierStokes.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+
+  #------------------
+
+  # ADVECTION
+  if (coupledAdvection):
+      # Create the equations set dependent field variables
+      DependentFieldAdvection = iron.Field()
+      EquationsSetAdvection.DependentCreateStart(DependentFieldUserNumber2,DependentFieldAdvection)
+      DependentFieldAdvection.VariableLabelSet(iron.FieldVariableTypes.U,'Concentration')
+      DependentFieldAdvection.VariableLabelSet(iron.FieldVariableTypes.DELUDELN,'Deriv')
+      # Set the mesh component to be used by the field components.
+      DependentFieldAdvection.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,meshComponentNumberConc)
+      DependentFieldAdvection.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN,1,meshComponentNumberConc)
+      EquationsSetAdvection.DependentCreateFinish()
+
+      # Initialise the dependent field variables
+      for inputIdx in range (1,numberOfInputNodes+1):
+          nodeIdx = inputNodeNumber[inputIdx-1]
+          nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberConc)
+          if (nodeDomain == computationalNodeNumber):
+              DependentFieldAdvection.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              versionIdx,derivIdx,nodeIdx,1,0.0)
+
+      # Finish the parameter update
+      DependentFieldAdvection.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+      DependentFieldAdvection.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 # =================================
 
 print('\033[1;32m'+'Dependent Field   COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
