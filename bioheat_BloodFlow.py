@@ -104,7 +104,7 @@ if computationalNodeNumber==0 and module_exists('DescriptionGenerator'):
 #================================================================================================================================
 #  Problem Control Panel
 #================================================================================================================================
-numberOfDimensions     = 1  #(One-dimensional)
+numberOfDimensionsEnergy     = 1  #(One-dimensional)
 #
 # derivIdx = 1
 #
@@ -114,6 +114,50 @@ ProgressDiagnostics = False   # Set to diagnostics
 # tissueSolve       = False # Set to solve energy equation
 # tissueEnergySolve = True  # Set to solve energy equation
 meshOrigin = [0.0,0.0,0.0]
+
+
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
+CoupleFlowEnergy = True
+CoupleEnergy = True
+
+# ENERGY=1
+# TISSUE=2
+# FLOW=3
+
+# =================================
+# F L O W
+if (CoupleFlowEnergy):
+  numberOfDimensionsFlow     = 1  #(One-dimensional)
+  numberOfComponentsFlow     = 2  #(Flow & Area)
+  numberOfInflowNodes    = 0
+  numberOfInputNodes     = 0
+  numberOfBifurcations   = 0
+  numberOfTrifurcations  = 0
+  numberOfTerminalNodes  = 0
+  inputNodeNumber        = []
+  bifurcationNodeNumber  = []
+  trifurcationNodeNumber = []
+  coupledNodeNumber      = []
+
+  # Set the user number
+  compIdx    = 1
+  derivIdx   = 1
+  versionIdx = 1
+
+  # Set the flags
+  Heart               = False   # Set to use coupled 0D Windkessel models (from CellML) at model inlet boundaries
+  HeartInput          = True
+  RCRBoundaries       = False   # Set to use coupled 0D Windkessel models (from CellML) at model outlet boundaries
+  nonReflecting       = True   # Set to use non-reflecting outlet boundaries
+  streeBoundaries     = False   # Set to use structured tree outlet boundaries
+  coupledAdvection    = False   # Set to solve a coupled advection problem
+  timestepStability   = False   # Set to do a basic check of the stability of the hyperbolic problem based on the timestep size
+  initialiseFromFile  = False   # Set to initialise values
+  ProgressDiagnostics = False   # Set to diagnostics
+# =================================
 
 #================================================================================================================================
 #  Start Program
