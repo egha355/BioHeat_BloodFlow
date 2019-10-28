@@ -2222,7 +2222,102 @@ IndependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.F
 
 # =================================
 # F L O W
-#if (CoupleFlowEnergy):
+if (CoupleFlowEnergy):
+  if (ProgressDiagnostics):
+    print( " == >> INDEPENDENT FIELD << == ")
+
+  # CHARACTERISTIC
+  # Create the equations set independent field variables
+  IndependentFieldNavierStokes = iron.Field()
+  EquationsSetCharacteristic.IndependentCreateStart(IndependentFieldUserNumber,IndependentFieldNavierStokes)
+  IndependentFieldNavierStokes.VariableLabelSet(iron.FieldVariableTypes.U,'Normal Wave Direction')
+  # Set the mesh component to be used by the field components.
+  IndependentFieldNavierStokes.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,meshComponentNumberSpace)
+  EquationsSetCharacteristic.IndependentCreateFinish()
+
+  #------------------
+
+  # NAVIER-STOKES
+  EquationsSetNavierStokes.IndependentCreateStart(IndependentFieldUserNumber,IndependentFieldNavierStokes)
+  EquationsSetNavierStokes.IndependentCreateFinish()
+
+  # Set the normal wave direction for arteries
+  for nodeIdx in range(1,numberOfNodesSpace+1,1):
+      nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+      if (nodeDomain == computationalNodeNumber):
+          if (Tp[nodeIdx] == 'Artery'):
+              # Incoming
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              versionIdx,derivIdx,nodeIdx,compIdx,1.0)
+          elif(Tp[nodeIdx] == 'Vein'):
+              # Outgoing
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              versionIdx,derivIdx,nodeIdx,compIdx,-1.0)
+
+  # Set the normal wave direction for bifurcation
+  for bifIdx in range (1,numberOfBifurcations+1):
+      nodeIdx = bifurcationNodeNumber[bifIdx-1]
+      nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+      if (nodeDomain == computationalNodeNumber):
+          if (Tp[nodeIdx] == 'Artery'):
+              # Incoming(parent)
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              1,derivIdx,nodeIdx,compIdx,1.0)
+              # Outgoing(branches)
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              2,derivIdx,nodeIdx,compIdx,-1.0)
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              3,derivIdx,nodeIdx,compIdx,-1.0)
+          elif(Tp[nodeIdx] == 'Vein'):
+              # Outgoing(parent)
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              1,derivIdx,nodeIdx,compIdx,-1.0)
+              # Incoming(branches)
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              2,derivIdx,nodeIdx,compIdx,1.0)
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              3,derivIdx,nodeIdx,compIdx,1.0)
+
+  # Set the normal wave direction for trifurcation
+  for trifIdx in range (1,numberOfTrifurcations+1):
+      nodeIdx = trifurcationNodeNumber[trifIdx-1]
+      nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+      if (nodeDomain == computationalNodeNumber):
+          if (Tp[nodeIdx] == 'Artery'):
+              # Incoming(parent)
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              1,derivIdx,nodeIdx,compIdx,1.0)
+              # Outgoing(branches)
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              2,derivIdx,nodeIdx,compIdx,-1.0)
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              3,derivIdx,nodeIdx,compIdx,-1.0)
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              4,derivIdx,nodeIdx,compIdx,-1.0)
+          elif (Tp[nodeIdx] == 'Vein'):
+              # Outgoing(parent)
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              1,derivIdx,nodeIdx,compIdx,-1.0)
+              # Incoming(branches)
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              2,derivIdx,nodeIdx,compIdx,1.0)
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              3,derivIdx,nodeIdx,compIdx,1.0)
+              IndependentFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              4,derivIdx,nodeIdx,compIdx,1.0)
+
+  # Finish the parameter update
+  IndependentFieldNavierStokes.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  IndependentFieldNavierStokes.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+
+  #------------------
+
+  # ADVECTION
+  if (coupledAdvection):
+      # Create the equations set independent field variables
+      IndependentFieldAdvection = iron.Field()
+      EquationsSetAdvection.IndependentCreateStart(DependentFieldUserNumber,DependentFieldNavierStokes)
+      EquationsSetAdvection.IndependentCreateFinish()
 # =================================
 
 print('\033[1;32m'+'Independent Field COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
