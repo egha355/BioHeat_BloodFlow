@@ -537,9 +537,9 @@ cBone              = 0.0           #\see equations section
 
 # Set the time parameters
 #timeIncrement   = 0.5
-timeIncrement   = 1.0
+timeIncrement   = 10
 startTime       = 0.0
-stopTime        = 820
+stopTime        = 8200
 
 # Set the output parameters
 DYNAMIC_SOLVER_DIFFUSION_OUTPUT_FREQUENCY = 100
@@ -604,7 +604,7 @@ basisXiGaussSpace = 3
 basisEnergy = iron.Basis()
 basisEnergy.CreateStart(basisUserNumberEnergy)
 basisEnergy.TypeSet(iron.BasisTypes.LAGRANGE_HERMITE_TP)
-basisEnergy.NumberOfXiSet(numberOfDimensions)
+basisEnergy.NumberOfXiSet(numberOfDimensionsEnergy)
 basisEnergy.InterpolationXiSet([iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE])
 basisEnergy.QuadratureNumberOfGaussXiSet([basisXiGaussSpace])
 basisEnergy.CreateFinish()
