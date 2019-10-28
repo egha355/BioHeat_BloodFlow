@@ -1330,7 +1330,26 @@ decompositionTissue.CreateFinish()
 
 # =================================
 # F L O W
-#if (CoupleFlowEnergy):
+if (CoupleFlowEnergy):
+  if (ProgressDiagnostics):
+    print( " == >> MESH DECOMPOSITION << == ")
+
+  # Start the creation of SPACE mesh decomposition
+  Decomposition = iron.Decomposition()
+  Decomposition.CreateStart(DecompositionUserNumber,Mesh)
+  Decomposition.TypeSet(iron.DecompositionTypes.CALCULATED)
+  Decomposition.NumberOfDomainsSet(numberOfComputationalNodes)
+  Decomposition.CreateFinish()
+
+  #------------------
+
+  if (streeBoundaries):
+      # Start the creation of TIME mesh decomposition
+      DecompositionTime = iron.Decomposition()
+      DecompositionTime.CreateStart(DecompositionUserNumber2,MeshTime)
+      DecompositionTime.TypeSet(iron.DecompositionTypes.CALCULATED)
+      DecompositionTime.NumberOfDomainsSet(numberOfComputationalNodes)
+      DecompositionTime.CreateFinish()
 # =================================
 
 print('\033[1;32m'+'Decomposition     COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
