@@ -122,6 +122,7 @@ meshOrigin = [0.0,0.0,0.0]
 # =================================
 CoupleFlowEnergy = True
 CoupleEnergy = True
+TestFlow = False
 
 # ENERGY=1
 # TISSUE=2
@@ -2690,7 +2691,18 @@ problem.CreateFinish()
 
 # =================================
 # F L O W
-#if (CoupleFlowEnergy):
+if (CoupleFlowEnergy):
+  if (TestFlow):
+    if (ProgressDiagnostics):
+        print( " == >> PROBLEM << == ")
+
+    # Start the creation of a problem.
+    problem = iron.Problem()
+    problemSpecification = [iron.ProblemClasses.FLUID_MECHANICS,
+                            iron.ProblemTypes.NAVIER_STOKES_EQUATION,
+                            ProblemSubtype]
+    problem.CreateStart(problemUserNumber,problemSpecification)
+    problem.CreateFinish()
 # =================================
 
 print('\033[1;32m'+'Problems          COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
@@ -2706,8 +2718,105 @@ problem.ControlLoopCreateStart()
 TimeLoop = iron.ControlLoop()
 problem.ControlLoopGet([iron.ControlLoopIdentifiers.NODE],TimeLoop)
 TimeLoop.LabelSet('Time Loop')
-TimeLoop.TimesSet(startTimeBioheat,stopTimeBioheat,timeIncrementBioheat)
-TimeLoop.TimeOutputSet(DYNAMIC_SOLVER_DIFFUSION_OUTPUT_FREQUENCY)
+if (TestFlow):
+  TimeLoop.TimesSet(startTime,stopTime,timeIncrement)
+  TimeLoop.TimeOutputSet(DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY)
+  # TimeLoop.OutputTypeSet(iron.ControlLoopOutputTypes.TIMING)
+  # TimeLoop.TimesSet(startTimeBioheat,stopTimeBioheat,timeIncrementBioheat)
+  # TimeLoop.TimeOutputSet(DYNAMIC_SOLVER_DIFFUSION_OUTPUT_FREQUENCY)
+else:
+  TimeLoop.TimesSet(startTimeBioheat,stopTimeBioheat,timeIncrementBioheat)
+  TimeLoop.TimeOutputSet(DYNAMIC_SOLVER_DIFFUSION_OUTPUT_FREQUENCY)
+
+
+# =================================
+# F L O W
+if (CoupleFlowEnergy):
+  if (ProgressDiagnostics):
+      print( " == >> PROBLEM CONTROL LOOP << == ")
+
+  '''
+    Solver Control Loops
+
+                    L1                                 L2                        L3
+
+  1D-Stree
+  ------
+
+
+                                                        | 1) 0D Simple subloop   | 1) 0D/Structured tree Solver
+                                                        |
+      Time Loop, L0  | 1) 1D-0D Iterative Coupling, L1  | 2) 1D NS/C coupling:   | 1) Characteristic Nonlinear Solver
+                    |    Convergence Loop (while loop) |    (while loop)        | 2) 1DNavierStokes Transient Solver
+                    |
+                    | 2) (optional) Simple subloop     | 1) Advection Linear Solver
+
+
+  1D0D
+  ------
+
+
+                                                        | 1) 0D Simple subloop   | 1) 0D/CellML DAE Solver
+                                                        |
+      Time Loop, L0  | 1) 1D-0D Iterative Coupling, L1  | 2) 1D NS/C coupling:   | 1) Characteristic Nonlinear Solver
+                    |    Convergence Loop (while loop) |    (while loop)        | 2) 1DNavierStokes Transient Solver
+                    |
+                    | 2) (optional) Simple subloop     | 1) Advection Linear Solver
+
+
+  1D
+  ------
+
+
+      Time Loop, L0  | 1) 1D NS/C coupling subloop      | 1) Characteristic Nonlinear Solver
+                    |    (while loop)                  | 2) 1DNavierStokes Transient Solver
+                    |
+                    | 2) (optional) Simple subloop     | 1) Advection Linear Solver
+
+
+  '''
+
+  # Order of solvers within their respective subloops
+  SolverCharacteristicUserNumber = 1
+  SolverNavierStokesUserNumber   = 2
+  SolverAdvectionUserNumber      = 1
+  SolverCellmlUserNumber         = 1
+  if (RCRBoundaries or streeBoundaries or Heart):
+    Iterative1d0dControlLoopNumber   = 1
+    SimpleAdvectionControlLoopNumber = 2
+    Simple0DControlLoopNumber        = 1
+    Iterative1dControlLoopNumber     = 2
+  else:
+    Iterative1dControlLoopNumber     = 1
+    SimpleAdvectionControlLoopNumber = 2
+
+  # Start the creation of the problem control loop
+  # TimeLoop = iron.ControlLoop()
+  # Problem.ControlLoopCreateStart()
+  # Problem.ControlLoopGet([iron.ControlLoopIdentifiers.NODE],TimeLoop)
+  # TimeLoop.LabelSet('Time Loop')
+  # TimeLoop.TimesSet(startTime,stopTime,timeIncrement)
+  # TimeLoop.TimeOutputSet(DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY)
+  # TimeLoop.OutputTypeSet(iron.ControlLoopOutputTypes.TIMING)
+
+  # Set tolerances for iterative convergence loops
+  if (RCRBoundaries or streeBoundaries or Heart):
+      Iterative1DCouplingLoop = iron.ControlLoop()
+      problem.ControlLoopGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
+      iron.ControlLoopIdentifiers.NODE],Iterative1DCouplingLoop)
+      Iterative1DCouplingLoop.AbsoluteToleranceSet(couplingTolerance1D)
+      Iterative1D0DCouplingLoop = iron.ControlLoop()
+      problem.ControlLoopGet([Iterative1d0dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+      Iterative1D0DCouplingLoop)
+      Iterative1D0DCouplingLoop.AbsoluteToleranceSet(couplingTolerance1D0D)
+  else:
+      Iterative1DCouplingLoop = iron.ControlLoop()
+      if (TestFlow):
+        problem.ControlLoopGet([Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],Iterative1DCouplingLoop)
+        Iterative1DCouplingLoop.AbsoluteToleranceSet(couplingTolerance1D)
+
+  # problem.ControlLoopCreateFinish()
+# =================================
 problem.ControlLoopCreateFinish()
 
 print('\033[1;32m'+'Control Loops     COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
@@ -2737,6 +2846,11 @@ solverTissue.DynamicLinearSolverGet(LinearSolverTissue)
 #solver.linearIterativeAbsoluteTolerance = 1.0E-12
 #solver.linearIterativeRelativeTolerance = 1.0E-12
 problem.SolversCreateFinish()
+
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
 
 print('\033[1;32m'+'Solvers           COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
@@ -2773,6 +2887,11 @@ equationsSetIndex3 = solverEquationsTissue.EquationsSetAdd(equationsSetTissue)
 
 problem.SolverEquationsCreateFinish()
 problem.CellMLEquationsCreateFinish()
+
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
 
 print('\033[1;32m'+'Solver Equations  COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
@@ -2827,6 +2946,11 @@ dependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.Fie
 #!  CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
 
 solverEquationsTissue.BoundaryConditionsCreateFinish()
+
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
 
 print('\033[1;32m'+'Boundary Conditions COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
