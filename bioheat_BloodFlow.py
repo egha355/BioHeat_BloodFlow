@@ -2327,51 +2327,51 @@ print('\033[1;32m'+'Independent Field COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 #================================================================================================================================
 
 # Create the CellML environment
-CellML = iron.CellML()
-CellML.CreateStart(cellMLUserNumberTissue,regionTissue)
+CellMLShiv = iron.CellML()
+CellMLShiv.CreateStart(cellMLUserNumberTissue,regionTissue)
 
 # Shivering model
-ShiveringIdx = CellML.ModelImport("Shivering3.cellml")
+ShiveringIdx = CellMLShiv.ModelImport("Shivering3.cellml")
 
 # Flag for known and wanted variables
 # Variables imported from OpenCMISS
-CellML.VariableSetAsKnown(ShiveringIdx, "Shivering/Tskin")
-CellML.VariableSetAsKnown(ShiveringIdx, "Shivering/Tcore")
-CellML.VariableSetAsKnown(ShiveringIdx, "thermophysicalProperties/OrganType")
-CellML.VariableSetAsKnown(ShiveringIdx, "Source/vol")
+CellMLShiv.VariableSetAsKnown(ShiveringIdx, "Shivering/Tskin")
+CellMLShiv.VariableSetAsKnown(ShiveringIdx, "Shivering/Tcore")
+CellMLShiv.VariableSetAsKnown(ShiveringIdx, "thermophysicalProperties/OrganType")
+CellMLShiv.VariableSetAsKnown(ShiveringIdx, "Source/vol")
 
 # Variables to get from the CellML
-CellML.VariableSetAsWanted(ShiveringIdx, "Source/source")
+CellMLShiv.VariableSetAsWanted(ShiveringIdx, "Source/source")
 
 # Finish the CellML environment creation
-CellML.CreateFinish()
+CellMLShiv.CreateFinish()
 
 # Create the CellML models field
-CellML.FieldMapsCreateStart()
+CellMLShiv.FieldMapsCreateStart()
 
 # Map the components
-CellML.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 1, iron.FieldParameterSetTypes.VALUES,
+CellMLShiv.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 1, iron.FieldParameterSetTypes.VALUES,
                               ShiveringIdx, "Shivering/Tskin", iron.FieldParameterSetTypes.VALUES)
-CellML.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 2, iron.FieldParameterSetTypes.VALUES,
+CellMLShiv.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 2, iron.FieldParameterSetTypes.VALUES,
                               ShiveringIdx, "Shivering/Tcore", iron.FieldParameterSetTypes.VALUES)
-CellML.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 3, iron.FieldParameterSetTypes.VALUES,
+CellMLShiv.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 3, iron.FieldParameterSetTypes.VALUES,
                               ShiveringIdx, "thermophysicalProperties/OrganType", iron.FieldParameterSetTypes.VALUES)                              
-CellML.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 4, iron.FieldParameterSetTypes.VALUES,
+CellMLShiv.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 4, iron.FieldParameterSetTypes.VALUES,
                               ShiveringIdx, "Source/vol", iron.FieldParameterSetTypes.VALUES)                              
 
-CellML.CreateCellMLToFieldMap(ShiveringIdx, "Source/source", iron.FieldParameterSetTypes.VALUES, sourceFieldTissue,
+CellMLShiv.CreateCellMLToFieldMap(ShiveringIdx, "Source/source", iron.FieldParameterSetTypes.VALUES, sourceFieldTissue,
                               iron.FieldVariableTypes.U,1,iron.FieldParameterSetTypes.VALUES)
 
 # Finish the creation of CellML <--> OpenCMISS field maps 
-CellML.FieldMapsCreateFinish()
+CellMLShiv.FieldMapsCreateFinish()
 
 
 # Map fields
 
 # Create the CellML models field
 CellMLModelsField = iron.Field()
-CellML.ModelsFieldCreateStart(cellMLModelsFieldUserNumberTissue, CellMLModelsField)
-CellML.ModelsFieldCreateFinish()
+CellMLShiv.ModelsFieldCreateStart(cellMLModelsFieldUserNumberTissue, CellMLModelsField)
+CellMLShiv.ModelsFieldCreateFinish()
 
 # Update cellmlModelsfield parameter set with the T_core?
 
@@ -2382,20 +2382,220 @@ CellML.ModelsFieldCreateFinish()
 
 # Create the CellML parameters field
 CellMLParametersField = iron.Field()
-CellML.ParametersFieldCreateStart(cellMLParametersFieldUserNumberTissue, CellMLParametersField)
-CellML.ParametersFieldCreateFinish()
+CellMLShiv.ParametersFieldCreateStart(cellMLParametersFieldUserNumberTissue, CellMLParametersField)
+CellMLShiv.ParametersFieldCreateFinish()
 # Create the CellML intermediate field
 CellMLIntermediateField = iron.Field()
-CellML.IntermediateFieldCreateStart(CellMLIntermediateFieldUserNumberTissue, CellMLIntermediateField)
-CellML.IntermediateFieldCreateFinish()
+CellMLShiv.IntermediateFieldCreateStart(CellMLIntermediateFieldUserNumberTissue, CellMLIntermediateField)
+CellMLShiv.IntermediateFieldCreateFinish()
 
 # Finish the parameter update
 IndependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 IndependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)  
 
+
+#================================================================================================================================
+# Analytic Field
+#================================================================================================================================
 # =================================
 # F L O W
-#if (CoupleFlowEnergy):
+if (CoupleFlowEnergy):
+
+  if (HeartInput):
+      if (ProgressDiagnostics):
+          print( " == >> ANALYTIC FIELD << == ")
+
+      AnalyticFieldNavierStokes = iron.Field()
+      EquationsSetNavierStokes.AnalyticCreateStart(iron.NavierStokesAnalyticFunctionTypes.FLOWRATE_AORTA,AnalyticFieldUserNumber,
+      AnalyticFieldNavierStokes) # SplintFromFile,FlowrateAorta,FlowrateOlufsen
+      AnalyticFieldNavierStokes.VariableLabelSet(iron.FieldVariableTypes.U,'Input Flow')
+      EquationsSetNavierStokes.AnalyticCreateFinish()
+  else:
+      Q[1][0]=0.0
+
+  #DOC-START cellml define field maps
+  #================================================================================================================================
+  #  RCR CellML Model Maps
+  #================================================================================================================================
+
+  if (RCRBoundaries):
+
+      #----------------------------------------------------------------------------------------------------------------------------
+      # Description
+      #----------------------------------------------------------------------------------------------------------------------------
+      # A CellML OD model is used to provide the impedance from the downstream vascular bed beyond the termination
+      # point of the 1D model. This is iteratively coupled with the the 1D solver. In the case of a simple resistance
+      # model, P=RQ, which is analogous to Ohm's law: V=IR. A variable map copies the guess for the FlowRate, Q at
+      # the boundary from the OpenCMISS Dependent Field to the CellML equation, which then returns presssure, P.
+      # The initial guess value for Q is taken from the previous time step or is 0 for t=0. In OpenCMISS this P value is
+      # then used to compute a new Area value based on the P-A relationship and the Riemann variable W_2, which gives a
+      # new value for Q until the values for Q and P converge within tolerance of the previous value.
+      #----------------------------------------------------------------------------------------------------------------------------
+
+      if (ProgressDiagnostics):
+          print( " == >> RCR CELLML MODEL << == ")
+
+      qCellMLComponent = 1
+      pCellMLComponent = 2
+
+      # Create the CellML environment
+      CellML = iron.CellML()
+      CellML.CreateStart(CellMLUserNumber,Region)
+      # Number of CellML models
+      CellMLModelIndex = [0]*(numberOfTerminalNodes+1)
+
+      # Windkessel Model
+      for terminalIdx in range (1,numberOfTerminalNodes+1):
+          nodeIdx = coupledNodeNumber[terminalIdx-1]
+          nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+          print(('reading model: ' + "./input/CellMLModels/outlet/"+str(segment[nodeIdx])+"/ModelRCR.cellml"))
+          if (nodeDomain == computationalNodeNumber):
+              CellMLModelIndex[terminalIdx] = CellML.ModelImport("./input/CellMLModels/outlet/"+str(segment[nodeIdx])+"/ModelRCR.cellml")
+              # known (to OpenCMISS) variables
+              CellML.VariableSetAsKnown(CellMLModelIndex[terminalIdx],"Circuit/Qin")
+              # to get from the CellML side
+              CellML.VariableSetAsWanted(CellMLModelIndex[terminalIdx],"Circuit/Pout")
+      CellML.CreateFinish()
+
+      # Start the creation of CellML <--> OpenCMISS field maps
+      CellML.FieldMapsCreateStart()
+
+      # ModelIndex
+      for terminalIdx in range (1,numberOfTerminalNodes+1):
+          nodeIdx = coupledNodeNumber[terminalIdx-1]
+          nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+          if (nodeDomain == computationalNodeNumber):
+              # Now we can set up the field variable component <--> CellML model variable mappings.
+              # Map the OpenCMISS boundary flow rate values --> CellML
+              # Q is component 1 of the DependentField
+              CellML.CreateFieldToCellMLMap(DependentFieldNavierStokes,iron.FieldVariableTypes.U,1,
+              iron.FieldParameterSetTypes.VALUES,CellMLModelIndex[terminalIdx],"Circuit/Qin",iron.FieldParameterSetTypes.VALUES)
+              # Map the returned pressure values from CellML --> CMISS
+              # pCellML is component 1 of the Dependent field U1 variable
+              CellML.CreateCellMLToFieldMap(CellMLModelIndex[terminalIdx],"Circuit/Pout",iron.FieldParameterSetTypes.VALUES,
+              DependentFieldNavierStokes,iron.FieldVariableTypes.U1,pCellMLComponent,iron.FieldParameterSetTypes.VALUES)
+
+      # Finish the creation of CellML <--> OpenCMISS field maps
+      CellML.FieldMapsCreateFinish()
+
+      CellMLModelsField = iron.Field()
+      CellML.ModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellMLModelsField)
+      CellML.ModelsFieldCreateFinish()
+
+      # Set the models field at boundary nodes
+      for terminalIdx in range (1,numberOfTerminalNodes+1):
+          nodeIdx = coupledNodeNumber[terminalIdx-1]
+          nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+          if (nodeDomain == computationalNodeNumber):
+              print(("Terminal node: " + str(nodeIdx) + " - " + str(segment[nodeIdx])))
+              CellMLModelsField.ParameterSetUpdateNode(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              versionIdx,derivIdx,nodeIdx,1,CellMLModelIndex[terminalIdx])
+
+      CellMLStateField = iron.Field()
+      CellML.StateFieldCreateStart(CellMLStateFieldUserNumber,CellMLStateField)
+      CellML.StateFieldCreateFinish()
+
+      CellMLParametersField = iron.Field()
+      CellML.ParametersFieldCreateStart(CellMLParametersFieldUserNumber,CellMLParametersField)
+      CellML.ParametersFieldCreateFinish()
+
+      CellMLIntermediateField = iron.Field()
+      CellML.IntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellMLIntermediateField)
+      CellML.IntermediateFieldCreateFinish()
+
+      # Finish the parameter update
+      DependentFieldNavierStokes.ParameterSetUpdateStart(iron.FieldVariableTypes.U1,iron.FieldParameterSetTypes.VALUES)
+      DependentFieldNavierStokes.ParameterSetUpdateFinish(iron.FieldVariableTypes.U1,iron.FieldParameterSetTypes.VALUES)
+  # DOC-END cellml define field maps
+
+  #================================================================================================================================
+  #  Heart CellML Model Maps
+  #================================================================================================================================
+
+  if (Heart):
+
+      #----------------------------------------------------------------------------------------------------------------------------
+      # Description
+      #----------------------------------------------------------------------------------------------------------------------------
+      # A CellML OD model is used to provide Heart model for the 1D model. A variable map copies the guess for the Pressure, P at
+      # the inlet node from the OpenCMISS Dependent Field to the CellML equation, which then returns flow, Q. The initial guess
+      # value for P is taken from the previous time step or is 0 for t=0. In OpenCMISS this Q value is then imposed to the inlet.
+      #----------------------------------------------------------------------------------------------------------------------------
+
+      if (ProgressDiagnostics):
+          print( " == >> HEART CELLML MODEL << == ")
+
+      qCellMLComponent = 1
+      pCellMLComponent = 2
+
+      # Create the CellML environment
+      CellML = iron.CellML()
+      CellML.CreateStart(CellMLUserNumber,Region)
+      # Number of CellML models
+      CellMLModelIndex = [0]*(numberOfInputNodes+1)
+
+      # Heart Model
+      for inputIdx in range (1,numberOfInputNodes+1):
+          nodeIdx = inputNodeNumber[inputIdx-1]
+          nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+          print(('reading model: ' + "./input/CellMLModels/inlet/"+str(segment[nodeIdx])+"/Heart.cellml"))
+          if (nodeDomain == computationalNodeNumber):
+              CellMLModelIndex[inputIdx] = CellML.ModelImport("./input/CellMLModels/inlet/"+str(segment[nodeIdx])+"/Heart.cellml")
+              # known (to OpenCMISS) variables
+              CellML.VariableSetAsKnown(CellMLModelIndex[inputIdx],"Heart/P_art")
+              # to get from the CellML side
+              CellML.VariableSetAsWanted(CellMLModelIndex[inputIdx],"Heart/Q_art")
+      CellML.CreateFinish()
+
+      # Start the creation of CellML <--> OpenCMISS field maps
+      CellML.FieldMapsCreateStart()
+
+      # ModelIndex
+      for inputIdx in range (1,numberOfInputNodes+1):
+          nodeIdx = inputNodeNumber[inputIdx-1]
+          nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+          if (nodeDomain == computationalNodeNumber):
+              # Now we can set up the field variable component <--> CellML model variable mappings.
+              # Map the OpenCMISS boundary flow rate values --> CellML
+              # P is component 1 of the Dependent field U2 variable
+              CellML.CreateFieldToCellMLMap(DependentFieldNavierStokes,iron.FieldVariableTypes.U2,1,
+              iron.FieldParameterSetTypes.VALUES,CellMLModelIndex[inputIdx],"Heart/P_art",iron.FieldParameterSetTypes.VALUES)
+              # Map the returned pressure values from CellML --> CMISS
+              # qCellML is component 1 of the Dependent field U1 variable
+              CellML.CreateCellMLToFieldMap(CellMLModelIndex[inputIdx],"Heart/Q_art",iron.FieldParameterSetTypes.VALUES,
+              DependentFieldNavierStokes,iron.FieldVariableTypes.U1,qCellMLComponent,iron.FieldParameterSetTypes.VALUES)
+
+      # Finish the creation of CellML <--> OpenCMISS field maps
+      CellML.FieldMapsCreateFinish()
+
+      CellMLModelsField = iron.Field()
+      CellML.ModelsFieldCreateStart(CellMLModelsFieldUserNumber,CellMLModelsField)
+      CellML.ModelsFieldCreateFinish()
+
+      # Set the models field at inlet boundary nodes
+      for inputIdx in range (1,numberOfInputNodes+1):
+          nodeIdx = inputNodeNumber[inputIdx-1]
+          nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+          if (nodeDomain == computationalNodeNumber):
+              print(("Input node: " + str(nodeIdx) + " - " + str(segment[nodeIdx])))
+              CellMLModelsField.ParameterSetUpdateNode(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              versionIdx,derivIdx,nodeIdx,1,CellMLModelIndex[inputIdx])
+
+      CellMLStateField = iron.Field()
+      CellML.StateFieldCreateStart(CellMLStateFieldUserNumber,CellMLStateField)
+      CellML.StateFieldCreateFinish()
+
+      CellMLParametersField = iron.Field()
+      CellML.ParametersFieldCreateStart(CellMLParametersFieldUserNumber,CellMLParametersField)
+      CellML.ParametersFieldCreateFinish()
+
+      CellMLIntermediateField = iron.Field()
+      CellML.IntermediateFieldCreateStart(CellMLIntermediateFieldUserNumber,CellMLIntermediateField)
+      CellML.IntermediateFieldCreateFinish()
+
+      # Finish the parameter update
+      DependentFieldNavierStokes.ParameterSetUpdateStart(iron.FieldVariableTypes.U1,iron.FieldParameterSetTypes.VALUES)
+      DependentFieldNavierStokes.ParameterSetUpdateFinish(iron.FieldVariableTypes.U1,iron.FieldParameterSetTypes.VALUES)
 # =================================
 
 #================================================================================================================================
@@ -2519,7 +2719,7 @@ solverEnergy.SolverEquationsGet(solverEquationsEnergy)
 solverTissue.SolverEquationsGet(solverEquationsTissue)
 
 solverEquationsEnergy.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
-equationsSetIndex1 = cellMLEquations.CellMLAdd(CellML)
+equationsSetIndex1 = cellMLEquations.CellMLAdd(CellMLShiv)
 equationsSetIndex2 = solverEquationsEnergy.EquationsSetAdd(equationsSetEnergy)
 equationsSetIndex3 = solverEquationsTissue.EquationsSetAdd(equationsSetTissue)
 
