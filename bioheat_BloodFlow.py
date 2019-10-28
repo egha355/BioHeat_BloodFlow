@@ -1085,7 +1085,16 @@ nodesTissue.CreateFinish()
 
 # =================================
 # F L O W
-#if (CoupleFlowEnergy):
+if (CoupleFlowEnergy):
+  # Start the creation of mesh nodes
+  Nodes = iron.Nodes()
+  Nodes.CreateStart(Region,totalNumberOfNodes)
+  Nodes.CreateFinish()
+
+  if (streeBoundaries):
+      NodesStree = iron.Nodes()
+      NodesStree.CreateStart(RegionStree,timePeriod+1)
+      NodesStree.CreateFinish()
 # =================================
 
 print('\033[1;32m'+'Nodes             COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
