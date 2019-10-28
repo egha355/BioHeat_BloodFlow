@@ -1618,7 +1618,59 @@ equationsSetTissue.CreateFinish()
 
 # =================================
 # F L O W
-#if (CoupleFlowEnergy):
+if (CoupleFlowEnergy):
+  if (ProgressDiagnostics):
+    print( " == >> EQUATIONS SET << == ")
+
+  # Create the equations set for STREE
+  if (streeBoundaries):
+      EquationsSetStree = iron.EquationsSet()
+      EquationsSetFieldStree = iron.Field()
+      StreeEquationsSetSpecification = [iron.EquationsSetClasses.FLUID_MECHANICS,
+                iron.EquationsSetTypes.STREE_EQUATION,
+                EquationsSetStreeSubtype]
+      # Set the equations set to be a dynamic linear problem
+      EquationsSetStree.CreateStart(EquationsSetUserNumberStree,RegionStree,GeometricFieldTime,
+          StreeEquationsSetSpecification,EquationsSetFieldUserNumberStree,EquationsSetFieldStree)
+      EquationsSetStree.CreateFinish()
+
+  #------------------
+
+  # Create the equations set for CHARACTERISTIC
+  EquationsSetCharacteristic = iron.EquationsSet()
+  EquationsSetFieldCharacteristic = iron.Field()
+  # Set the equations set to be a static nonlinear problem
+  CharacteristicEquationsSetSpecification = [iron.EquationsSetClasses.FLUID_MECHANICS,
+            iron.EquationsSetTypes.CHARACTERISTIC_EQUATION,
+            EquationsSetCharacteristicSubtype]
+  EquationsSetCharacteristic.CreateStart(EquationsSetUserNumberCharacteristic,Region,GeometricField,
+      CharacteristicEquationsSetSpecification,EquationsSetFieldUserNumberCharacteristic,EquationsSetFieldCharacteristic)
+  EquationsSetCharacteristic.CreateFinish()
+
+  # Create the equations set for NAVIER-STOKES
+  EquationsSetNavierStokes = iron.EquationsSet()
+  EquationsSetFieldNavierStokes = iron.Field()
+  # Set the equations set to be a dynamic nonlinear problem
+  NavierStokesEquationsSetSpecification = [iron.EquationsSetClasses.FLUID_MECHANICS,
+                iron.EquationsSetTypes.NAVIER_STOKES_EQUATION,
+                EquationsSetSubtype]
+  EquationsSetNavierStokes.CreateStart(EquationsSetUserNumberNavierStokes,Region,GeometricField,
+      NavierStokesEquationsSetSpecification,EquationsSetFieldUserNumberNavierStokes,EquationsSetFieldNavierStokes)
+  EquationsSetNavierStokes.CreateFinish()
+
+  #------------------
+
+  # Create the equations set for ADVECTION
+  if (coupledAdvection):
+      EquationsSetAdvection = iron.EquationsSet()
+      EquationsSetFieldAdvection = iron.Field()
+      # Set the equations set to be a dynamic linear problem
+      AdvectionEquationsSetSpecification = [iron.EquationsSetClasses.CLASSICAL_FIELD,
+                    iron.EquationsSetTypes.ADVECTION_EQUATION,
+                EquationsSetAdvectionSubtype]
+      EquationsSetAdvection.CreateStart(EquationsSetUserNumberAdvection,Region,GeometricField,
+          AdvectionEquationsSetSpecification,EquationsSetFieldUserNumberAdvection,EquationsSetFieldAdvection)
+      EquationsSetAdvection.CreateFinish()
 # =================================
 
 print('\033[1;32m'+'Equations Set     COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
