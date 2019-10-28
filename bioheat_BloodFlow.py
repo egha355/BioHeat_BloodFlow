@@ -264,37 +264,37 @@ numberOfNodesEnergy    = 26
 numberOfElementsEnergy = 25
 
 #ELEMENTS
-elementNodes= (numberOfElementsEnergy)*[2*[0]]
+elementNodesEnergy= (numberOfElementsEnergy)*[2*[0]]
 #Brachial artery
-elementNodes[0]=[1,2]
-elementNodes[1]=[2,3]
-elementNodes[2]=[3,4]
-elementNodes[3]=[4,5]
-elementNodes[4]=[5,6]
+elementNodesEnergy[0]=[1,2]
+elementNodesEnergy[1]=[2,3]
+elementNodesEnergy[2]=[3,4]
+elementNodesEnergy[3]=[4,5]
+elementNodesEnergy[4]=[5,6]
 
 #Radial
-elementNodes[5] =[6,7]
-elementNodes[6] =[7,8]
-elementNodes[7] =[8,9]
-elementNodes[8] =[9,10]
-elementNodes[9]=[10,11]
-elementNodes[10]=[11,12]
-elementNodes[11]=[12,13]
-elementNodes[12]=[13,14]
-elementNodes[13]=[14,15]
-elementNodes[14]=[15,16]
+elementNodesEnergy[5] =[6,7]
+elementNodesEnergy[6] =[7,8]
+elementNodesEnergy[7] =[8,9]
+elementNodesEnergy[8] =[9,10]
+elementNodesEnergy[9]=[10,11]
+elementNodesEnergy[10]=[11,12]
+elementNodesEnergy[11]=[12,13]
+elementNodesEnergy[12]=[13,14]
+elementNodesEnergy[13]=[14,15]
+elementNodesEnergy[14]=[15,16]
 
 #Ulnar
-elementNodes[15]=[6,17]
-elementNodes[16]=[17,18]
-elementNodes[17]=[18,19]
-elementNodes[18]=[19,20]
-elementNodes[19]=[20,21]
-elementNodes[20]=[21,22]
-elementNodes[21]=[22,23]
-elementNodes[22]=[23,24]
-elementNodes[23]=[24,25]
-elementNodes[24]=[25,26]
+elementNodesEnergy[15]=[6,17]
+elementNodesEnergy[16]=[17,18]
+elementNodesEnergy[17]=[18,19]
+elementNodesEnergy[18]=[19,20]
+elementNodesEnergy[19]=[20,21]
+elementNodesEnergy[20]=[21,22]
+elementNodesEnergy[21]=[22,23]
+elementNodesEnergy[22]=[23,24]
+elementNodesEnergy[23]=[24,25]
+elementNodesEnergy[24]=[25,26]
 
 #NODES
 xValues = numpy.zeros((numberOfNodesEnergy,1),dtype = numpy.float)
@@ -535,8 +535,143 @@ localNodes=[0]*numberOfLocalNodes
 
 elementNumber=0
 totalNumberOfElements=1
+
+
+
 # elementNodes = False
 #with open("upperlimb_refined2.exelem", "r") as f:
+
+# =================================
+# F L O W
+if (CoupleFlowEnergy):
+  if (ProgressDiagnostics):
+      print( " == >> Reading geometry from files... << == ")
+
+  # Read the node file
+  with open('input/Node.csv','r') as csvfile:
+      reader = csv.reader(csvfile, delimiter=',')
+  #    workSpace(vars())
+      rownum = 0
+      for row in reader:
+          if (rownum == 0):
+              # Read the header row
+              header = row
+          else:
+              # Read the number of nodes
+              if (rownum == 1):
+                  numberOfNodesSpace = int(row[10])
+                  totalNumberOfNodes = numberOfNodesSpace*3
+                  xValues = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)
+                  yValues = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)
+                  zValues = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)
+                  A0      = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)  # Area        (m2)
+                  H       = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)  # Thickness   (m)
+                  E       = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)  # Elasticity  (Pa)
+                  kp      = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)
+                  k1      = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)
+                  k2      = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)
+                  k3      = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)
+                  b1      = numpy.zeros((numberOfNodesSpace+1,4),dtype = numpy.float)
+                  Tp      = [0]*(numberOfNodesSpace+1)                                 # Type (Artery or Vein)
+                  segment = [0]*(numberOfNodesSpace+1)
+                  Sigma = 0.5                                                          # Poisson Ratio
+              # Initialise the coordinates
+              segment[rownum] = row[0]
+              xValues[rownum][0] = float(row[1])
+              yValues[rownum][0] = float(row[2])
+              zValues[rownum][0] = float(row[3])
+              A0[rownum][0] = float(row[4])
+              E [rownum][0] = float(row[5])
+              H [rownum][0] = float(row[6])
+              Tp[rownum] = row[8]
+              # Read the input nodes
+              if (row[9] == 'input'):
+                  numberOfInputNodes = numberOfInputNodes+1
+                  inputNodeNumber.append(rownum)
+              # Read the bifurcation nodes
+              elif (row[9] == 'bifurcation'):
+                  numberOfBifurcations+=1
+                  bifurcationNodeNumber.append(rownum)
+                  xValues[rownum][1] = float(row[1])
+                  yValues[rownum][1] = float(row[2])
+                  zValues[rownum][1] = float(row[3])
+                  xValues[rownum][2] = float(row[1])
+                  yValues[rownum][2] = float(row[2])
+                  zValues[rownum][2] = float(row[3])
+              # Read the trifurcation nodes
+              elif (row[9] == 'trifurcation'):
+                  numberOfTrifurcations+=1
+                  trifurcationNodeNumber.append(rownum)
+                  xValues[rownum][1] = float(row[1])
+                  yValues[rownum][1] = float(row[2])
+                  zValues[rownum][1] = float(row[3])
+                  xValues[rownum][2] = float(row[1])
+                  yValues[rownum][2] = float(row[2])
+                  zValues[rownum][2] = float(row[3])
+                  xValues[rownum][3] = float(row[1])
+                  yValues[rownum][3] = float(row[2])
+                  zValues[rownum][3] = float(row[3])
+              # Read the terminal nodes
+              elif (row[9] == 'terminal'):
+                  numberOfTerminalNodes+=1
+                  coupledNodeNumber.append(rownum)
+              if (Tp[rownum] == 'Artery' or Tp[rownum] == 'Vein'):
+                  #Arterial system (Sherwin 2003)
+                  kp[rownum][0] = (math.pi**0.5)/(1.0-Sigma**2)
+                  k1[rownum][0] = -0.5
+                  k2[rownum][0] = 1.0
+                  k3[rownum][0] = 1.0
+                  b1[rownum][0] = 0.5
+              #elif (Tp[rownum] == 'Vein'):
+                  #Venous system (Keijsers 2015, Pedley 1996)
+              #    kp[rownum][0] = (math.pi**1.5)/(12.0*(1.0-Sigma**2)**0.5)
+              #    k1[rownum][0] = -1.5
+              #    k2[rownum][0] = 1.0
+              #    k3[rownum][0] = 3.0
+              #    b1[rownum][0] = 10.0
+          # Next line
+          rownum+=1
+
+  #------------------
+
+  # Read the element file
+  with open('input/Element.csv','r') as csvfile:
+      reader = csv.reader(csvfile, delimiter=',')
+      rownum = 0
+      i = 0
+      k = 0
+      for row in reader:
+          if (rownum == 0):
+              # Read the header row
+              header = row
+          else:
+              # Read the number of elements
+              if (rownum == 1):
+                  totalNumberOfElements = int(row[11])
+                  elementNodes          = (totalNumberOfElements+1)*[3*[0]]
+                  bifurcationElements   = (numberOfBifurcations+1)*[3*[0]]
+                  trifurcationElements  = (numberOfTrifurcations+1)*[4*[0]]
+              # Read the element nodes
+              elementNodes[rownum] = [int(row[1]),int(row[2]),int(row[3])]
+              # Read the bifurcation elements
+              if (row[4]):
+                  i+=1
+                  bifurcationElements[i] = [int(row[4]),int(row[5]),int(row[6])]
+              # Read the trifurcation elements
+              elif (row[7]):
+                  k+=1
+                  trifurcationElements[k] = [int(row[7]),int(row[8]),int(row[9]),int(row[10])]
+          # Next line
+          rownum+=1
+
+  if (ProgressDiagnostics):
+      print( " Input at nodes: " + str(inputNodeNumber))
+      print( " Bifurcations at nodes: " + str(bifurcationNodeNumber))
+      print( " Trifurcations at nodes: " + str(trifurcationNodeNumber))
+      print( " Terminal at nodes: " + str(coupledNodeNumber))
+      print( " == >> Finished reading geometry... << == ")
+# =================================
+
 #================================================================================================================================
 #  Initial Data & Default values
 #================================================================================================================================
@@ -729,7 +864,7 @@ meshComponentNumber = 1
 meshElementsEnergy.CreateStart(meshEnergy,meshComponentNumber,basisEnergy)
 
 for elemIdx in range(0,numberOfElementsEnergy):
-    meshElementsEnergy.NodesSet(elemIdx+1,elementNodes[elemIdx])
+    meshElementsEnergy.NodesSet(elemIdx+1,elementNodesEnergy[elemIdx])
 meshElementsEnergy.CreateFinish()
 
 meshEnergy.CreateFinish()
