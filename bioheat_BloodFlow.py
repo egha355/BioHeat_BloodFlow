@@ -482,7 +482,9 @@ for i in range(numberOfElementsEnergy):
 brachialElements=[1,2,3,4,5]
 radialElements  =[6,7,8,9,10,11,12,13,14,15]
 ulnarElements   =[16,17,18,19,20,21,22,23,24,25]
-
+xValuesEnergy=xValues
+yValuesEnergy=yValues
+zValuesEnergy=zValues
 # # ================ VTK to csv file =================
 # def vtkTocsv():
 #   vtkFile='body.1.vtk'
@@ -1384,11 +1386,11 @@ for nodeIdx in range(0,numberOfNodesEnergy):
     nodeDomain = decompositionEnergy.NodeDomainGet(nodeIdx+1,1)
     if (nodeDomain == computationalNodeNumber):
         geometricFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-         versionIdx,derivIdx,nodeIdx+1,1,xValues[nodeIdx][0])
+         versionIdx,derivIdx,nodeIdx+1,1,xValuesEnergy[nodeIdx][0])
         geometricFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-         versionIdx,derivIdx,nodeIdx+1,2,yValues[nodeIdx][0])
+         versionIdx,derivIdx,nodeIdx+1,2,yValuesEnergy[nodeIdx][0])
         geometricFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-         versionIdx,derivIdx,nodeIdx+1,3,zValues[nodeIdx][0])
+         versionIdx,derivIdx,nodeIdx+1,3,zValuesEnergy[nodeIdx][0])
 
 # Finish the parameter update
 geometricFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
@@ -1504,7 +1506,80 @@ geometricFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.Fie
 
 # =================================
 # F L O W
-#if (CoupleFlowEnergy):
+if (CoupleFlowEnergy):
+  if (ProgressDiagnostics):
+    print( " == >> GEOMETRIC FIELD << == ")
+
+  # Start the creation of SPACE geometric field
+  GeometricField = iron.Field()
+  GeometricField.CreateStart(GeometricFieldUserNumber,Region)
+  GeometricField.NumberOfVariablesSet(1)
+  GeometricField.VariableLabelSet(iron.FieldVariableTypes.U,'Coordinates')
+  GeometricField.TypeSet = iron.FieldTypes.GEOMETRIC
+  GeometricField.meshDecomposition = Decomposition
+  GeometricField.ScalingTypeSet = iron.FieldScalingTypes.NONE
+  # Set the mesh component to be used by the geometric field components
+  for componentNumber in range(1,CoordinateSystem.dimension+1):
+      GeometricField.ComponentMeshComponentSet(iron.FieldVariableTypes.U,componentNumber,
+      meshComponentNumberSpace)
+  GeometricField.CreateFinish()
+
+  # Set the geometric field values for version 1
+  versionIdx = 1
+  for nodeIdx in range(1,numberOfNodesSpace+1):
+      nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+      if (nodeDomain == computationalNodeNumber):
+          GeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+          versionIdx,derivIdx,nodeIdx,1,xValues[nodeIdx][0])
+          GeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+          versionIdx,derivIdx,nodeIdx,2,yValues[nodeIdx][0])
+          GeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+          versionIdx,derivIdx,nodeIdx,3,zValues[nodeIdx][0])
+  # Set the geometric field for bifurcation
+  for bifIdx in range (1,numberOfBifurcations+1):
+      nodeIdx = bifurcationNodeNumber[bifIdx-1]
+      nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+      if (nodeDomain == computationalNodeNumber):
+          for versionNumber in range(2,4):
+              GeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              versionNumber,derivIdx,nodeIdx,1,xValues[nodeIdx][versionNumber-1])
+              GeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              versionNumber,derivIdx,nodeIdx,2,yValues[nodeIdx][versionNumber-1])
+              GeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              versionNumber,derivIdx,nodeIdx,3,zValues[nodeIdx][versionNumber-1])
+  # Set the geometric field for trifurcation
+  for trifIdx in range (1,numberOfTrifurcations+1):
+      nodeIdx = trifurcationNodeNumber[trifIdx-1]
+      nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+      if nodeDomain == computationalNodeNumber:
+          for versionNumber in range(2,5):
+              GeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              versionNumber,derivIdx,nodeIdx,1,xValues[nodeIdx][versionNumber-1])
+              GeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              versionNumber,derivIdx,nodeIdx,2,yValues[nodeIdx][versionNumber-1])
+              GeometricField.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+              versionNumber,derivIdx,nodeIdx,3,zValues[nodeIdx][versionNumber-1])
+
+  # Finish the parameter update
+  GeometricField.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  GeometricField.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+
+  #------------------
+
+  if (streeBoundaries):
+      # Start the creation of TIME geometric field
+      GeometricFieldTime = iron.Field()
+      GeometricFieldTime.CreateStart(GeometricFieldUserNumber2,RegionStree)
+      GeometricFieldTime.NumberOfVariablesSet(1)
+      GeometricFieldTime.VariableLabelSet(iron.FieldVariableTypes.U,'Time')
+      GeometricFieldTime.TypeSet = iron.FieldTypes.GEOMETRIC
+      GeometricFieldTime.meshDecomposition = DecompositionTime
+      GeometricFieldTime.ScalingTypeSet = iron.FieldScalingTypes.NONE
+      # Set the mesh component to be used by the geometric field components
+      for componentNumber in range(1,CoordinateSystem.dimension+1):
+          GeometricFieldTime.ComponentMeshComponentSet(iron.FieldVariableTypes.U,
+          componentNumber,meshComponentNumberTime)
+      GeometricFieldTime.CreateFinish()
 # =================================
 
 print('\033[1;32m'+'Geometric Field   COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
