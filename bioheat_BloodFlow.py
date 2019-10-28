@@ -193,6 +193,67 @@ cellMLModelsFieldUserNumberTissue      = 26
 cellMLParametersFieldUserNumberTissue  = 27
 CellMLIntermediateFieldUserNumberTissue = 28
 
+# Set program variables
+# CoordinateSystemUserNumber                = 1
+BasisUserNumberSpace                      = 29
+BasisUserNumberTime                       = 30
+RegionUserNumber                          = 31
+RegionUserNumber2                         = 32
+MeshUserNumber                            = 33
+MeshUserNumber2                           = 34
+DecompositionUserNumber                   = 35
+DecompositionUserNumber2                  = 36
+GeometricFieldUserNumber                  = 37
+GeometricFieldUserNumber2                 = 38
+EquationsSetFieldUserNumberStree          = 39
+EquationsSetFieldUserNumberCharacteristic = 40
+EquationsSetFieldUserNumberNavierStokes   = 41
+EquationsSetFieldUserNumberAdvection      = 42
+DependentFieldUserNumber                  = 43
+DependentFieldUserNumber2                 = 44
+DependentFieldUserNumber3                 = 45
+MaterialsFieldUserNumber                  = 46
+MaterialsFieldUserNumber2                 = 47
+IndependentFieldUserNumber                = 48
+EquationsSetUserNumberStree               = 49
+EquationsSetUserNumberCharacteristic      = 50
+EquationsSetUserNumberNavierStokes        = 51
+EquationsSetUserNumberAdvection           = 52
+# ProblemUserNumber                         = 26
+CellMLUserNumber                          = 53
+CellMLModelsFieldUserNumber               = 54
+CellMLStateFieldUserNumber                = 55
+CellMLIntermediateFieldUserNumber         = 56
+CellMLParametersFieldUserNumber           = 57
+MaterialsFieldUserNumberCellML            = 58
+AnalyticFieldUserNumber                   = 59
+# Solver user numbers
+SolverDAEUserNumber                       = 1
+SolverStreeUserNumber                     = 1
+SolverCharacteristicUserNumber            = 2
+SolverNavierStokesUserNumber              = 3
+SolverAdvectionUserNumber                 = 4
+# Materials constants
+MaterialsFieldUserNumberMu     = 1
+MaterialsFieldUserNumberRho    = 2
+MaterialsFieldUserNumberAlpha  = 3
+MaterialsFieldUserNumberPext   = 4
+MaterialsFieldUserNumberLs     = 5
+MaterialsFieldUserNumberTs     = 6
+MaterialsFieldUserNumberMs     = 7
+MaterialsFieldUserNumberG0     = 8
+MaterialsFieldUserNumberFr     = 9
+MaterialsFieldUserNumberD      = 1
+# Materials variables
+MaterialsFieldUserNumberA0     = 1
+MaterialsFieldUserNumberE      = 2
+MaterialsFieldUserNumberH      = 3
+MaterialsFieldUserNumberkp     = 4
+MaterialsFieldUserNumberk1     = 5
+MaterialsFieldUserNumberk2     = 6
+MaterialsFieldUserNumberk3     = 7
+MaterialsFieldUserNumberb1     = 8
+
 #================================================================================================================================
 #  Mesh Reading
 #================================================================================================================================
