@@ -1933,7 +1933,102 @@ materialsFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.Fie
 
 # =================================
 # F L O W
-#if (CoupleFlowEnergy):
+if (CoupleFlowEnergy):
+  if (ProgressDiagnostics):
+    print( " == >> MATERIALS FIELD << == ")
+
+  # STREE
+  if (streeBoundaries):
+      # Create the equations set materials field variables
+      MaterialsFieldStree = iron.Field()
+      EquationsSetStree.MaterialsCreateStart(MaterialsFieldUserNumber2,MaterialsFieldStree)
+      MaterialsFieldStree.VariableLabelSet(iron.FieldVariableTypes.U,'Stree Impedance')
+      MaterialsFieldStree.VariableLabelSet(iron.FieldVariableTypes.V,'Stree Flow')
+      EquationsSetStree.MaterialsCreateFinish()
+
+  #------------------
+
+  # CHARACTERISTIC
+  # Create the equations set materials field variables
+  MaterialsFieldNavierStokes = iron.Field()
+  EquationsSetCharacteristic.MaterialsCreateStart(MaterialsFieldUserNumber,MaterialsFieldNavierStokes)
+  MaterialsFieldNavierStokes.VariableLabelSet(iron.FieldVariableTypes.U,'MaterialsConstants')
+  MaterialsFieldNavierStokes.VariableLabelSet(iron.FieldVariableTypes.V,'MaterialsVariables')
+  # Set the mesh component to be used by the field components.
+  for componentNumber in range(1,4):
+      MaterialsFieldNavierStokes.ComponentMeshComponentSet(iron.FieldVariableTypes.V,componentNumber,meshComponentNumberSpace)
+  EquationsSetCharacteristic.MaterialsCreateFinish()
+
+  # NAVIER-STOKES
+  EquationsSetNavierStokes.MaterialsCreateStart(MaterialsFieldUserNumber,MaterialsFieldNavierStokes)
+  EquationsSetNavierStokes.MaterialsCreateFinish()
+
+  # Set the materials field constants
+  MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,
+  iron.FieldParameterSetTypes.VALUES,MaterialsFieldUserNumberMu,Mu)
+  MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,
+  iron.FieldParameterSetTypes.VALUES,MaterialsFieldUserNumberRho,Rho)
+  MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,
+  iron.FieldParameterSetTypes.VALUES,MaterialsFieldUserNumberAlpha,Alpha)
+  MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,
+  iron.FieldParameterSetTypes.VALUES,MaterialsFieldUserNumberPext,Pext)
+  MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,
+  iron.FieldParameterSetTypes.VALUES,MaterialsFieldUserNumberLs,Ls)
+  MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,
+  iron.FieldParameterSetTypes.VALUES,MaterialsFieldUserNumberTs,Ts)
+  MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,
+  iron.FieldParameterSetTypes.VALUES,MaterialsFieldUserNumberMs,Ms)
+  MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,
+  iron.FieldParameterSetTypes.VALUES,MaterialsFieldUserNumberG0,G0)
+  #MaterialsFieldNavierStokes.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,
+  # iron.FieldParameterSetTypes.VALUES,MaterialsFieldUserNumberFr,Fr)
+
+  # Initialise the materials field variables (A0,E,H,kp,k1,k2,k3,b1)
+  bifIdx = 0
+  trifIdx = 0
+  for nodeIdx in range(1,numberOfNodesSpace+1,1):
+      nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+      if (nodeDomain == computationalNodeNumber):
+          if (nodeIdx in trifurcationNodeNumber):
+              versions = [1,2,3,4]
+          elif (nodeIdx in bifurcationNodeNumber):
+              versions = [1,2,3]
+          else:
+              versions = [1]
+          for versionIdx in versions:
+              MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES,
+              versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberA0,A0[nodeIdx][versionIdx-1])
+              MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES,
+              versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberE,E[nodeIdx][versionIdx-1])
+              MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES,
+              versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberH,H[nodeIdx][versionIdx-1])
+  #            MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES,
+  #             versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberkp,kp[nodeIdx][versionIdx-1])
+  #            MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES,
+  #             versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberk1,k1[nodeIdx][versionIdx-1])
+  #            MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES,
+  #             versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberk2,k2[nodeIdx][versionIdx-1])
+  #            MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES,
+  #             versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberk3,k3[nodeIdx][versionIdx-1])
+  #            MaterialsFieldNavierStokes.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES,
+  #             versionIdx,derivIdx,nodeIdx,MaterialsFieldUserNumberb1,b1[nodeIdx][versionIdx-1])
+
+  # Finish the parameter update
+  MaterialsFieldNavierStokes.ParameterSetUpdateStart(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES)
+  MaterialsFieldNavierStokes.ParameterSetUpdateFinish(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES)
+
+  #------------------
+
+  # ADVECTION
+  if (coupledAdvection):
+      # Create the equations set materials field variables
+      MaterialsFieldAdvection = iron.Field()
+      EquationsSetAdvection.MaterialsCreateStart(MaterialsFieldUserNumber2,MaterialsFieldAdvection)
+      MaterialsFieldAdvection.VariableLabelSet(iron.FieldVariableTypes.U,'Diffusivity')
+      EquationsSetAdvection.MaterialsCreateFinish()
+      # Set the materials field constant
+      MaterialsFieldAdvection.ComponentValuesInitialiseDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+      MaterialsFieldUserNumberD,D)
 # =================================
 
 print('\033[1;32m'+'Materials Field   COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
