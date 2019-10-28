@@ -1040,6 +1040,31 @@ basisTissue.InterpolationXiSet([iron.BasisInterpolationSpecifications.LINEAR_SIM
 basisTissue.QuadratureOrderSet(2)
 basisTissue.CreateFinish()
 
+# =================================
+# F L O W
+if (CoupleFlowEnergy):
+  # Start the creation of SPACE bases
+  basisXiGaussSpace = 3
+  BasisSpace = iron.Basis()
+  BasisSpace.CreateStart(BasisUserNumberSpace)
+  BasisSpace.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
+  BasisSpace.numberOfXi = numberOfDimensionsFlow
+  BasisSpace.interpolationXi = [iron.BasisInterpolationSpecifications.QUADRATIC_LAGRANGE]
+  BasisSpace.quadratureNumberOfGaussXi = [basisXiGaussSpace]
+  BasisSpace.CreateFinish()
+
+  if (streeBoundaries):
+      # Start the creation of TIME bases
+      basisXiGaussSpace = 3
+      BasisTime = iron.Basis()
+      BasisTime.CreateStart(BasisUserNumberTime)
+      BasisTime.type = iron.BasisTypes.LAGRANGE_HERMITE_TP
+      BasisTime.numberOfXi = numberOfDimensionsFlow
+      BasisTime.interpolationXi = [iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE]
+      BasisTime.quadratureNumberOfGaussXi = [basisXiGaussSpace]
+      BasisTime.CreateFinish()
+# =================================
+
 print('\033[1;32m'+'Bases             COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
 #  Nodes
@@ -1057,6 +1082,11 @@ NodesEnergy.CreateFinish()
 nodesTissue = iron.Nodes()
 nodesTissue.CreateStart(regionTissue,numberOfNodesTissue)
 nodesTissue.CreateFinish()
+
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
 
 print('\033[1;32m'+'Nodes             COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
@@ -1179,6 +1209,11 @@ meshTissue.CreateFinish()
 
 # input("Stop Here")
 
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
+
 print('\033[1;32m'+'Mesh              COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
 #  Decomposition
@@ -1202,6 +1237,11 @@ decompositionTissue.TypeSet(iron.DecompositionTypes.CALCULATED)
 decompositionTissue.NumberOfDomainsSet(numberOfComputationalNodes)
 decompositionTissue.CalculateFacesSet(True)
 decompositionTissue.CreateFinish()
+
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
 
 print('\033[1;32m'+'Decomposition     COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
@@ -1353,6 +1393,11 @@ print( "Elapsed time after reading node file is: ", time.time()-t)
 geometricFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 geometricFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
+
 print('\033[1;32m'+'Geometric Field   COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
 #  Equations Sets
@@ -1386,6 +1431,11 @@ equationsSetTissue.CreateStart(equationsSetUserNumberTissue,regionTissue,geometr
         equationsSetSpecification,equationsSetFieldUserNumberTissue,equationsSetFieldTissue)
 equationsSetTissue.LabelSet('Diffusion Equation')
 equationsSetTissue.CreateFinish()
+
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
 
 print('\033[1;32m'+'Equations Set     COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
@@ -1426,6 +1476,11 @@ dependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.Fi
 
 dependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 dependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
 
 print('\033[1;32m'+'Dependent Field   COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
@@ -1530,6 +1585,11 @@ materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.Fi
 materialsFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 materialsFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
+
 print('\033[1;32m'+'Materials Field   COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
 #  Source Field
@@ -1610,6 +1670,11 @@ sourceFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.Field
 
 sourceFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 sourceFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
 
 print('\033[1;32m'+'Source Field      COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
@@ -1714,6 +1779,11 @@ IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.
 IndependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 IndependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
+
 print('\033[1;32m'+'Independent Field COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 
 #================================================================================================================================
@@ -1787,6 +1857,11 @@ CellML.IntermediateFieldCreateFinish()
 IndependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 IndependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)  
 
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
+
 #================================================================================================================================
 #  Equations
 #================================================================================================================================
@@ -1812,6 +1887,11 @@ equationsSetTissue.EquationsCreateStart(equationsTissue)
 equationsTissue.sparsityType = iron.EquationsSparsityTypes.SPARSE
 equationsTissue.outputType = iron.EquationsOutputTypes.NONE
 equationsSetTissue.EquationsCreateFinish()
+
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
 
 print('\033[1;32m'+'equations         COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
