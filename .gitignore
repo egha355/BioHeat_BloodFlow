@@ -1,0 +1,12 @@
+# geometry files
+boundary_nodes.csv
+elements2.csv
+nodes.csv
+
+# output Detalis
+output/
+outputArtery/
+outputDiffusion/
+
+# tilde
+*~

@@ -1,0 +1,568 @@
+<?xml version='1.0'?>
+<model cmeta:id="Shivering" name="Shivering" xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cellml="http://www.cellml.org/cellml/1.1#" xmlns:cmeta="http://www.cellml.org/metadata/1.0#">
+    <!-- def unit UnitT as
+unit pascal {mult: 0.0075};-->
+    <!--   unit dimensionless;
+ enddef;-->
+    <!-- =====================================================================
+ Interface
+ =====================================================================    -->
+    <component name="interface">
+        <variable initial_value="37.0" name="Tskin" private_interface="out" units="dimensionless"/>
+        <variable initial_value="37.0" name="Tcore" private_interface="out" units="dimensionless"/>
+        <variable initial_value="1" name="OrganType" private_interface="out" units="dimensionless"/>
+        <variable initial_value="1e6" name="MuscleVolume" private_interface="out" units="dimensionless"/>
+        <!-- Variables we want to make available externally -->
+        <variable name="source" private_interface="in" public_interface="out" units="dimensionless"/>
+    </component>
+    <!-- =====================================================================
+ Thermophysical properties
+ =====================================================================-->
+    <component name="thermophysicalProperties">
+        <variable name="OrganType" public_interface="in" units="dimensionless"/>
+        <variable name="OrganDensity" public_interface="out" units="dimensionless"/>
+        <variable name="OrganSpecificHeat" public_interface="out" units="dimensionless"/>
+        <variable name="BasalMetabolism" public_interface="out" units="dimensionless"/>
+        <variable name="Perfusion" public_interface="out" units="dimensionless"/>
+        <variable name="BloodDensity" public_interface="out" units="dimensionless"/>
+        <variable name="BloodSpecificHeat" public_interface="out" units="dimensionless"/>
+        <variable name="BloodTemperature" public_interface="out" units="dimensionless"/>
+        <!--      //  var OrganConductivity: dimensionless {pub: out};        -->
+        <!--        // kg/m3 -->
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+                <eq/>
+                <ci>BloodDensity</ci>
+                <cn cellml:units="dimensionless">1069.0</cn>
+            </apply>
+            <!--        // J/Kg.K-->
+            <apply>
+                <eq/>
+                <ci>BloodSpecificHeat</ci>
+                <cn cellml:units="dimensionless">3650.0</cn>
+            </apply>
+            <apply>
+                <eq/>
+                <ci>BloodTemperature</ci>
+                <cn cellml:units="dimensionless">37.0</cn>
+            </apply>
+            <!--becauase we are forced to use otherwise I put muscle in otherwise hopefully I do not forget this shortcomming
+[1,2,3,4,5,6,7]=Skeletal muscle,Bone,Brain,Lung,Viscera,Fat,Skin-->
+            <!--kg/m3-->
+            <apply>
+                <eq/>
+                <ci>OrganDensity</ci>
+                <piecewise>
+                    <piece>
+                        <cn cellml:units="dimensionless">1375.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">2</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">1080.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">3</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">550.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">4</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">1000.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">5</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">850.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">6</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">1085.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">7</cn>
+                        </apply>
+                    </piece>
+                    <otherwise>
+                        <cn cellml:units="dimensionless">1085.0</cn>
+                    </otherwise>
+                </piecewise>
+            </apply>
+            <!--kJ/Kg.K           -->
+            <apply>
+                <eq/>
+                <ci>OrganSpecificHeat</ci>
+                <piecewise>
+                    <piece>
+                        <cn cellml:units="dimensionless">1700.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">2</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">3850.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">3</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">3718.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">4</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">3697.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">5</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">2300.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">6</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">3680.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">7</cn>
+                        </apply>
+                    </piece>
+                    <otherwise>
+                        <cn cellml:units="dimensionless">3768.0</cn>
+                    </otherwise>
+                </piecewise>
+            </apply>
+            <!--W/m.K          -->
+            <!--        OrganConductivity = sel
+            case OrganType == 2{dimensionless}:
+                0.75{dimensionless};
+            case OrganType == 3{dimensionless}:
+                0.49{dimensionless};
+            case OrganType == 4{dimensionless}:
+                0.28{dimensionless};
+            case OrganType == 5{dimensionless}:
+                0.53{dimensionless};
+            case OrganType == 6{dimensionless}:
+                0.16{dimensionless};
+            case OrganType == 7{dimensionless}:
+                0.47{dimensionless};
+            otherwise:
+                0.42{dimensionless};            
+        endsel;-->
+            <!--W/m3          -->
+            <apply>
+                <eq/>
+                <ci>BasalMetabolism</ci>
+                <piecewise>
+                    <piece>
+                        <cn cellml:units="dimensionless">0.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">2</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">13400.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">3</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">600.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">4</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">4100.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">5</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">3</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">6</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">1096.0</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">7</cn>
+                        </apply>
+                    </piece>
+                    <otherwise>
+                        <cn cellml:units="dimensionless">700.0</cn>
+                    </otherwise>
+                </piecewise>
+            </apply>
+            <!--1/s
+ skin variable         -->
+            <apply>
+                <eq/>
+                <ci>Perfusion</ci>
+                <piecewise>
+                    <piece>
+                        <cn cellml:units="dimensionless">0.000000</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">2</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">0.011320</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">3</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">0.004310</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">4</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">0.000500</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">5</cn>
+                        </apply>
+                    </piece>
+                    <piece>
+                        <cn cellml:units="dimensionless">0.000004</cn>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">6</cn>
+                        </apply>
+                    </piece>
+                    <otherwise>
+                        <cn cellml:units="dimensionless">0.0005</cn>
+                    </otherwise>
+                </piecewise>
+            </apply>
+        </math>
+    </component>
+    <!-- =====================================================================
+ Shivering
+ =====================================================================    -->
+    <component name="Shivering">
+        <variable name="Tskin" public_interface="in" units="dimensionless"/>
+        <variable name="Tcore" public_interface="in" units="dimensionless"/>
+        <variable name="Qshiv" public_interface="out" units="dimensionless"/>
+        <variable name="Tshiv" units="dimensionless"/>
+        <variable name="Qshivmax" units="dimensionless"/>
+        <!-- C-->
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+                <eq/>
+                <ci>Tshiv</ci>
+                <piecewise>
+                    <piece>
+                        <apply>
+                            <minus/>
+                            <apply>
+                                <plus/>
+                                <apply>
+                                    <minus/>
+                                    <cn cellml:units="dimensionless">10222.0</cn>
+                                </apply>
+                                <apply>
+                                    <times/>
+                                    <cn cellml:units="dimensionless">570.9</cn>
+                                    <ci>Tcore</ci>
+                                </apply>
+                            </apply>
+                            <apply>
+                                <times/>
+                                <cn cellml:units="dimensionless">7.9455</cn>
+                                <apply>
+                                    <power/>
+                                    <ci>Tcore</ci>
+                                    <cn cellml:units="dimensionless">2</cn>
+                                </apply>
+                            </apply>
+                        </apply>
+                        <apply>
+                            <and/>
+                            <apply>
+                                <geq/>
+                                <ci>Tcore</ci>
+                                <cn cellml:units="dimensionless">35.8</cn>
+                            </apply>
+                            <apply>
+                                <leq/>
+                                <ci>Tcore</ci>
+                                <cn cellml:units="dimensionless">37.1</cn>
+                            </apply>
+                        </apply>
+                    </piece>
+                    <otherwise>
+                        <cn cellml:units="dimensionless">35.5</cn>
+                    </otherwise>
+                </piecewise>
+            </apply>
+            <!-- W-->
+            <apply>
+                <eq/>
+                <ci>Qshivmax</ci>
+                <piecewise>
+                    <piece>
+                        <cn cellml:units="dimensionless">0.0</cn>
+                        <apply>
+                            <gt/>
+                            <ci>Tcore</ci>
+                            <cn cellml:units="dimensionless">37.1</cn>
+                        </apply>
+                    </piece>
+                    <otherwise>
+                        <apply>
+                            <times/>
+                            <apply>
+                                <divide/>
+                                <cn cellml:units="dimensionless">1</cn>
+                                <cn cellml:units="dimensionless">3600</cn>
+                            </apply>
+                            <apply>
+                                <minus/>
+                                <apply>
+                                    <plus/>
+                                    <apply>
+                                        <times/>
+                                        <apply>
+                                            <minus/>
+                                            <cn cellml:units="dimensionless">1.1861</cn>
+                                        </apply>
+                                        <apply>
+                                            <power/>
+                                            <cn cellml:units="dimensionless">10</cn>
+                                            <cn cellml:units="dimensionless">9</cn>
+                                        </apply>
+                                    </apply>
+                                    <apply>
+                                        <times/>
+                                        <cn cellml:units="dimensionless">6.552</cn>
+                                        <apply>
+                                            <power/>
+                                            <cn cellml:units="dimensionless">10</cn>
+                                            <cn cellml:units="dimensionless">7</cn>
+                                        </apply>
+                                        <ci>Tcore</ci>
+                                    </apply>
+                                </apply>
+                                <apply>
+                                    <times/>
+                                    <cn cellml:units="dimensionless">9.0418</cn>
+                                    <apply>
+                                        <power/>
+                                        <cn cellml:units="dimensionless">10</cn>
+                                        <cn cellml:units="dimensionless">5</cn>
+                                    </apply>
+                                    <apply>
+                                        <power/>
+                                        <ci>Tcore</ci>
+                                        <cn cellml:units="dimensionless">2</cn>
+                                    </apply>
+                                </apply>
+                            </apply>
+                        </apply>
+                    </otherwise>
+                </piecewise>
+            </apply>
+            <!-- W-->
+            <apply>
+                <eq/>
+                <ci>Qshiv</ci>
+                <piecewise>
+                    <piece>
+                        <apply>
+                            <times/>
+                            <ci>Qshivmax</ci>
+                            <apply>
+                                <minus/>
+                                <cn cellml:units="dimensionless">1</cn>
+                                <apply>
+                                    <power/>
+                                    <apply>
+                                        <divide/>
+                                        <apply>
+                                            <minus/>
+                                            <ci>Tskin</ci>
+                                            <cn cellml:units="dimensionless">20</cn>
+                                        </apply>
+                                        <apply>
+                                            <minus/>
+                                            <ci>Tshiv</ci>
+                                            <cn cellml:units="dimensionless">20</cn>
+                                        </apply>
+                                    </apply>
+                                    <cn cellml:units="dimensionless">2</cn>
+                                </apply>
+                            </apply>
+                        </apply>
+                        <apply>
+                            <and/>
+                            <apply>
+                                <geq/>
+                                <ci>Tskin</ci>
+                                <apply>
+                                    <minus/>
+                                    <cn cellml:units="dimensionless">40</cn>
+                                    <ci>Tshiv</ci>
+                                </apply>
+                            </apply>
+                            <apply>
+                                <leq/>
+                                <ci>Tskin</ci>
+                                <ci>Tshiv</ci>
+                            </apply>
+                        </apply>
+                    </piece>
+                    <otherwise>
+                        <cn cellml:units="dimensionless">0.0</cn>
+                    </otherwise>
+                </piecewise>
+            </apply>
+        </math>
+    </component>
+    <!-- =====================================================================
+ source term update value 
+ =====================================================================      -->
+    <component name="Source">
+        <variable name="Tskin" private_interface="out" public_interface="in" units="dimensionless"/>
+        <variable name="Tcore" private_interface="out" public_interface="in" units="dimensionless"/>
+        <variable name="OrganType" private_interface="out" public_interface="in" units="dimensionless"/>
+        <variable name="Qshiv" private_interface="in" units="dimensionless"/>
+        <variable name="vol" public_interface="in" units="dimensionless"/>
+        <variable name="q_m0" private_interface="in" units="dimensionless"/>
+        <variable name="rho_b" private_interface="in" units="dimensionless"/>
+        <variable name="c_b" private_interface="in" units="dimensionless"/>
+        <variable name="w" private_interface="in" units="dimensionless"/>
+        <variable name="T_b" private_interface="in" units="dimensionless"/>
+        <variable name="rho_t" private_interface="in" units="dimensionless"/>
+        <variable name="c_t" private_interface="in" units="dimensionless"/>
+        <variable name="source" public_interface="out" units="dimensionless"/>
+        <!-- convert from mm3 to m3-->
+        <!--        vol = vol*1e-9{dimensionless};-->
+        <!-- Every parameter is in SI units. source unit is K/s. In OpenCMISS we use mm instead of m.-->
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+                <eq/>
+                <ci>source</ci>
+                <apply>
+                    <divide/>
+                    <apply>
+                        <plus/>
+                        <apply>
+                            <divide/>
+                            <ci>Qshiv</ci>
+                            <ci>vol</ci>
+                        </apply>
+                        <ci>q_m0</ci>
+                        <apply>
+                            <times/>
+                            <ci>rho_b</ci>
+                            <ci>c_b</ci>
+                            <ci>w</ci>
+                            <ci>T_b</ci>
+                        </apply>
+                    </apply>
+                    <apply>
+                        <times/>
+                        <ci>rho_t</ci>
+                        <ci>c_t</ci>
+                    </apply>
+                </apply>
+            </apply>
+        </math>
+    </component>
+    <!-- =====================================================================
+ Maping
+ =====================================================================-->
+    <connection>
+        <map_components component_1="interface" component_2="Source"/>
+        <map_variables variable_1="Tskin" variable_2="Tskin"/>
+        <map_variables variable_1="Tcore" variable_2="Tcore"/>
+        <map_variables variable_1="OrganType" variable_2="OrganType"/>
+        <map_variables variable_1="MuscleVolume" variable_2="vol"/>
+        <map_variables variable_1="source" variable_2="source"/>
+    </connection>
+    <connection>
+        <map_components component_1="Source" component_2="Shivering"/>
+        <map_variables variable_1="Tskin" variable_2="Tskin"/>
+        <map_variables variable_1="Tcore" variable_2="Tcore"/>
+        <map_variables variable_1="Qshiv" variable_2="Qshiv"/>
+    </connection>
+    <connection>
+        <map_components component_1="Source" component_2="thermophysicalProperties"/>
+        <map_variables variable_1="OrganType" variable_2="OrganType"/>
+        <map_variables variable_1="q_m0" variable_2="BasalMetabolism"/>
+        <map_variables variable_1="rho_b" variable_2="BloodDensity"/>
+        <map_variables variable_1="c_b" variable_2="BloodSpecificHeat"/>
+        <map_variables variable_1="w" variable_2="Perfusion"/>
+        <map_variables variable_1="T_b" variable_2="BloodTemperature"/>
+        <map_variables variable_1="rho_t" variable_2="OrganDensity"/>
+        <map_variables variable_1="c_t" variable_2="OrganSpecificHeat"/>
+    </connection>
+    <!-- =====================================================================
+ Grouping
+ =====================================================================-->
+    <group>
+        <relationship_ref relationship="encapsulation"/>
+        <component_ref component="interface">
+            <component_ref component="Source">
+                <component_ref component="Shivering"/>
+                <component_ref component="thermophysicalProperties"/>
+            </component_ref>
+        </component_ref>
+    </group>
+</model>
