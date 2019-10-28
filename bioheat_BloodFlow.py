@@ -164,7 +164,7 @@ if (CoupleFlowEnergy):
 #================================================================================================================================
 
 controlLoopNode                        = 0
-coordinateSystemUserNumber             = 1
+CoordinateSystemUserNumber             = 1
 regionUserNumberEnergy                 = 2
 regionUserNumberTissue                 = 3
 basisUserNumberEnergy                  = 4
@@ -966,10 +966,10 @@ if (ProgressDiagnostics):
     print( " == >> COORDINATE SYSTEM << == ")
 
 # Start the creation of RC coordinate system
-coordinateSystem = iron.CoordinateSystem()
-coordinateSystem.CreateStart(coordinateSystemUserNumber)
-coordinateSystem.DimensionSet(3)
-coordinateSystem.CreateFinish()
+CoordinateSystem = iron.CoordinateSystem()
+CoordinateSystem.CreateStart(CoordinateSystemUserNumber)
+CoordinateSystem.DimensionSet(3)
+CoordinateSystem.CreateFinish()
 
 print('\033[1;32m'+'Coordinate System COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
@@ -983,15 +983,34 @@ if (ProgressDiagnostics):
 regionEnergy = iron.Region()
 regionEnergy.CreateStart(regionUserNumberEnergy,iron.WorldRegion)
 regionEnergy.LabelSet("Energy")
-regionEnergy.CoordinateSystemSet(coordinateSystem)
+regionEnergy.CoordinateSystemSet(CoordinateSystem)
 regionEnergy.CreateFinish()
 
 # Start the creation of Tissue region
 regionTissue = iron.Region()
 regionTissue.CreateStart(regionUserNumberTissue,iron.WorldRegion)
 regionTissue.LabelSet("Tissue")
-regionTissue.CoordinateSystemSet(coordinateSystem)
+regionTissue.CoordinateSystemSet(CoordinateSystem)
 regionTissue.CreateFinish()
+
+# =================================
+# F L O W
+if (CoupleFlowEnergy):
+  # Start the creation of SPACE region
+  Region = iron.Region()
+  Region.CreateStart(RegionUserNumber,iron.WorldRegion)
+  Region.label = "ArterialSystem"
+  Region.coordinateSystem = CoordinateSystem
+  Region.CreateFinish()
+
+  if (streeBoundaries):
+      # Start the creation of TIME region
+      RegionStree = iron.Region()
+      RegionStree.CreateStart(RegionUserNumber2,iron.WorldRegion)
+      RegionStree.label = "StructuredTree"
+      RegionStree.coordinateSystem = CoordinateSystem
+      RegionStree.CreateFinish()
+# =================================
 
 print('\033[1;32m'+'Region            COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
@@ -1202,7 +1221,7 @@ geometricFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'Artery Coordina
 geometricFieldEnergy.TypeSet(iron.FieldTypes.GEOMETRIC)
 geometricFieldEnergy.ScalingTypeSet(iron.FieldScalingTypes.NONE)
 
-for componentNumber in range(1,coordinateSystem.dimension+1):
+for componentNumber in range(1,CoordinateSystem.dimension+1):
     geometricFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,componentNumber,1)
 # geometricFieldEnergy.CreateFinish()
 # generatedMesh.GeometricParametersCalculate(geometricFieldEnergy)
@@ -1236,7 +1255,7 @@ geometricFieldTissue.NumberOfVariablesSet(1)
 geometricFieldTissue.VariableLabelSet(iron.FieldVariableTypes.U,'Tissue Coordinates')
 geometricFieldTissue.TypeSet(iron.FieldTypes.GEOMETRIC)
 geometricFieldTissue.ScalingTypeSet(iron.FieldScalingTypes.NONE)
-for componentNumber in range(1,coordinateSystem.dimension+1):
+for componentNumber in range(1,CoordinateSystem.dimension+1):
     geometricFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.U,componentNumber,1)
 geometricFieldTissue.CreateFinish()
 
