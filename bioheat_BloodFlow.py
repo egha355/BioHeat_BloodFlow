@@ -2626,7 +2626,50 @@ equationsSetTissue.EquationsCreateFinish()
 
 # =================================
 # F L O W
-#if (CoupleFlowEnergy):
+if (CoupleFlowEnergy):
+  if (ProgressDiagnostics):
+    print( " == >> EQUATIONS << == ")
+
+  # 1th Equations Set - STREE
+  if (streeBoundaries):
+      EquationsStree = iron.Equations()
+      EquationsSetStree.EquationsCreateStart(EquationsStree)
+      EquationsStree.sparsityType = iron.EquationsSparsityTypes.SPARSE
+      # (NONE/TIMING/MATRIX/ELEMENT_MATRIX/NODAL_MATRIX)
+      EquationsStree.outputType = iron.EquationsOutputTypes.NONE
+      EquationsSetStree.EquationsCreateFinish()
+
+  #------------------
+
+  # 2nd Equations Set - CHARACTERISTIC
+  EquationsCharacteristic = iron.Equations()
+  EquationsSetCharacteristic.EquationsCreateStart(EquationsCharacteristic)
+  EquationsCharacteristic.sparsityType = iron.EquationsSparsityTypes.SPARSE
+  # (NONE/TIMING/MATRIX/ELEMENT_MATRIX/NODAL_MATRIX)
+  EquationsCharacteristic.outputType = iron.EquationsOutputTypes.NONE
+  EquationsSetCharacteristic.EquationsCreateFinish()
+
+  #------------------
+
+  # 3rd Equations Set - NAVIER-STOKES
+  EquationsNavierStokes = iron.Equations()
+  EquationsSetNavierStokes.EquationsCreateStart(EquationsNavierStokes)
+  EquationsNavierStokes.sparsityType = iron.EquationsSparsityTypes.FULL
+  EquationsNavierStokes.lumpingType = iron.EquationsLumpingTypes.UNLUMPED
+  # (NONE/TIMING/MATRIX/ELEMENT_MATRIX/NODAL_MATRIX)
+  EquationsNavierStokes.outputType = iron.EquationsOutputTypes.NONE
+  EquationsSetNavierStokes.EquationsCreateFinish()
+
+  #------------------
+
+  # 4th Equations Set - ADVECTION
+  if (coupledAdvection):
+      EquationsAdvection = iron.Equations()
+      EquationsSetAdvection.EquationsCreateStart(EquationsAdvection)
+      EquationsAdvection.sparsityType = iron.EquationsSparsityTypes.SPARSE
+      # (NONE/TIMING/MATRIX/ELEMENT_MATRIX/NODAL_MATRIX)
+      EquationsAdvection.outputType = iron.EquationsOutputTypes.NONE
+      EquationsSetAdvection.EquationsCreateFinish()
 # =================================
 
 print('\033[1;32m'+'equations         COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
@@ -2644,6 +2687,11 @@ problemSpecification = [iron.ProblemClasses.MULTI_PHYSICS,
                         ProblemSubtype]
 problem.CreateStart(problemUserNumber,problemSpecification)
 problem.CreateFinish()
+
+# =================================
+# F L O W
+#if (CoupleFlowEnergy):
+# =================================
 
 print('\033[1;32m'+'Problems          COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
