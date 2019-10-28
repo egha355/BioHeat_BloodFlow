@@ -733,9 +733,9 @@ cBone              = 0.0           #\see equations section
 
 # Set the time parameters
 #timeIncrement   = 0.5
-timeIncrement   = 10
-startTime       = 0.0
-stopTime        = 8200
+timeIncrementBioheat   = 10
+startTimeBioheat       = 0.0
+stopTimeBioheat        = 8200
 
 # Set the output parameters
 DYNAMIC_SOLVER_DIFFUSION_OUTPUT_FREQUENCY = 100
@@ -746,6 +746,212 @@ DYNAMIC_SOLVER_DIFFUSION_OUTPUT_FREQUENCY = 100
 #DIVERGENCE_TOLERANCE = 1.0e+10  # default: 1.0e+05
 MAXIMUM_ITERATIONS   = 1000   # default: 100000
 #RESTART_VALUE        = 3000     # default: 30
+
+# =================================
+# F L O W
+if (CoupleFlowEnergy):
+  # Set the material parameters
+  Rho  = 1050.0                                 # Rho         (kg/m3)
+  Mu   = 0.004                                  # Mu          (Pa.s)
+  Fr   = 8.0*math.pi*Mu/Rho                     # Viscous resistance per unit length (m2/s)
+  D    = 2.5                                    # Diffusivity (m2/s)
+  G0   = 0.0                                    # Gravitational acceleration (m/s2)
+  Pext = 0.0                                    # External pressure (Pa)
+  Pv   = 2667.0                                 # Venous pressure = 20.0 mmHg (Pa)
+  dt   = [0]*(numberOfNodesSpace+1)             # TimeStep    (s)
+  eig  = [0]*(numberOfNodesSpace+1)             # Eigenvalues
+
+  # Material parameter scaling factors
+  Ls = 1000.0              # Length   (m -> mm)
+  Ts = 1000.0              # Time     (s -> ms)
+  Ms = 1000.0              # Mass     (kg -> g)
+
+  Alpha = 1.3              # Flow profile
+  Qs    = (Ls**3.0)/Ts     # Flow             (m3/s)
+  As    = Ls**2.0          # Area             (m2)
+  Hs    = Ls               # Vessel thickness (m)
+  Es    = Ms/(Ls*Ts**2.0)  # Elasticity Pa    (kg/(ms2) --> g/(mm.ms^2)
+  Rhos  = Ms/(Ls**3.0)     # Density          (kg/m3)
+  Mus   = Ms/(Ls*Ts)       # Viscosity        (kg/(ms))
+  Ps    = Ms/(Ls*Ts**2.0)  # Pressure         (kg/(ms2))
+  Fs    = Mus/Rhos         # Viscous R        (m2/s)
+  Ds    = (Ls**2.0)/Ts     # Diffusivity      (m2/s)
+  Zs    = Ps/Qs            # Impedance        (pa/(m3/s))
+  Gs    = Ls/(Ts**2.0)     # Acceleration     (m/s2)
+
+  Rho = Rho*Rhos
+  Mu  = Mu*Mus
+  P   = Pext*Ps
+  A0  = A0*As
+  E   = E*Es
+  H   = H*Hs
+  Fr  = Fr*Fs
+  D   = D*Ds
+  G0  = G0*Gs
+
+  Q  = numpy.zeros((numberOfNodesSpace+1,4))
+  A  = numpy.zeros((numberOfNodesSpace+1,4))
+  dQ = numpy.zeros((numberOfNodesSpace+1,4))
+  dA = numpy.zeros((numberOfNodesSpace+1,4))
+
+  # Set A0 for branch nodes
+  for bifIdx in range(1,numberOfBifurcations+1):
+      nodeIdx = bifurcationNodeNumber[bifIdx-1]
+      for versionIdx in range(1,3):
+          if (Tp[nodeIdx] == 'Artery'):
+              A0[nodeIdx][versionIdx] = 2*A0[elementNodes[bifurcationElements[bifIdx][versionIdx]][1]][0]-A0[elementNodes[bifurcationElements[bifIdx][versionIdx]][2]][0]
+              if (A0[nodeIdx][versionIdx] <= 0):
+                  A0[nodeIdx][versionIdx] = A0[elementNodes[bifurcationElements[bifIdx][versionIdx]][1]][0]
+          elif (Tp[nodeIdx] == 'Vein'):
+              A0[nodeIdx][versionIdx] = A0[elementNodes[bifurcationElements[bifIdx][versionIdx]][1]][0]
+          E [nodeIdx][versionIdx] = E [elementNodes[bifurcationElements[bifIdx][versionIdx]][1]][0]
+          H [nodeIdx][versionIdx] = H [elementNodes[bifurcationElements[bifIdx][versionIdx]][1]][0]
+          kp[nodeIdx][versionIdx] = kp[elementNodes[bifurcationElements[bifIdx][versionIdx]][1]][0]
+          k1[nodeIdx][versionIdx] = k1[elementNodes[bifurcationElements[bifIdx][versionIdx]][1]][0]
+          k2[nodeIdx][versionIdx] = k2[elementNodes[bifurcationElements[bifIdx][versionIdx]][1]][0]
+          k3[nodeIdx][versionIdx] = k3[elementNodes[bifurcationElements[bifIdx][versionIdx]][1]][0]
+          b1[nodeIdx][versionIdx] = b1[elementNodes[bifurcationElements[bifIdx][versionIdx]][1]][0]
+
+  # Area for circle of willis
+  #A0[422][1]=2
+  #A0[422][2]=2
+  #A0[425][1]=2
+  #A0[428][1]=2
+  #A0[425][2]=0.8
+  #A0[428][2]=0.8
+
+  for trifIdx in range(1,numberOfTrifurcations+1):
+      nodeIdx = trifurcationNodeNumber[trifIdx-1]
+      for versionIdx in range(1,4):
+          if (Tp[nodeIdx] == 'Artery'):
+              A0[nodeIdx][versionIdx] = 2*A0[elementNodes[trifurcationElements[trifIdx][versionIdx]][1]][0]-A0[elementNodes[trifurcationElements[trifIdx][versionIdx]][2]][0]
+              if (A0[nodeIdx][versionIdx] <= 0):
+                  A0[nodeIdx][versionIdx] = A0[elementNodes[trifurcationElements[trifIdx][versionIdx]][1]][0]
+          elif (Tp[nodeIdx] == 'Vein'):
+              A0[nodeIdx][versionIdx] = A0[elementNodes[trifurcationElements[trifIdx][versionIdx]][1]][0]
+          E [nodeIdx][versionIdx] = E [elementNodes[trifurcationElements[trifIdx][versionIdx]][1]][0]
+          H [nodeIdx][versionIdx] = H [elementNodes[trifurcationElements[trifIdx][versionIdx]][1]][0]
+          kp[nodeIdx][versionIdx] = kp[elementNodes[trifurcationElements[trifIdx][versionIdx]][1]][0]
+          k1[nodeIdx][versionIdx] = k1[elementNodes[trifurcationElements[trifIdx][versionIdx]][1]][0]
+          k2[nodeIdx][versionIdx] = k2[elementNodes[trifurcationElements[trifIdx][versionIdx]][1]][0]
+          k3[nodeIdx][versionIdx] = k3[elementNodes[trifurcationElements[trifIdx][versionIdx]][1]][0]
+          b1[nodeIdx][versionIdx] = b1[elementNodes[trifurcationElements[trifIdx][versionIdx]][1]][0]
+
+  # Start with Q=0, A=A0 state
+  A = A0
+
+  # Or initialise from init file
+  if (initialiseFromFile):
+      init = numpy.zeros([numberOfNodesSpace+1,4,4])
+      init = numpy.load('./input/init.npy')
+      Q [1:numberOfNodesSpace+1,:] = init[:,0,:]
+      A [1:numberOfNodesSpace+1,:] = init[:,1,:]
+      dQ[1:numberOfNodesSpace+1,:] = init[:,2,:]
+      dA[1:numberOfNodesSpace+1,:] = init[:,3,:]
+
+  # Set the boundary conditions flag
+  InletBoundaryConditionType = iron.BoundaryConditionsTypes.FIXED_INLET
+  if (nonReflecting):
+      OutletBoundaryConditionType = iron.BoundaryConditionsTypes.FIXED_NONREFLECTING
+  elif (RCRBoundaries):
+      OutletBoundaryConditionType = iron.BoundaryConditionsTypes.FIXED_CELLML
+  elif (streeBoundaries):
+      OutletBoundaryConditionType = iron.BoundaryConditionsTypes.FIXED_STREE
+  else:
+      OutletBoundaryConditionType = iron.BoundaryConditionsTypes.FIXED_OUTLET
+
+  # Set the output parameters
+  # (NONE/PROGRESS/TIMING/SOLVER/MATRIX)
+  DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE    = iron.SolverOutputTypes.NONE
+  NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE  = iron.SolverOutputTypes.NONE
+  NONLINEAR_SOLVER_CHARACTERISTIC_OUTPUT_TYPE = iron.SolverOutputTypes.NONE
+  LINEAR_SOLVER_CHARACTERISTIC_OUTPUT_TYPE    = iron.SolverOutputTypes.NONE
+  LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE     = iron.SolverOutputTypes.NONE
+  # (NONE/TIMING/SOLVER/MATRIX)
+  CMISS_SOLVER_OUTPUT_TYPE = iron.SolverOutputTypes.NONE
+  DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY = 10
+
+  # Set the time parameters
+  numberOfPeriods = 5.0
+  timePeriod      = 800.0
+  timeIncrement   = 0.1
+  startTime       = 0.0
+  stopTime  = numberOfPeriods*timePeriod
+  dynamicSolverNavierStokesTheta = [1.0]
+  dynamicSolverAdvectionTheta    = [0.5]
+
+  # Set the solver parameters
+  relativeToleranceNonlinearNavierStokes   = 1.0E-05  # default: 1.0E-05
+  absoluteToleranceNonlinearNavierStokes   = 1.0E-08  # default: 1.0E-10
+  solutionToleranceNonlinearNavierStokes   = 1.0E-05  # default: 1.0E-05
+  relativeToleranceLinearNavierStokes      = 1.0E-05  # default: 1.0E-05
+  absoluteToleranceLinearNavierStokes      = 1.0E-08  # default: 1.0E-10
+  relativeToleranceNonlinearCharacteristic = 1.0E-05  # default: 1.0E-05
+  absoluteToleranceNonlinearCharacteristic = 1.0E-08  # default: 1.0E-10
+  solutionToleranceNonlinearCharacteristic = 1.0E-05  # default: 1.0E-05
+  relativeToleranceLinearCharacteristic    = 1.0E-05  # default: 1.0E-05
+  absoluteToleranceLinearCharacteristic    = 1.0E-08  # default: 1.0E-10
+
+  DIVERGENCE_TOLERANCE = 1.0e+10  # default: 1.0e+05
+  MAXIMUM_ITERATIONS   = 100000   # default: 100000
+  RESTART_VALUE        = 3000     # default: 30
+
+  # N-S/C coupling tolerance
+  couplingTolerance1D = 1.0E+6
+  # 1D-0D coupling tolerance
+  couplingTolerance1D0D = 0.001
+
+  # Check the CellML flag
+  if (RCRBoundaries or Heart):
+      if (coupledAdvection):
+          # Navier-Stokes solver
+          EquationsSetSubtype = iron.EquationsSetSubtypes.COUPLED1D0D_ADV_NAVIER_STOKES
+          # Characteristic solver
+          EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.CHARACTERISTIC
+          # Advection solver
+          EquationsSetAdvectionSubtype = iron.EquationsSetSubtypes.ADVECTION
+          ProblemSubtype = iron.ProblemSubtypes.COUPLED1D0D_ADV_NAVIER_STOKES
+      else:
+          # Navier-Stokes solver
+          EquationsSetSubtype = iron.EquationsSetSubtypes.COUPLED1D0D_NAVIER_STOKES
+          # Characteristic solver
+          EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.CHARACTERISTIC
+          ProblemSubtype = iron.ProblemSubtypes.COUPLED1D0D_NAVIER_STOKES
+  elif (streeBoundaries):
+      if (coupledAdvection):
+          # Navier-Stokes solver
+          EquationsSetSubtype = iron.EquationsSetSubtypes.COUPLED1D0D_ADV_NAVIER_STOKES
+          # Characteristic solver
+          EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.CHARACTERISTIC
+          # Stree solver
+          EquationsSetStreeSubtype = iron.EquationsSetSubtypes.STREE1D0D_ADV
+          # Advection solver
+          EquationsSetAdvectionSubtype = iron.EquationsSetSubtypes.ADVECTION
+          ProblemSubtype = iron.ProblemSubtypes.STREE1D0DAdv_NAVIER_STOKES
+      else:
+          # Navier-Stokes solver
+          EquationsSetSubtype = iron.EquationsSetSubtypes.COUPLED1D0D_NAVIER_STOKES
+          # Characteristic solver
+          EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.CHARACTERISTIC
+          # Stree solver
+          EquationsSetStreeSubtype = iron.EquationsSetSubtypes.STREE1D0D
+          ProblemSubtype = iron.ProblemSubtypes.STREE1D0D
+  else:
+      if (coupledAdvection):
+          # Navier-Stokes solver
+          EquationsSetSubtype = iron.EquationsSetSubtypes.OnedTransientAdv_NAVIER_STOKES
+          # Characteristic solver
+          EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.CHARACTERISTIC
+          # Advection solver
+          EquationsSetAdvectionSubtype = iron.EquationsSetSubtypes.ADVECTION
+          ProblemSubtype = iron.ProblemSubtypes.TRANSIENT1D_ADV_NAVIER_STOKES
+      else:
+          # Navier-Stokes solver
+          EquationsSetSubtype = iron.EquationsSetSubtypes.TRANSIENT1D_NAVIER_STOKES
+          # Characteristic solver
+          EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.CHARACTERISTIC
+          ProblemSubtype = iron.ProblemSubtypes.TRANSIENT1D_NAVIER_STOKES
+# =================================
 
 # Navier-Stokes solver
 equationsSetEnergySubtype = iron.EquationsSetSubtypes.ADVECTION_DIFFUSION
@@ -1617,7 +1823,7 @@ problem.ControlLoopCreateStart()
 TimeLoop = iron.ControlLoop()
 problem.ControlLoopGet([iron.ControlLoopIdentifiers.NODE],TimeLoop)
 TimeLoop.LabelSet('Time Loop')
-TimeLoop.TimesSet(startTime,stopTime,timeIncrement)
+TimeLoop.TimesSet(startTimeBioheat,stopTimeBioheat,timeIncrementBioheat)
 TimeLoop.TimeOutputSet(DYNAMIC_SOLVER_DIFFUSION_OUTPUT_FREQUENCY)
 problem.ControlLoopCreateFinish()
 
