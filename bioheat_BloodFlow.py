@@ -120,17 +120,21 @@ meshOrigin = [0.0,0.0,0.0]
 # F L O W
 #if (CoupleFlowEnergy):
 # =================================
+# Only one of these could be true.
 CoupleFlowEnergy = True
-CoupleEnergy = True
 TestFlow = True
-
+Bioheat = False
+CoupledBioheatFlow = False
+if (CoupledBioheatFlow):
+  Bioheat = False
+  TestFlow = False
 # ENERGY=1
 # TISSUE=2
 # FLOW=3
 
 # =================================
 # F L O W
-if (CoupleFlowEnergy):
+if (CoupledBioheatFlow or TestFlow):
   numberOfDimensionsFlow     = 1  #(One-dimensional)
   numberOfComponentsFlow     = 2  #(Flow & Area)
   numberOfInflowNodes    = 0
