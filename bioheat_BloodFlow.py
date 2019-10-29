@@ -2969,36 +2969,118 @@ print('\033[1;32m'+'Solvers           COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 if (ProgressDiagnostics):
     print( " == >> SOLVER EQUATIONS << == ")
 
-# if (TestFlow):
+if (TestFlow):
+  if (ProgressDiagnostics):
+    print( " == >> SOLVER EQUATIONS << == ")
 
-# else:
-# Create solver equations and add equations set to solver equations
-solverEnergy = iron.Solver()
-solverTissue = iron.Solver()
-cellMLSolver = iron.Solver()
+  # Start the creation of the problem solver equations
+  NonlinearSolverCharacteristic = iron.Solver()
+  SolverEquationsCharacteristic = iron.SolverEquations()
+  DynamicSolverNavierStokes     = iron.Solver()
+  SolverEquationsNavierStokes   = iron.SolverEquations()
+  if (streeBoundaries):
+      LinearSolverStree         = iron.Solver()
+      SolverEquationsStree      = iron.SolverEquations()
+  if (coupledAdvection):
+      DynamicSolverAdvection    = iron.Solver()
+      SolverEquationsAdvection  = iron.SolverEquations()
 
-solverEquationsEnergy = iron.SolverEquations()
-solverEquationsTissue = iron.SolverEquations()
-cellMLEquations = iron.CellMLEquations()
+  problem.SolverEquationsCreateStart()
 
-problem.SolverEquationsCreateStart()
-problem.CellMLEquationsCreateStart()
+  #------------------
 
-problem.SolverGet([iron.ControlLoopIdentifiers.NODE],1,cellMLSolver)
-problem.SolverGet([iron.ControlLoopIdentifiers.NODE],2,solverEnergy)
-problem.SolverGet([iron.ControlLoopIdentifiers.NODE],3,solverTissue)
+  # STREE Solver
+  if (streeBoundaries):
+      problem.SolverGet([Iterative1d0dControlLoopNumber,Simple0DControlLoopNumber,
+      iron.ControlLoopIdentifiers.NODE],SolverStreeUserNumber,LinearSolverStree)
+      LinearSolverStree.SolverEquationsGet(SolverEquationsStree)
+      SolverEquationsStree.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
+      # Add in the equations set
+      EquationsSetStree = SolverEquationsStree.EquationsSetAdd(EquationsSetStree)
 
-cellMLSolver.CellMLEquationsGet(cellMLEquations)
-solverEnergy.SolverEquationsGet(solverEquationsEnergy)
-solverTissue.SolverEquationsGet(solverEquationsTissue)
+  #------------------
 
-solverEquationsEnergy.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
-equationsSetIndex1 = cellMLEquations.CellMLAdd(CellMLShiv)
-equationsSetIndex2 = solverEquationsEnergy.EquationsSetAdd(equationsSetEnergy)
-equationsSetIndex3 = solverEquationsTissue.EquationsSetAdd(equationsSetTissue)
+  # CellML Solver
+  if (RCRBoundaries or Heart):
+      CellMLSolver = iron.Solver()
+      CellMLEquations = iron.CellMLEquations()
+      problem.CellMLEquationsCreateStart()
+      problem.SolverGet([Iterative1d0dControlLoopNumber,Simple0DControlLoopNumber,
+      iron.ControlLoopIdentifiers.NODE],SolverDAEUserNumber,CellMLSolver)
+      CellMLSolver.CellMLEquationsGet(CellMLEquations)
+      # Add in the equations set
+      CellMLEquations.CellMLAdd(CellML)
+      problem.CellMLEquationsCreateFinish()
 
-problem.SolverEquationsCreateFinish()
-problem.CellMLEquationsCreateFinish()
+  #------------------
+
+  # CHARACTERISTIC solver
+  if (RCRBoundaries or streeBoundaries or Heart):
+      problem.SolverGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
+      iron.ControlLoopIdentifiers.NODE],SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
+  else:
+      problem.SolverGet([Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+      SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
+  NonlinearSolverCharacteristic.SolverEquationsGet(SolverEquationsCharacteristic)
+  SolverEquationsCharacteristic.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
+  # Add in the equations set
+  EquationsSetCharacteristic = SolverEquationsCharacteristic.EquationsSetAdd(EquationsSetCharacteristic)
+
+  #------------------
+
+  #  NAVIER-STOKES solver
+  if (RCRBoundaries or streeBoundaries or Heart):
+      problem.SolverGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
+      iron.ControlLoopIdentifiers.NODE],SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
+  else:
+      problem.SolverGet([Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+      SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
+  DynamicSolverNavierStokes.SolverEquationsGet(SolverEquationsNavierStokes)
+  SolverEquationsNavierStokes.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
+  # Add in the equations set
+  EquationsSetNavierStokes = SolverEquationsNavierStokes.EquationsSetAdd(EquationsSetNavierStokes)
+
+  #------------------
+
+  # ADVECTION Solver
+  if (coupledAdvection):
+      problem.SolverGet([SimpleAdvectionControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+      SolverAdvectionUserNumber,DynamicSolverAdvection)
+      DynamicSolverAdvection.SolverEquationsGet(SolverEquationsAdvection)
+      SolverEquationsAdvection.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
+      # Add in the equations set
+      EquationsSetAdvection = SolverEquationsAdvection.EquationsSetAdd(EquationsSetAdvection)
+
+  # Finish the creation of the problem solver equations
+  problem.SolverEquationsCreateFinish()
+else:
+  # Create solver equations and add equations set to solver equations
+  solverEnergy = iron.Solver()
+  solverTissue = iron.Solver()
+  cellMLSolver = iron.Solver()
+
+  solverEquationsEnergy = iron.SolverEquations()
+  solverEquationsTissue = iron.SolverEquations()
+  cellMLEquations = iron.CellMLEquations()
+
+  problem.SolverEquationsCreateStart()
+  problem.CellMLEquationsCreateStart()
+
+  problem.SolverGet([iron.ControlLoopIdentifiers.NODE],1,cellMLSolver)
+  problem.SolverGet([iron.ControlLoopIdentifiers.NODE],2,solverEnergy)
+  problem.SolverGet([iron.ControlLoopIdentifiers.NODE],3,solverTissue)
+
+  cellMLSolver.CellMLEquationsGet(cellMLEquations)
+  solverEnergy.SolverEquationsGet(solverEquationsEnergy)
+  solverTissue.SolverEquationsGet(solverEquationsTissue)
+
+  solverEquationsEnergy.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
+  equationsSetIndex1 = cellMLEquations.CellMLAdd(CellMLShiv)
+  equationsSetIndex2 = solverEquationsEnergy.EquationsSetAdd(equationsSetEnergy)
+  equationsSetIndex3 = solverEquationsTissue.EquationsSetAdd(equationsSetTissue)
+
+  problem.SolverEquationsCreateFinish()
+  problem.CellMLEquationsCreateFinish()
 
 # =================================
 # F L O W
@@ -3061,7 +3143,66 @@ solverEquationsTissue.BoundaryConditionsCreateFinish()
 
 # =================================
 # F L O W
-#if (CoupleFlowEnergy):
+if (CoupleFlowEnergy):
+  if (ProgressDiagnostics):
+    print( " == >> BOUNDARY CONDITIONS << == ")
+
+  if (streeBoundaries):
+      # STREE
+      BoundaryConditionsStree = iron.BoundaryConditions()
+      SolverEquationsStree.BoundaryConditionsCreateStart(BoundaryConditionsStree)
+      SolverEquationsStree.BoundaryConditionsCreateFinish()
+
+  #------------------
+
+  # CHARACTERISTIC
+  BoundaryConditionsCharacteristic = iron.BoundaryConditions()
+  SolverEquationsCharacteristic.BoundaryConditionsCreateStart(BoundaryConditionsCharacteristic)
+  # Area-outlet
+  for terminalIdx in range (1,numberOfTerminalNodes+1):
+      nodeNumber = coupledNodeNumber[terminalIdx-1]
+      nodeDomain = Decomposition.NodeDomainGet(nodeNumber,meshComponentNumberSpace)
+      if (nodeDomain == computationalNodeNumber):
+          BoundaryConditionsCharacteristic.SetNode(DependentFieldNavierStokes,iron.FieldVariableTypes.U,
+          versionIdx,derivIdx,nodeNumber,2,OutletBoundaryConditionType,[A[nodeNumber][0]])
+  # Finish the creation of boundary conditions
+  SolverEquationsCharacteristic.BoundaryConditionsCreateFinish()
+
+  #------------------
+
+  # NAVIER-STOKES
+  BoundaryConditionsNavierStokes = iron.BoundaryConditions()
+  SolverEquationsNavierStokes.BoundaryConditionsCreateStart(BoundaryConditionsNavierStokes)
+  # Flow-inlet
+  for inputIdx in range (1,numberOfInputNodes+1):
+      nodeNumber = inputNodeNumber[inputIdx-1]
+      nodeDomain = Decomposition.NodeDomainGet(nodeNumber,meshComponentNumberSpace)
+      if (nodeDomain == computationalNodeNumber):
+          BoundaryConditionsNavierStokes.SetNode(DependentFieldNavierStokes,iron.FieldVariableTypes.U,
+          versionIdx,derivIdx,nodeNumber,1,InletBoundaryConditionType,[Q[nodeNumber][0]])
+  # Area-outlet
+  for terminalIdx in range (1,numberOfTerminalNodes+1):
+      nodeNumber = coupledNodeNumber[terminalIdx-1]
+      nodeDomain = Decomposition.NodeDomainGet(nodeNumber,meshComponentNumberSpace)
+      if (nodeDomain == computationalNodeNumber):
+          BoundaryConditionsNavierStokes.SetNode(DependentFieldNavierStokes,iron.FieldVariableTypes.U,
+          versionIdx,derivIdx,nodeNumber,2,OutletBoundaryConditionType,[A[nodeNumber][0]])
+  # Finish the creation of boundary conditions
+  SolverEquationsNavierStokes.BoundaryConditionsCreateFinish()
+
+  #------------------
+
+  # ADVECTION
+  if (coupledAdvection):
+      BoundaryConditionsAdvection = iron.BoundaryConditions()
+      SolverEquationsAdvection.BoundaryConditionsCreateStart(BoundaryConditionsAdvection)
+      for inputIdx in range (1,numberOfInputNodes+1):
+          nodeNumber = inputNodeNumber[inputIdx-1]
+          nodeDomain = Decomposition.NodeDomainGet(nodeNumber,meshComponentNumberConc)
+          if (nodeDomain == computationalNodeNumber):
+              BoundaryConditionsAdvection.SetNode(DependentFieldAdvection,iron.FieldVariableTypes.U,
+              versionIdx,derivIdx,nodeNumber,1,iron.BoundaryConditionsTypes.FIXED,[1.0])
+      SolverEquationsAdvection.BoundaryConditionsCreateFinish()
 # =================================
 
 print('\033[1;32m'+'Boundary Conditions COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
