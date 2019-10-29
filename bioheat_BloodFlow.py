@@ -903,7 +903,7 @@ if (CoupleFlowEnergy):
   couplingTolerance1D = 1.0E+6
   # 1D-0D coupling tolerance
   couplingTolerance1D0D = 0.001
-
+  
   # Check the CellML flag
   if (RCRBoundaries or Heart):
       if (coupledAdvection):
@@ -955,11 +955,11 @@ if (CoupleFlowEnergy):
           EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.CHARACTERISTIC
           ProblemSubtype = iron.ProblemSubtypes.TRANSIENT1D_NAVIER_STOKES
 # =================================
-
-# Navier-Stokes solver
-equationsSetEnergySubtype = iron.EquationsSetSubtypes.ADVECTION_DIFFUSION
-equationsSetTissueSubtype = iron.EquationsSetSubtypes.LINEAR_SOURCE_DIFFUSION
-ProblemSubtype      = iron.ProblemSubtypes.THERMOREGULATION_DIFFUSION_ADVEC_DIFFUSION
+if (~TestFlow):
+  # Navier-Stokes solver
+  equationsSetEnergySubtype = iron.EquationsSetSubtypes.ADVECTION_DIFFUSION
+  equationsSetTissueSubtype = iron.EquationsSetSubtypes.LINEAR_SOURCE_DIFFUSION
+  ProblemSubtype      = iron.ProblemSubtypes.THERMOREGULATION_DIFFUSION_ADVEC_DIFFUSION
 
 #================================================================================================================================
 #  Coordinate System
@@ -2827,25 +2827,134 @@ print('\033[1;32m'+'Control Loops     COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 if (ProgressDiagnostics):
     print( " == >> SOLVERS << == ")
 
-# Create problem solver
-solverEnergy = iron.Solver()
-LinearSolverEnergy = iron.Solver()
+if (TestFlow):
+  if (ProgressDiagnostics):
+    print( " == >> SOLVERS << == ")
 
-solverTissue = iron.Solver()
-LinearSolverTissue = iron.Solver()
+  # Start the creation of the problem solvers
+  DynamicSolverNavierStokes     = iron.Solver()
+  NonlinearSolverNavierStokes   = iron.Solver()
+  LinearSolverNavierStokes      = iron.Solver()
+  NonlinearSolverCharacteristic = iron.Solver()
+  LinearSolverCharacteristic    = iron.Solver()
+  if (streeBoundaries):
+      LinearSolverStree         = iron.Solver()
+  if (coupledAdvection):
+      DynamicSolverAdvection    = iron.Solver()
+      LinearSolverAdvection     = iron.Solver()
 
-problem.SolversCreateStart()
-problem.SolverGet([iron.ControlLoopIdentifiers.NODE],2,solverEnergy)
-problem.SolverGet([iron.ControlLoopIdentifiers.NODE],3,solverTissue)
-solverEnergy.LabelSet('Arterial Energy Solver')
-solverTissue.LabelSet('Tissue Energy Solver')
-#solver.outputType = iron.SolverOutputTypes.SOLVER
-solverEnergy.DynamicLinearSolverGet(LinearSolverEnergy)
-solverTissue.DynamicLinearSolverGet(LinearSolverTissue)
-#solver.linearType = iron.LinearSolverTypes.ITERATIVE
-#solver.linearIterativeAbsoluteTolerance = 1.0E-12
-#solver.linearIterativeRelativeTolerance = 1.0E-12
-problem.SolversCreateFinish()
+  problem.SolversCreateStart()
+
+  #------------------
+
+  # 1st Solver, Simple 0D subloop - STREE
+  if (streeBoundaries):
+      problem.SolverGet([Iterative1d0dControlLoopNumber,Simple0DControlLoopNumber,
+      iron.ControlLoopIdentifiers.NODE],SolverStreeUserNumber,LinearSolverStree)
+      # Set the nonlinear Jacobian type
+      LinearSolverStree.OutputTypeSet(CMISS_SOLVER_OUTPUT_TYPE)
+
+  #------------------
+
+  # 1st Solver, Simple 0D subloop - CellML
+  if (RCRBoundaries or Heart):
+      CellMLSolver = iron.Solver()
+      problem.SolverGet([Iterative1d0dControlLoopNumber,Simple0DControlLoopNumber,
+      iron.ControlLoopIdentifiers.NODE],SolverDAEUserNumber,CellMLSolver)
+      CellMLSolver.OutputTypeSet(CMISS_SOLVER_OUTPUT_TYPE)
+
+  #------------------
+
+  # 1st Solver, Iterative 1D subloop - CHARACTERISTIC
+  if (RCRBoundaries or streeBoundaries or Heart):
+      problem.SolverGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
+      iron.ControlLoopIdentifiers.NODE],SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
+  else:
+      problem.SolverGet([Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+      SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
+  # Set the nonlinear Jacobian type
+  NonlinearSolverCharacteristic.NewtonJacobianCalculationTypeSet(iron.JacobianCalculationTypes.EQUATIONS) #(FD/EQUATIONS)
+  NonlinearSolverCharacteristic.OutputTypeSet(NONLINEAR_SOLVER_CHARACTERISTIC_OUTPUT_TYPE)
+  # Set the solver settings
+  NonlinearSolverCharacteristic.NewtonAbsoluteToleranceSet(absoluteToleranceNonlinearCharacteristic)
+  NonlinearSolverCharacteristic.NewtonSolutionToleranceSet(solutionToleranceNonlinearCharacteristic)
+  NonlinearSolverCharacteristic.NewtonRelativeToleranceSet(relativeToleranceNonlinearCharacteristic)
+  # Get the nonlinear linear solver
+  NonlinearSolverCharacteristic.NewtonLinearSolverGet(LinearSolverCharacteristic)
+  LinearSolverCharacteristic.OutputTypeSet(LINEAR_SOLVER_CHARACTERISTIC_OUTPUT_TYPE)
+  # Set the solver settings
+  LinearSolverCharacteristic.LinearTypeSet(iron.LinearSolverTypes.ITERATIVE)
+  LinearSolverCharacteristic.LinearIterativeMaximumIterationsSet(MAXIMUM_ITERATIONS)
+  LinearSolverCharacteristic.LinearIterativeDivergenceToleranceSet(DIVERGENCE_TOLERANCE)
+  LinearSolverCharacteristic.LinearIterativeRelativeToleranceSet(relativeToleranceLinearCharacteristic)
+  LinearSolverCharacteristic.LinearIterativeAbsoluteToleranceSet(absoluteToleranceLinearCharacteristic)
+  LinearSolverCharacteristic.LinearIterativeGMRESRestartSet(RESTART_VALUE)
+
+  #------------------
+
+  # 2nd Solver, Iterative 1D subloop - NAVIER-STOKES
+  if (RCRBoundaries or streeBoundaries or Heart):
+      problem.SolverGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
+      iron.ControlLoopIdentifiers.NODE],SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
+  else:
+      problem.SolverGet([Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+      SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
+  DynamicSolverNavierStokes.OutputTypeSet(DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
+  DynamicSolverNavierStokes.DynamicThetaSet(dynamicSolverNavierStokesTheta)
+  # Get the dynamic nonlinear solver
+  DynamicSolverNavierStokes.DynamicNonlinearSolverGet(NonlinearSolverNavierStokes)
+  # Set the nonlinear Jacobian type
+  NonlinearSolverNavierStokes.NewtonJacobianCalculationTypeSet(iron.JacobianCalculationTypes.EQUATIONS) #(FD/EQUATIONS)
+  NonlinearSolverNavierStokes.OutputTypeSet(NONLINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
+
+  # Set the solver settings
+  NonlinearSolverNavierStokes.NewtonAbsoluteToleranceSet(absoluteToleranceNonlinearNavierStokes)
+  NonlinearSolverNavierStokes.NewtonSolutionToleranceSet(solutionToleranceNonlinearNavierStokes)
+  NonlinearSolverNavierStokes.NewtonRelativeToleranceSet(relativeToleranceNonlinearNavierStokes)
+  # Get the dynamic nonlinear linear solver
+  NonlinearSolverNavierStokes.NewtonLinearSolverGet(LinearSolverNavierStokes)
+  LinearSolverNavierStokes.OutputTypeSet(LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
+  # Set the solver settings
+  LinearSolverNavierStokes.LinearTypeSet(iron.LinearSolverTypes.ITERATIVE)
+  LinearSolverNavierStokes.LinearIterativeMaximumIterationsSet(MAXIMUM_ITERATIONS)
+  LinearSolverNavierStokes.LinearIterativeDivergenceToleranceSet(DIVERGENCE_TOLERANCE)
+  LinearSolverNavierStokes.LinearIterativeRelativeToleranceSet(relativeToleranceLinearNavierStokes)
+  LinearSolverNavierStokes.LinearIterativeAbsoluteToleranceSet(absoluteToleranceLinearNavierStokes)
+  LinearSolverNavierStokes.LinearIterativeGMRESRestartSet(RESTART_VALUE)
+
+  #------------------
+
+  # 1st Solver, Simple advection subloop - ADVECTION
+  if (coupledAdvection):
+      problem.SolverGet([SimpleAdvectionControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+      SolverAdvectionUserNumber,DynamicSolverAdvection)
+      DynamicSolverAdvection.OutputTypeSet(DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
+      DynamicSolverAdvection.DynamicThetaSet(dynamicSolverAdvectionTheta)
+      # Get the dynamic linear solver
+      DynamicSolverAdvection.DynamicLinearSolverGet(LinearSolverAdvection)
+
+  # Finish the creation of the problem solver
+  problem.SolversCreateFinish()
+else:
+  # Create problem solver
+  solverEnergy = iron.Solver()
+  LinearSolverEnergy = iron.Solver()
+
+  solverTissue = iron.Solver()
+  LinearSolverTissue = iron.Solver()
+
+  problem.SolversCreateStart()
+  problem.SolverGet([iron.ControlLoopIdentifiers.NODE],2,solverEnergy)
+  problem.SolverGet([iron.ControlLoopIdentifiers.NODE],3,solverTissue)
+  solverEnergy.LabelSet('Arterial Energy Solver')
+  solverTissue.LabelSet('Tissue Energy Solver')
+  #solver.outputType = iron.SolverOutputTypes.SOLVER
+  solverEnergy.DynamicLinearSolverGet(LinearSolverEnergy)
+  solverTissue.DynamicLinearSolverGet(LinearSolverTissue)
+  #solver.linearType = iron.LinearSolverTypes.ITERATIVE
+  #solver.linearIterativeAbsoluteTolerance = 1.0E-12
+  #solver.linearIterativeRelativeTolerance = 1.0E-12
+  problem.SolversCreateFinish()
 
 # =================================
 # F L O W
@@ -2860,6 +2969,9 @@ print('\033[1;32m'+'Solvers           COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 if (ProgressDiagnostics):
     print( " == >> SOLVER EQUATIONS << == ")
 
+# if (TestFlow):
+
+# else:
 # Create solver equations and add equations set to solver equations
 solverEnergy = iron.Solver()
 solverTissue = iron.Solver()
