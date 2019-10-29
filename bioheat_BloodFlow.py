@@ -3143,7 +3143,7 @@ solverEquationsTissue.BoundaryConditionsCreateFinish()
 
 # =================================
 # F L O W
-if (CoupleFlowEnergy):
+if (CoupleFlowEnergy and TestFlow):
   if (ProgressDiagnostics):
     print( " == >> BOUNDARY CONDITIONS << == ")
 
@@ -3206,6 +3206,191 @@ if (CoupleFlowEnergy):
 # =================================
 
 print('\033[1;32m'+'Boundary Conditions COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
+
+#================================================================================================================================
+#  Element Length
+#================================================================================================================================
+
+if (timestepStability):
+    QMax = 600.0
+    # Check the element length
+    elementNumber = [0]*(totalNumberOfElements+1)
+    elementLength = [0]*(totalNumberOfElements+1)
+    for i in range(1,totalNumberOfElements+1):
+        Node1 = elementNodes[i][0]
+        Node2 = elementNodes[i][1]
+        Node3 = elementNodes[i][2]
+        Length1 = (((xValues[Node1][0]-xValues[Node2][0])**2)
+                  +((yValues[Node1][0]-yValues[Node2][0])**2)
+                  +((zValues[Node1][0]-zValues[Node2][0])**2))**0.5
+        Length2 = (((xValues[Node2][0]-xValues[Node3][0])**2)
+                  +((yValues[Node2][0]-yValues[Node3][0])**2)
+                  +((zValues[Node2][0]-zValues[Node3][0])**2))**0.5
+        elementNumber[i] = i
+        elementLength[i] = Length1 + Length2
+        elementLength[0] = elementLength[i]
+        print( "Element %1.0f" %elementNumber[i],)
+        print( "Length: %1.1f" %elementLength[i],)
+        print( "Length1: %1.1f" %Length1,)
+        print( "Length2: %1.1f" %Length2)
+    maxElementLength = max(elementLength)
+    minElementLength = min(elementLength)
+    print(("Max Element Length: %1.3f" % maxElementLength))
+    print(("Min Element Length: %1.3f" % minElementLength))
+
+    # Check the timestep
+    for i in range(1,numberOfNodesSpace+1):
+        beta   = (3.0*math.sqrt(math.pi)*H[i,0]*E[i,0])/(4.0*A0[i,0])
+        eig[i] = QMax/A0[i,0] + (A0[i,0]**0.25)*(math.sqrt(beta/(2.0*Rho)))
+        dt[i]  = ((3.0**(0.5))/3.0)*minElementLength/eig[i]
+        dt[0]  = dt[i]
+    minTimeStep = min(dt)
+    print(("Max allowable timestep:      %3.5f" % minTimeStep ))
+
+#================================================================================================================================
+#  Transmission Line Theory
+#================================================================================================================================
+
+'''
+terminal 1 ----- right leg ------- right internal iliac artery
+terminal 2 ----- right leg ------- right deep femoral artery
+terminal 3 ----- right leg ------- right posterior tibial artery
+terminal 4 ----- right leg ------- right anterior tibial artery
+terminal 5 ----- left leg -------- left internal iliac artery
+terminal 6 ----- left leg -------- left deep femoral artery
+terminal 7 ----- left leg -------- left posterior tibial artery
+terminal 8 ----- left leg -------- left anterior tibial artery
+terminal 9 ----- right arm ------- right radial artery
+terminal 10 ---- right arm ------- right ulnar artery
+terminal 11 ---- right arm ------- right interosseous artery
+terminal 12 ---- left arm -------- left radial artery
+terminal 13 ---- left arm -------- left ulnar artery
+terminal 14 ---- left arm -------- left interosseous artery
+terminal 15 ---- brain ----------- right external carotid artery
+terminal 16 ---- brain ----------- left external carotid artery
+terminal 17 ---- right kidney ---- right renal artery 1
+terminal 18 ---- right kidney ---- right renal artery 3
+terminal 19 ---- right kidney ---- right renal artery 4
+terminal 20 ---- left kidney ----- left renal artery 1
+terminal 21 ---- left kidney ----- left renal artery 3
+terminal 22 ---- left kidney ----- left renal artery 4
+terminal 23 ---- right lung ------ right intercostal artery 1
+terminal 24 ---- left lung ------- left intercostal artery 1
+terminal 25 ---- right lung ------ right intercostal artery 2
+terminal 26 ---- left lung ------- left intercostal artery 2
+terminal 27 ---- intestines ------ inferior mesenteric artery
+terminal 28 ---- intestines ------ superior mesenteric artery
+terminal 29 ---- intestines ------ middle colic artery
+terminal 30 ---- intestines ------ jejunal 3 artery
+terminal 31 ---- intestines ------ jejunal 5 artery
+terminal 32 ---- intestines ------ ileocolic artery
+terminal 33 ---- intestines ------ ilieal 3 artery
+terminal 34 ---- intestines ------ ilieal 5 artery
+terminal 35 ---- liver ----------- right hepatic artery
+terminal 36 ---- liver ----------- left hepatic artery
+terminal 37 ---- spline ---------- splenic artery
+terminal 38 ---- stomach --------- left gastric artery
+terminal 39 ---- pancreas -------- pancreatic artery
+terminal 40 ---- brain ----------- right posterior communicating artery 2
+terminal 41 ---- brain ----------- left posterior communicating artery 2
+terminal 42 ---- brain ----------- right middle cerebral artery
+terminal 43 ---- brain ----------- left middle cerebral artery
+terminal 44 ---- brain ----------- right anterior cerebral artery 2
+terminal 45 ---- brain ----------- left anterior cerebral artery 2
+'''
+
+if (streeBoundaries):
+    if (ProgressDiagnostics):
+        print( " == >> STREE << == ")
+
+    numberOfTerminalNodes = 27
+    # Loop through the terminal nodes
+    for terminalIdx in range (1,numberOfTerminalNodes+1):
+        # Read the organ node file
+        with open('input/stree/'+str(terminalIdx)+'.csv','rb') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',')
+            rownum = 0
+            for row in reader:
+                if (rownum == 0):
+                    # Read the header row
+                    header = row
+                else:
+                    # Read number of nodes
+                    if (rownum == 1):
+                        numberOfSegments = int(row[6])
+                        stree = numpy.zeros((numberOfSegments+1,7,timePeriod+1),dtype = numpy.float)
+                    stree[rownum][0] = float(row[0])/Ls  # Length of segment
+                    stree[rownum][1] = float(row[1])     # Radius of segment
+                    stree[rownum][2] = float(row[2])     # Terminal segment
+                    stree[rownum][3] = float(row[3])     # Number of parent segment
+                    if (row[4]):
+                        stree[rownum][4] = float(row[4]) # Number of daughter segments
+                        stree[rownum][5] = float(row[5])
+                # Next line
+                rownum+=1
+
+        # Loop through the segments to calculate each segment impedance
+        for idx in range(1,numberOfSegments+1):
+            n = numberOfSegments+1-idx                    # Start from last segment
+            L = stree[n][0][0]                            # Length of segment
+            r = stree[n][1][0]                            # Radius of segment
+            term = stree[n][2][0]                         # Terminal segment
+            if (term == 0):
+                # Calculate daughter segment impedance
+                zin1=stree[stree[n][4][0]][6][0]
+                zin2=stree[stree[n][5][0]][6][0]
+
+            Ng  = 8                                       # Number of generations
+            h   = 0.35*r                                  # Thickness
+            E   = 0.4E+6                                  # Elasticity
+            A0  = math.pi*(r**2.0)                        # Area at rest
+            Qin = 6.5E-6                                  # Input flow
+            T   = timePeriod/Ts                           # Time period
+            zin = [0]*(timePeriod+1)                      # Impedance
+            Cp  = (3.0*A0*(A0/math.pi)**0.5)/(2.0*E*h)    # Vessel wall compliance
+
+            # Non-zero frequency condition
+            for k in range(0,timePeriod+1):
+                if (k == 0):
+                    # Zero frequency condition
+                    # Terminal load
+                    if (term == 0):
+                        zL = zin1*zin2/(zin1+zin2)
+                    else:
+                        zL = (Pv/Qin)*(2.0**Ng)
+                    # Transfer function
+                    zin[k] = 8.0*(Mu/Mus)*L/((A0**2.0)/math.pi)+zL
+                else:
+                    # Frequency
+                    freq = 2.0*math.pi*k/T
+                    # Womersley number
+                    w = (A0*freq*(Rho/Rhos)/((Mu/Mus)*math.pi))**0.5
+                    w0 = ((1j)**1.5)*w
+                    # Bessel function zeroth-order
+                    J0 = jn(0,w0)
+                    # Bessel function first-order
+                    J1 = jn(1,w0)
+                    # Bessel function
+                    Fj = (2.0*J1)/(w0*J0)
+                    # Wave propagation velocity
+                    c = cmath.sqrt(A0*(1.0-Fj)/((Rho/Rhos)*Cp))
+                    g = c*Cp
+                    # Terminal load
+                    if (term == 1):
+                        zL = 1.0/(c*Cp)
+                    else:
+                        zL = zin1*zin2/(zin1+zin2)
+                    # Transfer function
+                    zin[k] = ((1j)*cmath.sin(freq*L/c)/g+zL*cmath.cos(freq*L/c))/(cmath.cos(freq*L/c)+(1j)*g*zL*cmath.sin(freq*L/c))
+                #Saving the line's characteristics
+                stree[n][6][k] = zin[k]
+        # Invrese fourier transform
+        zt = ifft(stree[1][6])*Zs
+        # Set the impedance
+        for k in range(0,timePeriod+1):
+            MaterialsFieldStree.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,
+             iron.FieldParameterSetTypes.VALUES,1,1,k+1,terminalIdx,zt[k].real)
+             
 #================================================================================================================================
 #  Run Solvers
 #================================================================================================================================
