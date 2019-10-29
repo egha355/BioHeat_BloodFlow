@@ -122,7 +122,7 @@ meshOrigin = [0.0,0.0,0.0]
 # =================================
 CoupleFlowEnergy = True
 CoupleEnergy = True
-TestFlow = False
+TestFlow = True
 
 # ENERGY=1
 # TISSUE=2
@@ -955,7 +955,7 @@ if (CoupleFlowEnergy):
           EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.CHARACTERISTIC
           ProblemSubtype = iron.ProblemSubtypes.TRANSIENT1D_NAVIER_STOKES
 # =================================
-if (~TestFlow):
+if (not TestFlow):
   # Navier-Stokes solver
   equationsSetEnergySubtype = iron.EquationsSetSubtypes.ADVECTION_DIFFUSION
   equationsSetTissueSubtype = iron.EquationsSetSubtypes.LINEAR_SOURCE_DIFFUSION
@@ -1591,31 +1591,32 @@ print('\033[1;32m'+'Geometric Field   COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 if (ProgressDiagnostics):
     print( " == >> EQUATIONS SET << == ")
 
-# Create the equations set for advection diffusion in arteries
-# dT/dt+u dT/dx-alpha d2T/dx2-(b-cT)=0
-equationsSetEnergy = iron.EquationsSet()
-equationsSetFieldEnergy = iron.Field()
-# Set the equations set to be a dynamic linear problem
-equationsSetEnergySpecification = [iron.EquationsSetClasses.CLASSICAL_FIELD,
-  iron.EquationsSetTypes.ADVECTION_EQUATION,
-  equationsSetEnergySubtype]
-equationsSetEnergy.CreateStart(equationsSetUserNumberEnergy,regionEnergy,geometricFieldEnergy,
-equationsSetEnergySpecification,equationsSetFieldUserNumberEnergy,equationsSetFieldEnergy)
-equationsSetEnergy.LabelSet('Advec Diffusion Equation')
-equationsSetEnergy.CreateFinish()
+if (not TestFlow):
+  # Create the equations set for advection diffusion in arteries
+  # dT/dt+u dT/dx-alpha d2T/dx2-(b-cT)=0
+  equationsSetEnergy = iron.EquationsSet()
+  equationsSetFieldEnergy = iron.Field()
+  # Set the equations set to be a dynamic linear problem
+  equationsSetEnergySpecification = [iron.EquationsSetClasses.CLASSICAL_FIELD,
+    iron.EquationsSetTypes.ADVECTION_EQUATION,
+    equationsSetEnergySubtype]
+  equationsSetEnergy.CreateStart(equationsSetUserNumberEnergy,regionEnergy,geometricFieldEnergy,
+  equationsSetEnergySpecification,equationsSetFieldUserNumberEnergy,equationsSetFieldEnergy)
+  equationsSetEnergy.LabelSet('Advec Diffusion Equation')
+  equationsSetEnergy.CreateFinish()
 
 
-# Create standard Diffusion equations set
-# dT/dt-div(alpha grad(T))-(b-cT)=0
-equationsSetTissue = iron.EquationsSet()
-equationsSetFieldTissue = iron.Field()
-equationsSetSpecification = [iron.EquationsSetClasses.CLASSICAL_FIELD,
-  iron.EquationsSetTypes.DIFFUSION_EQUATION,
-  equationsSetTissueSubtype]
-equationsSetTissue.CreateStart(equationsSetUserNumberTissue,regionTissue,geometricFieldTissue,
-        equationsSetSpecification,equationsSetFieldUserNumberTissue,equationsSetFieldTissue)
-equationsSetTissue.LabelSet('Diffusion Equation')
-equationsSetTissue.CreateFinish()
+  # Create standard Diffusion equations set
+  # dT/dt-div(alpha grad(T))-(b-cT)=0
+  equationsSetTissue = iron.EquationsSet()
+  equationsSetFieldTissue = iron.Field()
+  equationsSetSpecification = [iron.EquationsSetClasses.CLASSICAL_FIELD,
+    iron.EquationsSetTypes.DIFFUSION_EQUATION,
+    equationsSetTissueSubtype]
+  equationsSetTissue.CreateStart(equationsSetUserNumberTissue,regionTissue,geometricFieldTissue,
+          equationsSetSpecification,equationsSetFieldUserNumberTissue,equationsSetFieldTissue)
+  equationsSetTissue.LabelSet('Diffusion Equation')
+  equationsSetTissue.CreateFinish()
 
 # =================================
 # F L O W
@@ -1682,37 +1683,38 @@ print('\033[1;32m'+'Equations Set     COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 if (ProgressDiagnostics):
     print( " == >> DEPENDENT FIELD << == ")
 
-# Create the equations set dependent field variables
-dependentFieldEnergy = iron.Field()
-equationsSetEnergy.DependentCreateStart(dependentFieldUserNumberEnergy,dependentFieldEnergy)
-dependentFieldEnergy.LabelSet('Dependent Field')
-dependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'Blood Temperature')
-dependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.DELUDELN,'Blood Temperature Gradient')
-dependentFieldEnergy.DOFOrderTypeSet(iron.FieldVariableTypes.U,iron.FieldDOFOrderTypes.SEPARATED)
-dependentFieldEnergy.DOFOrderTypeSet(iron.FieldVariableTypes.DELUDELN,iron.FieldDOFOrderTypes.SEPARATED)
-equationsSetEnergy.DependentCreateFinish()
+if (not TestFlow):
+  # Create the equations set dependent field variables
+  dependentFieldEnergy = iron.Field()
+  equationsSetEnergy.DependentCreateStart(dependentFieldUserNumberEnergy,dependentFieldEnergy)
+  dependentFieldEnergy.LabelSet('Dependent Field')
+  dependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'Blood Temperature')
+  dependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.DELUDELN,'Blood Temperature Gradient')
+  dependentFieldEnergy.DOFOrderTypeSet(iron.FieldVariableTypes.U,iron.FieldDOFOrderTypes.SEPARATED)
+  dependentFieldEnergy.DOFOrderTypeSet(iron.FieldVariableTypes.DELUDELN,iron.FieldDOFOrderTypes.SEPARATED)
+  equationsSetEnergy.DependentCreateFinish()
 
-# Initialise dependent field
-dependentFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,37.0)
+  # Initialise dependent field
+  dependentFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,37.0)
 
-dependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-dependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  dependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  dependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
 
-# Create dependent field
-dependentFieldTissue = iron.Field()
-equationsSetTissue.DependentCreateStart(dependentFieldUserNumberTissue,dependentFieldTissue)
-dependentFieldTissue.VariableLabelSet(iron.FieldVariableTypes.U,'Tissue Temperature')
-dependentFieldTissue.VariableLabelSet(iron.FieldVariableTypes.DELUDELN,'Tissue Temperature Gradient')
-dependentFieldTissue.DOFOrderTypeSet(iron.FieldVariableTypes.U,iron.FieldDOFOrderTypes.SEPARATED)
-dependentFieldTissue.DOFOrderTypeSet(iron.FieldVariableTypes.DELUDELN,iron.FieldDOFOrderTypes.SEPARATED)
-equationsSetTissue.DependentCreateFinish()
+  # Create dependent field
+  dependentFieldTissue = iron.Field()
+  equationsSetTissue.DependentCreateStart(dependentFieldUserNumberTissue,dependentFieldTissue)
+  dependentFieldTissue.VariableLabelSet(iron.FieldVariableTypes.U,'Tissue Temperature')
+  dependentFieldTissue.VariableLabelSet(iron.FieldVariableTypes.DELUDELN,'Tissue Temperature Gradient')
+  dependentFieldTissue.DOFOrderTypeSet(iron.FieldVariableTypes.U,iron.FieldDOFOrderTypes.SEPARATED)
+  dependentFieldTissue.DOFOrderTypeSet(iron.FieldVariableTypes.DELUDELN,iron.FieldDOFOrderTypes.SEPARATED)
+  equationsSetTissue.DependentCreateFinish()
 
-# Initialise dependent field
-dependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,36.3)
+  # Initialise dependent field
+  dependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,36.3)
 
-dependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-dependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  dependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  dependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
 # =================================
 # F L O W
@@ -1837,100 +1839,101 @@ print('\033[1;32m'+'Dependent Field   COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 if (ProgressDiagnostics):
     print( " == >> MATERIALS FIELD << == ")
 
-# Create the equations set material field variables for artery energy
-materialsFieldEnergy = iron.Field()
-equationsSetEnergy.MaterialsCreateStart(materialsFieldUserNumberEnergy,materialsFieldEnergy)
-materialsFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'Blood Properties')
-materialsFieldEnergy.ComponentLabelSet(iron.FieldVariableTypes.U,1,'Blood Diffusivity')
-materialsFieldEnergy.ComponentLabelSet(iron.FieldVariableTypes.U,2,'Source Tb coeff.')
-equationsSetEnergy.MaterialsCreateFinish()
+if (not TestFlow):
+  # Create the equations set material field variables for artery energy
+  materialsFieldEnergy = iron.Field()
+  equationsSetEnergy.MaterialsCreateStart(materialsFieldUserNumberEnergy,materialsFieldEnergy)
+  materialsFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'Blood Properties')
+  materialsFieldEnergy.ComponentLabelSet(iron.FieldVariableTypes.U,1,'Blood Diffusivity')
+  materialsFieldEnergy.ComponentLabelSet(iron.FieldVariableTypes.U,2,'Source Tb coeff.')
+  equationsSetEnergy.MaterialsCreateFinish()
 
-# Initialise the properties and source values
-diffusivity=Alpha #+U*beta*le/2 #U*beta*le/2=0.000416667 almost 3000 times of the real diffusivity Pe=Ule/2a=0.2*0.05/12/2/0.0004=1
-materialsFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,diffusivity)
+  # Initialise the properties and source values
+  diffusivity=Alpha #+U*beta*le/2 #U*beta*le/2=0.000416667 almost 3000 times of the real diffusivity Pe=Ule/2a=0.2*0.05/12/2/0.0004=1
+  materialsFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,diffusivity)
 
-for elemIdx in arteriesElements:
-    elemDomain = decompositionEnergy.ElementDomainGet(elemIdx)
-    if elemDomain == computationalNodeNumber:
-        # ra=(radius[elemIdx-1]+radius[elemIdx])/2
-        cArtery=4*Alpha/ra[elemIdx-1]**2
-        materialsFieldEnergy.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-  elemIdx,2, cArtery)
+  for elemIdx in arteriesElements:
+      elemDomain = decompositionEnergy.ElementDomainGet(elemIdx)
+      if elemDomain == computationalNodeNumber:
+          # ra=(radius[elemIdx-1]+radius[elemIdx])/2
+          cArtery=4*Alpha/ra[elemIdx-1]**2
+          materialsFieldEnergy.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+    elemIdx,2, cArtery)
 
-materialsFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-materialsFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-
-
-
-# Create the equations set material field variables for tissue
-materialsFieldTissue = iron.Field()
-equationsSetTissue.MaterialsCreateStart(materialsFieldUserNumberTissue,materialsFieldTissue)
-materialsFieldTissue.VariableLabelSet(iron.FieldVariableTypes.U,'Materials')
-materialsFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,1,'Diffusivity 1')
-materialsFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,2,'Diffusivity 2')
-materialsFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,3,'Diffusivity 3')
-materialsFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,4,'Source T coeff.')
-equationsSetTissue.MaterialsCreateFinish()
+  materialsFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  materialsFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
 
-# for elementNumber in muscleElements:
-#     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
-#     if elementDomain == computationalNodeNumber:
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,1, k_ms*kFactor/(rho_ms*c_ms*rhoCFactor)) #0.42*1e-3
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,2, k_ms*kFactor/(rho_ms*c_ms*rhoCFactor))
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,3, k_ms*kFactor/(rho_ms*c_ms*rhoCFactor))
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,4, cMuscle)  #4.0e6*1e-9 0.42/4.0e6
 
-# for elementNumber in leftRadiusElements:
-#     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
-#     if elementDomain == computationalNodeNumber:
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,1, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,2, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,3, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,4, cBone)
+  # Create the equations set material field variables for tissue
+  materialsFieldTissue = iron.Field()
+  equationsSetTissue.MaterialsCreateStart(materialsFieldUserNumberTissue,materialsFieldTissue)
+  materialsFieldTissue.VariableLabelSet(iron.FieldVariableTypes.U,'Materials')
+  materialsFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,1,'Diffusivity 1')
+  materialsFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,2,'Diffusivity 2')
+  materialsFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,3,'Diffusivity 3')
+  materialsFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,4,'Source T coeff.')
+  equationsSetTissue.MaterialsCreateFinish()
 
-# for elementNumber in leftHumerusElements:
-#     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
-#     if elementDomain == computationalNodeNumber:
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,1, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,2, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,3, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,4, cBone)
 
-# for elementNumber in leftUlnaElements:
-#     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
-#     if elementDomain == computationalNodeNumber:
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,1, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,2, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,3, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
-#       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#   elementNumber,4, cBone)
+  # for elementNumber in muscleElements:
+  #     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
+  #     if elementDomain == computationalNodeNumber:
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,1, k_ms*kFactor/(rho_ms*c_ms*rhoCFactor)) #0.42*1e-3
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,2, k_ms*kFactor/(rho_ms*c_ms*rhoCFactor))
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,3, k_ms*kFactor/(rho_ms*c_ms*rhoCFactor))
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,4, cMuscle)  #4.0e6*1e-9 0.42/4.0e6
 
-materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,
-k_ms*kFactor/(rho_ms*c_ms*rhoCFactor))
-materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,2,
-k_ms*kFactor/(rho_ms*c_ms*rhoCFactor))
-materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,3,
-k_ms*kFactor/(rho_ms*c_ms*rhoCFactor))
-materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,4,cMuscle)
+  # for elementNumber in leftRadiusElements:
+  #     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
+  #     if elementDomain == computationalNodeNumber:
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,1, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,2, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,3, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,4, cBone)
 
-materialsFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-materialsFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  # for elementNumber in leftHumerusElements:
+  #     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
+  #     if elementDomain == computationalNodeNumber:
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,1, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,2, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,3, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,4, cBone)
+
+  # for elementNumber in leftUlnaElements:
+  #     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
+  #     if elementDomain == computationalNodeNumber:
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,1, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,2, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,3, k_bn*kFactor/(rho_bn*c_bn*rhoCFactor))
+  #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   elementNumber,4, cBone)
+
+  materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,
+  k_ms*kFactor/(rho_ms*c_ms*rhoCFactor))
+  materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,2,
+  k_ms*kFactor/(rho_ms*c_ms*rhoCFactor))
+  materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,3,
+  k_ms*kFactor/(rho_ms*c_ms*rhoCFactor))
+  materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,4,cMuscle)
+
+  materialsFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  materialsFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
 # =================================
 # F L O W
@@ -2037,81 +2040,82 @@ print('\033[1;32m'+'Materials Field   COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 #  Source Field
 #================================================================================================================================
 
-#------------------------------
-#creating ulnar artery
-#-----------------------------
+if (not TestFlow):
+  #------------------------------
+  #creating ulnar artery
+  #-----------------------------
 
-#FileName_cell = "MaxVol1000/ulnarArteryFromWholeUpLi"
+  #FileName_cell = "MaxVol1000/ulnarArteryFromWholeUpLi"
 
-#ulnarElementList=[]
+  #ulnarElementList=[]
 
-#with open(FileName_cell, "r") as f:
-#    target=f.readlines()
-#    for lineNum,line in enumerate(target):
-#        target[lineNum] = target[lineNum].rstrip('\n\r').replace("\t"," ").replace(","," ").split()
-#    for lineNum,line in enumerate(target):
-#        if lineNum !=0:
-#          ulnarElementList.append(int(target[lineNum][0])+1) # plus one because we are taking vtk numbers and we need to add 1.
+  #with open(FileName_cell, "r") as f:
+  #    target=f.readlines()
+  #    for lineNum,line in enumerate(target):
+  #        target[lineNum] = target[lineNum].rstrip('\n\r').replace("\t"," ").replace(","," ").split()
+  #    for lineNum,line in enumerate(target):
+  #        if lineNum !=0:
+  #          ulnarElementList.append(int(target[lineNum][0])+1) # plus one because we are taking vtk numbers and we need to add 1.
 
-if (ProgressDiagnostics):
-    print( " == >> SOURCE FIELD << == ")
+  if (ProgressDiagnostics):
+      print( " == >> SOURCE FIELD << == ")
 
-# Create source field for artery energy
-sourceFieldEnergy = iron.Field()
-equationsSetEnergy.SourceCreateStart(sourceFieldUserNumberEnergy,sourceFieldEnergy)
-equationsSetEnergy.SourceCreateFinish()
+  # Create source field for artery energy
+  sourceFieldEnergy = iron.Field()
+  equationsSetEnergy.SourceCreateStart(sourceFieldUserNumberEnergy,sourceFieldEnergy)
+  equationsSetEnergy.SourceCreateFinish()
 
-# Source is b-cT; e.g. for my case C(Tt-T), b=CTt, c=C. Because source field is scalar type I cannot define 2 components.
-# So it is in 2nd component of the materials field.
+  # Source is b-cT; e.g. for my case C(Tt-T), b=CTt, c=C. Because source field is scalar type I cannot define 2 components.
+  # So it is in 2nd component of the materials field.
 
-#sourceFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,cArtery*Tt)
-for elemIdx in arteriesElements:
-    elemDomain = decompositionEnergy.ElementDomainGet(elemIdx)
-    if elemDomain == computationalNodeNumber:
-        # ra=(radius[elemIdx-1]+radius[elemIdx])/2
-        cArtery=4*Alpha/ra[elemIdx-1]**2
-        sourceFieldEnergy.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elemIdx,1,cArtery*Tt[elemIdx])
+  #sourceFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,cArtery*Tt)
+  for elemIdx in arteriesElements:
+      elemDomain = decompositionEnergy.ElementDomainGet(elemIdx)
+      if elemDomain == computationalNodeNumber:
+          # ra=(radius[elemIdx-1]+radius[elemIdx])/2
+          cArtery=4*Alpha/ra[elemIdx-1]**2
+          sourceFieldEnergy.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elemIdx,1,cArtery*Tt[elemIdx])
 
-sourceFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-sourceFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  sourceFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  sourceFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
-# Create source field for tissue
-sourceFieldTissue = iron.Field()
-equationsSetTissue.SourceCreateStart(sourceFieldUserNumberTissue,sourceFieldTissue)
-equationsSetTissue.SourceCreateFinish()
+  # Create source field for tissue
+  sourceFieldTissue = iron.Field()
+  equationsSetTissue.SourceCreateStart(sourceFieldUserNumberTissue,sourceFieldTissue)
+  equationsSetTissue.SourceCreateFinish()
 
-# for elementNumber in muscleElements:
-#     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
-#     if elementDomain == computationalNodeNumber:
-#       sourceFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,700.0e-9/(rho_ms*c_ms)+cMuscle*Tb) # source=qm/rhoC+CTb-CT
-# for elementNumber in leftRadiusElements:
-#     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
-#     if elementDomain == computationalNodeNumber:
-#       sourceFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,0.0)
-# for elementNumber in leftHumerusElements:
-#     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
-#     if elementDomain == computationalNodeNumber:
-#       sourceFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,0.0)
-# for elementNumber in leftUlnaElements:
-#     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
-#     if elementDomain == computationalNodeNumber:
-#       sourceFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,0.0)
+  # for elementNumber in muscleElements:
+  #     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
+  #     if elementDomain == computationalNodeNumber:
+  #       sourceFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,700.0e-9/(rho_ms*c_ms)+cMuscle*Tb) # source=qm/rhoC+CTb-CT
+  # for elementNumber in leftRadiusElements:
+  #     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
+  #     if elementDomain == computationalNodeNumber:
+  #       sourceFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,0.0)
+  # for elementNumber in leftHumerusElements:
+  #     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
+  #     if elementDomain == computationalNodeNumber:
+  #       sourceFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,0.0)
+  # for elementNumber in leftUlnaElements:
+  #     elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
+  #     if elementDomain == computationalNodeNumber:
+  #       sourceFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,0.0)
 
-sourceFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,
-700.0e-9/(rho_ms*c_ms)+cMuscle*Tb)  # source=qm/rhoC+CTb-CT
+  sourceFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,
+  700.0e-9/(rho_ms*c_ms)+cMuscle*Tb)  # source=qm/rhoC+CTb-CT
 
-#for elementNumber in ulnarElementList:
-#    elementDomain = decomposition.ElementDomainGet(elementNumber)
-#    if elementDomain == computationalNodeNumber:
-##      sourceField.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,2.5e6/2.0/4.0e6)
-#      sourceField.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,0.0)
-# Modifying source term for the element with the artery passing through.
-# for elementNumber in range(1,81):
-#   sourceFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,
-#     700/(rho_t*c_t)+CWall*Tb*volumeCorrection) # Because element volume here is much smaller than the artery passing it. We could consider more elements as well.
+  #for elementNumber in ulnarElementList:
+  #    elementDomain = decomposition.ElementDomainGet(elementNumber)
+  #    if elementDomain == computationalNodeNumber:
+  ##      sourceField.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,2.5e6/2.0/4.0e6)
+  #      sourceField.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,0.0)
+  # Modifying source term for the element with the artery passing through.
+  # for elementNumber in range(1,81):
+  #   sourceFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,
+  #     700/(rho_t*c_t)+CWall*Tb*volumeCorrection) # Because element volume here is much smaller than the artery passing it. We could consider more elements as well.
 
-sourceFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-sourceFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  sourceFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  sourceFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
 # =================================
 # F L O W
@@ -2126,100 +2130,101 @@ print('\033[1;32m'+'Source Field      COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 if (ProgressDiagnostics):
     print (" == >> INDEPENDENT FIELD << == ")
 
-# Create the equations set independent field variables
-IndependentFieldEnergy = iron.Field()
-#IndependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'flow velocity')
-# Set the mesh component to be used by the field components.
-#IndependentFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,1)
+if (not TestFlow):
+  # Create the equations set independent field variables
+  IndependentFieldEnergy = iron.Field()
+  #IndependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'flow velocity')
+  # Set the mesh component to be used by the field components.
+  #IndependentFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,1)
 
-# NAVIER-STOKES
-equationsSetEnergy.IndependentCreateStart(independentFieldUserNumberEnergy,IndependentFieldEnergy)
-equationsSetEnergy.IndependentCreateFinish()
+  # NAVIER-STOKES
+  equationsSetEnergy.IndependentCreateStart(independentFieldUserNumberEnergy,IndependentFieldEnergy)
+  equationsSetEnergy.IndependentCreateFinish()
 
-# Set the velocity
-IndependentFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-  1,1.0)
+  # Set the velocity
+  IndependentFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+    1,1.0)
 
-# Finish the parameter update
-IndependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-IndependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  # Finish the parameter update
+  IndependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  IndependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
-# Tissue independent field =================
-IndependentFieldTissue = iron.Field()
-IndependentFieldTissue.CreateStart(independentFieldUserNumberTissue,regionTissue)
-IndependentFieldTissue.VariableLabelSet(iron.FieldVariableTypes.U,'dynamic parameters')
-# Set type to general
-IndependentFieldTissue.TypeSet(iron.FieldTypes.GENERAL)
-# label the field
-IndependentFieldTissue.LabelSet('Control Parameters')
-# define new created field to be independent
-IndependentFieldTissue.DependentTypeSet(iron.FieldDependentTypes.INDEPENDENT)
-# Define decomposition
-IndependentFieldTissue.MeshDecompositionSet(decompositionTissue)
-# point new field to geometric field
-IndependentFieldTissue.GeometricFieldSet(geometricFieldTissue)
-# Set number of variables to 1
-IndependentFieldTissue.NumberOfVariablesSet(1)
-# Set the variable type to U
-IndependentFieldTissue.VariableTypesSet([iron.FieldVariableTypes.U])
-# Set the dimension to scalar
-IndependentFieldTissue.DimensionSet(iron.FieldVariableTypes.U,iron.FieldDimensionTypes.VECTOR)
-# Set number of components 2 for T_skin and T_core
-IndependentFieldTissue.NumberOfComponentsSet(iron.FieldVariableTypes.U,4)
-# Set the mesh component to be used by the field components.
-IndependentFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,1)
-IndependentFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.U,2,1)
-IndependentFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.U,3,1)
-IndependentFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.U,4,1)
+  # Tissue independent field =================
+  IndependentFieldTissue = iron.Field()
+  IndependentFieldTissue.CreateStart(independentFieldUserNumberTissue,regionTissue)
+  IndependentFieldTissue.VariableLabelSet(iron.FieldVariableTypes.U,'dynamic parameters')
+  # Set type to general
+  IndependentFieldTissue.TypeSet(iron.FieldTypes.GENERAL)
+  # label the field
+  IndependentFieldTissue.LabelSet('Control Parameters')
+  # define new created field to be independent
+  IndependentFieldTissue.DependentTypeSet(iron.FieldDependentTypes.INDEPENDENT)
+  # Define decomposition
+  IndependentFieldTissue.MeshDecompositionSet(decompositionTissue)
+  # point new field to geometric field
+  IndependentFieldTissue.GeometricFieldSet(geometricFieldTissue)
+  # Set number of variables to 1
+  IndependentFieldTissue.NumberOfVariablesSet(1)
+  # Set the variable type to U
+  IndependentFieldTissue.VariableTypesSet([iron.FieldVariableTypes.U])
+  # Set the dimension to scalar
+  IndependentFieldTissue.DimensionSet(iron.FieldVariableTypes.U,iron.FieldDimensionTypes.VECTOR)
+  # Set number of components 2 for T_skin and T_core
+  IndependentFieldTissue.NumberOfComponentsSet(iron.FieldVariableTypes.U,4)
+  # Set the mesh component to be used by the field components.
+  IndependentFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,1)
+  IndependentFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.U,2,1)
+  IndependentFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.U,3,1)
+  IndependentFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.U,4,1)
 
-#Set the label for them
-IndependentFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,1,'T_skin')
-IndependentFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,2,'T_core')
-IndependentFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,3,'organ')
-IndependentFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,4,'volume')
+  #Set the label for them
+  IndependentFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,1,'T_skin')
+  IndependentFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,2,'T_core')
+  IndependentFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,3,'organ')
+  IndependentFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,4,'volume')
 
-# Set interpolation type
-IndependentFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.U,1,iron.FieldInterpolationTypes.ELEMENT_BASED)
-IndependentFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.U,2,iron.FieldInterpolationTypes.ELEMENT_BASED)
-IndependentFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.U,3,iron.FieldInterpolationTypes.ELEMENT_BASED)
-IndependentFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.U,4,iron.FieldInterpolationTypes.ELEMENT_BASED)
-# Set scaling type to none
-IndependentFieldTissue.ScalingTypeSet(iron.FieldScalingTypes.NONE)
+  # Set interpolation type
+  IndependentFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.U,1,iron.FieldInterpolationTypes.ELEMENT_BASED)
+  IndependentFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.U,2,iron.FieldInterpolationTypes.ELEMENT_BASED)
+  IndependentFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.U,3,iron.FieldInterpolationTypes.ELEMENT_BASED)
+  IndependentFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.U,4,iron.FieldInterpolationTypes.ELEMENT_BASED)
+  # Set scaling type to none
+  IndependentFieldTissue.ScalingTypeSet(iron.FieldScalingTypes.NONE)
 
-IndependentFieldTissue.CreateFinish()
-
-
+  IndependentFieldTissue.CreateFinish()
 
 
-equationsSetTissue.IndependentCreateStart(independentFieldUserNumberTissue,IndependentFieldTissue)
-equationsSetTissue.IndependentCreateFinish()
 
-# Set the parameters
-IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-  1,37.0)
-IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-  2,37.0)
-IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-  3,1)
 
-# for elementNumber in kidneyElementsLeft:
-#   elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
-#   if elementDomain == computationalNodeNumber:
-#     IndependentFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#       elementNumber,4,kidneyLeft) 
+  equationsSetTissue.IndependentCreateStart(independentFieldUserNumberTissue,IndependentFieldTissue)
+  equationsSetTissue.IndependentCreateFinish()
 
-# for elementNumber in kidneyElementsRight:
-#   elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
-#   if elementDomain == computationalNodeNumber:
-#     IndependentFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-#       elementNumber,4,kidneyRight) 
+  # Set the parameters
+  IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+    1,37.0)
+  IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+    2,37.0)
+  IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+    3,1)
 
-IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-  4,1)
+  # for elementNumber in kidneyElementsLeft:
+  #   elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
+  #   if elementDomain == computationalNodeNumber:
+  #     IndependentFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #       elementNumber,4,kidneyLeft) 
 
-# Finish the parameter update
-IndependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-IndependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  # for elementNumber in kidneyElementsRight:
+  #   elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
+  #   if elementDomain == computationalNodeNumber:
+  #     IndependentFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #       elementNumber,4,kidneyRight) 
+
+  IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+    4,1)
+
+  # Finish the parameter update
+  IndependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  IndependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
 # =================================
 # F L O W
@@ -2327,72 +2332,73 @@ print('\033[1;32m'+'Independent Field COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 #  CellML fields: Shivering Model
 #================================================================================================================================
 
-# Create the CellML environment
-CellMLShiv = iron.CellML()
-CellMLShiv.CreateStart(cellMLUserNumberTissue,regionTissue)
+if (not TestFlow):
+  # Create the CellML environment
+  CellMLShiv = iron.CellML()
+  CellMLShiv.CreateStart(cellMLUserNumberTissue,regionTissue)
 
-# Shivering model
-ShiveringIdx = CellMLShiv.ModelImport("Shivering3.cellml")
+  # Shivering model
+  ShiveringIdx = CellMLShiv.ModelImport("Shivering3.cellml")
 
-# Flag for known and wanted variables
-# Variables imported from OpenCMISS
-CellMLShiv.VariableSetAsKnown(ShiveringIdx, "Shivering/Tskin")
-CellMLShiv.VariableSetAsKnown(ShiveringIdx, "Shivering/Tcore")
-CellMLShiv.VariableSetAsKnown(ShiveringIdx, "thermophysicalProperties/OrganType")
-CellMLShiv.VariableSetAsKnown(ShiveringIdx, "Source/vol")
+  # Flag for known and wanted variables
+  # Variables imported from OpenCMISS
+  CellMLShiv.VariableSetAsKnown(ShiveringIdx, "Shivering/Tskin")
+  CellMLShiv.VariableSetAsKnown(ShiveringIdx, "Shivering/Tcore")
+  CellMLShiv.VariableSetAsKnown(ShiveringIdx, "thermophysicalProperties/OrganType")
+  CellMLShiv.VariableSetAsKnown(ShiveringIdx, "Source/vol")
 
-# Variables to get from the CellML
-CellMLShiv.VariableSetAsWanted(ShiveringIdx, "Source/source")
+  # Variables to get from the CellML
+  CellMLShiv.VariableSetAsWanted(ShiveringIdx, "Source/source")
 
-# Finish the CellML environment creation
-CellMLShiv.CreateFinish()
+  # Finish the CellML environment creation
+  CellMLShiv.CreateFinish()
 
-# Create the CellML models field
-CellMLShiv.FieldMapsCreateStart()
+  # Create the CellML models field
+  CellMLShiv.FieldMapsCreateStart()
 
-# Map the components
-CellMLShiv.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 1, iron.FieldParameterSetTypes.VALUES,
-                              ShiveringIdx, "Shivering/Tskin", iron.FieldParameterSetTypes.VALUES)
-CellMLShiv.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 2, iron.FieldParameterSetTypes.VALUES,
-                              ShiveringIdx, "Shivering/Tcore", iron.FieldParameterSetTypes.VALUES)
-CellMLShiv.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 3, iron.FieldParameterSetTypes.VALUES,
-                              ShiveringIdx, "thermophysicalProperties/OrganType", iron.FieldParameterSetTypes.VALUES)                              
-CellMLShiv.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 4, iron.FieldParameterSetTypes.VALUES,
-                              ShiveringIdx, "Source/vol", iron.FieldParameterSetTypes.VALUES)                              
+  # Map the components
+  CellMLShiv.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 1, iron.FieldParameterSetTypes.VALUES,
+                                ShiveringIdx, "Shivering/Tskin", iron.FieldParameterSetTypes.VALUES)
+  CellMLShiv.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 2, iron.FieldParameterSetTypes.VALUES,
+                                ShiveringIdx, "Shivering/Tcore", iron.FieldParameterSetTypes.VALUES)
+  CellMLShiv.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 3, iron.FieldParameterSetTypes.VALUES,
+                                ShiveringIdx, "thermophysicalProperties/OrganType", iron.FieldParameterSetTypes.VALUES)                              
+  CellMLShiv.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 4, iron.FieldParameterSetTypes.VALUES,
+                                ShiveringIdx, "Source/vol", iron.FieldParameterSetTypes.VALUES)                              
 
-CellMLShiv.CreateCellMLToFieldMap(ShiveringIdx, "Source/source", iron.FieldParameterSetTypes.VALUES, sourceFieldTissue,
-                              iron.FieldVariableTypes.U,1,iron.FieldParameterSetTypes.VALUES)
+  CellMLShiv.CreateCellMLToFieldMap(ShiveringIdx, "Source/source", iron.FieldParameterSetTypes.VALUES, sourceFieldTissue,
+                                iron.FieldVariableTypes.U,1,iron.FieldParameterSetTypes.VALUES)
 
-# Finish the creation of CellML <--> OpenCMISS field maps 
-CellMLShiv.FieldMapsCreateFinish()
+  # Finish the creation of CellML <--> OpenCMISS field maps 
+  CellMLShiv.FieldMapsCreateFinish()
 
 
-# Map fields
+  # Map fields
 
-# Create the CellML models field
-CellMLModelsField = iron.Field()
-CellMLShiv.ModelsFieldCreateStart(cellMLModelsFieldUserNumberTissue, CellMLModelsField)
-CellMLShiv.ModelsFieldCreateFinish()
+  # Create the CellML models field
+  CellMLModelsField = iron.Field()
+  CellMLShiv.ModelsFieldCreateStart(cellMLModelsFieldUserNumberTissue, CellMLModelsField)
+  CellMLShiv.ModelsFieldCreateFinish()
 
-# Update cellmlModelsfield parameter set with the T_core?
+  # Update cellmlModelsfield parameter set with the T_core?
 
-# Create the CellML state field
-# CellMLStateField = iron.Field()
-# CellML.StateFieldCreateStart(cellMLStateFieldUserNumber, CellMLStateField)
-# CellML.StateFieldCreateFinish()
+  # Create the CellML state field
+  # CellMLStateField = iron.Field()
+  # CellML.StateFieldCreateStart(cellMLStateFieldUserNumber, CellMLStateField)
+  # CellML.StateFieldCreateFinish()
 
-# Create the CellML parameters field
-CellMLParametersField = iron.Field()
-CellMLShiv.ParametersFieldCreateStart(cellMLParametersFieldUserNumberTissue, CellMLParametersField)
-CellMLShiv.ParametersFieldCreateFinish()
-# Create the CellML intermediate field
-CellMLIntermediateField = iron.Field()
-CellMLShiv.IntermediateFieldCreateStart(CellMLIntermediateFieldUserNumberTissue, CellMLIntermediateField)
-CellMLShiv.IntermediateFieldCreateFinish()
+  # Create the CellML parameters field
+  CellMLParametersField = iron.Field()
+  CellMLShiv.ParametersFieldCreateStart(cellMLParametersFieldUserNumberTissue, CellMLParametersField)
+  CellMLShiv.ParametersFieldCreateFinish()
+  # Create the CellML intermediate field
+  CellMLIntermediateField = iron.Field()
+  CellMLShiv.IntermediateFieldCreateStart(CellMLIntermediateFieldUserNumberTissue, CellMLIntermediateField)
+  CellMLShiv.IntermediateFieldCreateFinish()
 
-# Finish the parameter update
-IndependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-IndependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)  
+  # Finish the parameter update
+  IndependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  IndependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)  
 
 
 #================================================================================================================================
@@ -2606,24 +2612,25 @@ if (CoupleFlowEnergy):
 if (ProgressDiagnostics):
     print( " == >> EQUATIONS << == ")
 
-# Create equations for artery energy
-equationsEnergy = iron.Equations()
-equationsSetEnergy.EquationsCreateStart(equationsEnergy)
-equationsEnergy.sparsityType = iron.EquationsSparsityTypes.SPARSE
-equationsEnergy.outputType = iron.EquationsOutputTypes.NONE
-equationsSetEnergy.EquationsCreateFinish()
+if (not TestFlow):
+  # Create equations for artery energy
+  equationsEnergy = iron.Equations()
+  equationsSetEnergy.EquationsCreateStart(equationsEnergy)
+  equationsEnergy.sparsityType = iron.EquationsSparsityTypes.SPARSE
+  equationsEnergy.outputType = iron.EquationsOutputTypes.NONE
+  equationsSetEnergy.EquationsCreateFinish()
 
-  # I want to solve this type of equation, dT/dt-div(Sigma grad(T))-(b-cT)=0.
-  # Sigma in my case is Sigma=k/rhoC.
-  # q=(Sigma grad(T)).n which in my 1D case is q=k/rhoC dT/dx which in the boundary is q=-h/rhoC (T-Tinf)
-  # in my case b=qm/rhoC+CTb and c=C
+    # I want to solve this type of equation, dT/dt-div(Sigma grad(T))-(b-cT)=0.
+    # Sigma in my case is Sigma=k/rhoC.
+    # q=(Sigma grad(T)).n which in my 1D case is q=k/rhoC dT/dx which in the boundary is q=-h/rhoC (T-Tinf)
+    # in my case b=qm/rhoC+CTb and c=C
 
-# Create equations for tissue
-equationsTissue = iron.Equations()
-equationsSetTissue.EquationsCreateStart(equationsTissue)
-equationsTissue.sparsityType = iron.EquationsSparsityTypes.SPARSE
-equationsTissue.outputType = iron.EquationsOutputTypes.NONE
-equationsSetTissue.EquationsCreateFinish()
+  # Create equations for tissue
+  equationsTissue = iron.Equations()
+  equationsSetTissue.EquationsCreateStart(equationsTissue)
+  equationsTissue.sparsityType = iron.EquationsSparsityTypes.SPARSE
+  equationsTissue.outputType = iron.EquationsOutputTypes.NONE
+  equationsSetTissue.EquationsCreateFinish()
 
 # =================================
 # F L O W
@@ -2680,14 +2687,14 @@ print('\033[1;32m'+'equations         COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 
 if (ProgressDiagnostics):
     print( " == >> PROBLEM << == ")
-
-# Start the creation of a problem.
-problem = iron.Problem()
-problemSpecification = [iron.ProblemClasses.MULTI_PHYSICS,
-                        iron.ProblemTypes.DIFFUSION_ADVECTION_DIFFUSION,
-                        ProblemSubtype]
-problem.CreateStart(problemUserNumber,problemSpecification)
-problem.CreateFinish()
+if(not TestFlow):
+  # Start the creation of a problem.
+  problem = iron.Problem()
+  problemSpecification = [iron.ProblemClasses.MULTI_PHYSICS,
+                          iron.ProblemTypes.DIFFUSION_ADVECTION_DIFFUSION,
+                          ProblemSubtype]
+  problem.CreateStart(problemUserNumber,problemSpecification)
+  problem.CreateFinish()
 
 # =================================
 # F L O W
@@ -3095,51 +3102,52 @@ print('\033[1;32m'+'Solver Equations  COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 if (ProgressDiagnostics):
     print( " == >> BOUNDARY CONDITIONS << == ")
 
-boundaryConditionsEnergy = iron.BoundaryConditions()
-boundaryConditionsTissue = iron.BoundaryConditions()
+if (not TestFlow):
+  boundaryConditionsEnergy = iron.BoundaryConditions()
+  boundaryConditionsTissue = iron.BoundaryConditions()
 
-solverEquationsEnergy.BoundaryConditionsCreateStart(boundaryConditionsEnergy)
+  solverEquationsEnergy.BoundaryConditionsCreateStart(boundaryConditionsEnergy)
 
-nodeDomain = decompositionEnergy.NodeDomainGet(1,1)
-if nodeDomain == computationalNodeNumber:
-    boundaryConditionsEnergy.SetNode(dependentFieldEnergy,iron.FieldVariableTypes.U,1,1,1,1,
-        iron.BoundaryConditionsTypes.FIXED,[37.0])
-
-dependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-dependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-
-solverEquationsEnergy.BoundaryConditionsCreateFinish()
-
-#Tissue boundary conditions =============
-solverEquationsTissue.BoundaryConditionsCreateStart(boundaryConditionsTissue)
-
-nodes = iron.Nodes()
-regionTissue.NodesGet(nodes)
-
-
-# Actually in OpenCMISS the equation is divided by rhoC. So q=alpha*gradT.n which alpha=sigma/rhoC.
-# So for Robin BCs you need to pass h/rhoC and q_h/rhoC. Also DON'T FORGET ABOUT THE UNITS
-q_hUnit = 1#1e-6
-hUnit   = 1#1e-6
-
-
-Rtot=1/((h_conv+hr_rad)*hUnit)+3/k_sk # units terms has mm2 so no 1e6.
-
-for nodeNumber in boundaryTissue:
-  nodeDomain = decompositionTissue.NodeDomainGet(nodeNumber,1)
+  nodeDomain = decompositionEnergy.NodeDomainGet(1,1)
   if nodeDomain == computationalNodeNumber:
-    dependentFieldTissue.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-      1,1,nodeNumber,1,20.0)
-    boundaryConditionsTissue.SetNode(dependentFieldTissue,iron.FieldVariableTypes.DELUDELN,1,1,nodeNumber,1,
-      iron.BoundaryConditionsTypes.ROBIN,[1.0/(rho_sk*c_sk*rhoCFactor*Rtot),1.0/(rho_sk*c_sk*rhoCFactor*Rtot)* Tair])
+      boundaryConditionsEnergy.SetNode(dependentFieldEnergy,iron.FieldVariableTypes.U,1,1,1,1,
+          iron.BoundaryConditionsTypes.FIXED,[37.0])
+
+  dependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  dependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+
+  solverEquationsEnergy.BoundaryConditionsCreateFinish()
+
+  #Tissue boundary conditions =============
+  solverEquationsTissue.BoundaryConditionsCreateStart(boundaryConditionsTissue)
+
+  nodes = iron.Nodes()
+  regionTissue.NodesGet(nodes)
 
 
-dependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-dependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-#!  !Finish the creation of the equations set boundary conditions
-#!  CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
+  # Actually in OpenCMISS the equation is divided by rhoC. So q=alpha*gradT.n which alpha=sigma/rhoC.
+  # So for Robin BCs you need to pass h/rhoC and q_h/rhoC. Also DON'T FORGET ABOUT THE UNITS
+  q_hUnit = 1#1e-6
+  hUnit   = 1#1e-6
 
-solverEquationsTissue.BoundaryConditionsCreateFinish()
+
+  Rtot=1/((h_conv+hr_rad)*hUnit)+3/k_sk # units terms has mm2 so no 1e6.
+
+  for nodeNumber in boundaryTissue:
+    nodeDomain = decompositionTissue.NodeDomainGet(nodeNumber,1)
+    if nodeDomain == computationalNodeNumber:
+      dependentFieldTissue.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+        1,1,nodeNumber,1,20.0)
+      boundaryConditionsTissue.SetNode(dependentFieldTissue,iron.FieldVariableTypes.DELUDELN,1,1,nodeNumber,1,
+        iron.BoundaryConditionsTypes.ROBIN,[1.0/(rho_sk*c_sk*rhoCFactor*Rtot),1.0/(rho_sk*c_sk*rhoCFactor*Rtot)* Tair])
+
+
+  dependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  dependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  #!  !Finish the creation of the equations set boundary conditions
+  #!  CALL cmfe_SolverEquations_BoundaryConditionsCreateFinish(SolverEquations,Err)
+
+  solverEquationsTissue.BoundaryConditionsCreateFinish()
 
 # =================================
 # F L O W
@@ -3390,7 +3398,7 @@ if (streeBoundaries):
         for k in range(0,timePeriod+1):
             MaterialsFieldStree.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,
              iron.FieldParameterSetTypes.VALUES,1,1,k+1,terminalIdx,zt[k].real)
-             
+
 #================================================================================================================================
 #  Run Solvers
 #================================================================================================================================
