@@ -10,3 +10,9 @@ outputDiffusion/
 
 # tilde
 *~
+
+# temporary files
+MainTime_10.part0.exelem
+MainTime_100.part0.exelem
+MainTime_10.part0.exnode
+MainTime_100.part0.exnode
