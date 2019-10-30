@@ -2700,7 +2700,7 @@ print('\033[1;32m'+'equations         COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 
 if (ProgressDiagnostics):
     print( " == >> PROBLEM << == ")
-if(not TestFlow):
+if(Bioheat):
   # Start the creation of a problem.
   problem = iron.Problem()
   problemSpecification = [iron.ProblemClasses.MULTI_PHYSICS,
@@ -2711,7 +2711,7 @@ if(not TestFlow):
 
 # =================================
 # F L O W
-if (CoupledBioheatFlow or TestFlow):
+if (TestFlow):
   if (TestFlow):
     if (ProgressDiagnostics):
         print( " == >> PROBLEM << == ")
@@ -2720,6 +2720,14 @@ if (CoupledBioheatFlow or TestFlow):
     problem = iron.Problem()
     problemSpecification = [iron.ProblemClasses.FLUID_MECHANICS,
                             iron.ProblemTypes.NAVIER_STOKES_EQUATION,
+                            ProblemSubtype]
+    problem.CreateStart(problemUserNumber,problemSpecification)
+    problem.CreateFinish()
+  
+  if (CoupledBioheatFlow):
+    problem = iron.Problem()
+    problemSpecification = [iron.ProblemClasses.MULTI_PHYSICS,
+                            ProblemType,
                             ProblemSubtype]
     problem.CreateStart(problemUserNumber,problemSpecification)
     problem.CreateFinish()
