@@ -2750,7 +2750,7 @@ if (TestFlow):
   TimeLoop.TimesSet(startTime,stopTime,timeIncrement)
   TimeLoop.TimeOutputSet(DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY)
   TimeLoop.OutputTypeSet(iron.ControlLoopOutputTypes.TIMING)
-else:
+elif (Bioheat or CoupledBioheatFlow):
   TimeLoop.TimesSet(startTimeBioheat,stopTimeBioheat,timeIncrementBioheat)
   TimeLoop.TimeOutputSet(DYNAMIC_SOLVER_DIFFUSION_OUTPUT_FREQUENCY)
 
@@ -2799,6 +2799,16 @@ if (CoupledBioheatFlow or TestFlow):
                     |
                     | 2) (optional) Simple subloop     | 1) Advection Linear Solver
 
+    Boheat
+    ------
+
+
+      Time Loop, L0  | 1) control cellML Simple loop  |  1) Control equations, CELLML evaluator solver
+                     | 2) Conditional while loop      |  1) Time loop for flow  | 1D NS/C coupling
+                     |                                                           (iterative while loop)  |  1) Characteristics Nonlinear Solver
+                     |                                                                                   |  2) 1DNS Transient Solver
+                     | 3) Energy and Bioheat simple loop  |  1) Energy linear dynamic Solver
+                                                          |  2) Bioheat linear dynamic Solver
 
   '''
 
@@ -2807,6 +2817,9 @@ if (CoupledBioheatFlow or TestFlow):
   SolverNavierStokesUserNumber   = 2
   SolverAdvectionUserNumber      = 1
   SolverCellmlUserNumber         = 1
+  SolverControlUserNumber        = 1
+  SolverEnergyUserNumber         = 1
+  SolverBioheatUserNumber        = 2
   if (RCRBoundaries or streeBoundaries or Heart):
     Iterative1d0dControlLoopNumber   = 1
     SimpleAdvectionControlLoopNumber = 2
@@ -2815,6 +2828,12 @@ if (CoupledBioheatFlow or TestFlow):
   else:
     Iterative1dControlLoopNumber     = 1
     SimpleAdvectionControlLoopNumber = 2
+    conidtionalWhileLoop             = 2
+    timeLoopFlow                     = 1
+  if(CoupledBioheatFlow):
+    simpleControlLoop =1
+    simpleBioheatLoop =3
+
 
   # Start the creation of the problem control loop
   # TimeLoop = iron.ControlLoop()
@@ -2824,22 +2843,38 @@ if (CoupledBioheatFlow or TestFlow):
   # TimeLoop.TimesSet(startTime,stopTime,timeIncrement)
   # TimeLoop.TimeOutputSet(DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY)
   # TimeLoop.OutputTypeSet(iron.ControlLoopOutputTypes.TIMING)
-
-  # Set tolerances for iterative convergence loops
-  if (RCRBoundaries or streeBoundaries or Heart):
-      Iterative1DCouplingLoop = iron.ControlLoop()
-      problem.ControlLoopGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
-      iron.ControlLoopIdentifiers.NODE],Iterative1DCouplingLoop)
-      Iterative1DCouplingLoop.AbsoluteToleranceSet(couplingTolerance1D)
-      Iterative1D0DCouplingLoop = iron.ControlLoop()
-      problem.ControlLoopGet([Iterative1d0dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
-      Iterative1D0DCouplingLoop)
-      Iterative1D0DCouplingLoop.AbsoluteToleranceSet(couplingTolerance1D0D)
-  else:
-      Iterative1DCouplingLoop = iron.ControlLoop()
-      if (TestFlow):
+  if (TestFlow):
+    # Set tolerances for iterative convergence loops
+    if (RCRBoundaries or streeBoundaries or Heart):
+        Iterative1DCouplingLoop = iron.ControlLoop()
+        problem.ControlLoopGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
+        iron.ControlLoopIdentifiers.NODE],Iterative1DCouplingLoop)
+        Iterative1DCouplingLoop.AbsoluteToleranceSet(couplingTolerance1D)
+        Iterative1D0DCouplingLoop = iron.ControlLoop()
+        problem.ControlLoopGet([Iterative1d0dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+        Iterative1D0DCouplingLoop)
+        Iterative1D0DCouplingLoop.AbsoluteToleranceSet(couplingTolerance1D0D)
+    else:
+        Iterative1DCouplingLoop = iron.ControlLoop()
         problem.ControlLoopGet([Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],Iterative1DCouplingLoop)
         Iterative1DCouplingLoop.AbsoluteToleranceSet(couplingTolerance1D)
+  elif (CoupledBioheatFlow):
+    # Set tolerances for iterative convergence loops
+    if (RCRBoundaries or streeBoundaries or Heart):
+        Iterative1DCouplingLoop = iron.ControlLoop()
+        problem.ControlLoopGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
+        iron.ControlLoopIdentifiers.NODE],Iterative1DCouplingLoop)
+        Iterative1DCouplingLoop.AbsoluteToleranceSet(couplingTolerance1D)
+        Iterative1D0DCouplingLoop = iron.ControlLoop()
+        problem.ControlLoopGet([Iterative1d0dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+        Iterative1D0DCouplingLoop)
+        Iterative1D0DCouplingLoop.AbsoluteToleranceSet(couplingTolerance1D0D)
+    else:
+        Iterative1DCouplingLoop = iron.ControlLoop()
+        problem.ControlLoopGet([conidtionalWhileLoop,timeLoopFlow,
+        Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],Iterative1DCouplingLoop)
+        Iterative1DCouplingLoop.AbsoluteToleranceSet(couplingTolerance1D)
+
 
   # problem.ControlLoopCreateFinish()
 # =================================
@@ -2853,7 +2888,8 @@ print('\033[1;32m'+'Control Loops     COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 if (ProgressDiagnostics):
     print( " == >> SOLVERS << == ")
 
-if (TestFlow):
+problem.SolversCreateStart()
+if (TestFlow or CoupledBioheatFlow):
   if (ProgressDiagnostics):
     print( " == >> SOLVERS << == ")
 
@@ -2869,7 +2905,7 @@ if (TestFlow):
       DynamicSolverAdvection    = iron.Solver()
       LinearSolverAdvection     = iron.Solver()
 
-  problem.SolversCreateStart()
+
 
   #------------------
 
@@ -2896,8 +2932,12 @@ if (TestFlow):
       problem.SolverGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
       iron.ControlLoopIdentifiers.NODE],SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
   else:
-      problem.SolverGet([Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
-      SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
+      if(TestFlow):
+        problem.SolverGet([Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+        SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
+      elif(CoupledBioheatFlow):
+          problem.SolverGet([conidtionalWhileLoop,timeLoopFlow,Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+          SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
   # Set the nonlinear Jacobian type
   NonlinearSolverCharacteristic.NewtonJacobianCalculationTypeSet(iron.JacobianCalculationTypes.EQUATIONS) #(FD/EQUATIONS)
   NonlinearSolverCharacteristic.OutputTypeSet(NONLINEAR_SOLVER_CHARACTERISTIC_OUTPUT_TYPE)
@@ -2923,8 +2963,13 @@ if (TestFlow):
       problem.SolverGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
       iron.ControlLoopIdentifiers.NODE],SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
   else:
-      problem.SolverGet([Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
-      SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
+      if(TestFlow):
+        problem.SolverGet([Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+        SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
+      elif(CoupledBioheatFlow):
+        problem.SolverGet([conidtionalWhileLoop,timeLoopFlow,Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+        SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
+
   DynamicSolverNavierStokes.OutputTypeSet(DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_TYPE)
   DynamicSolverNavierStokes.DynamicThetaSet(dynamicSolverNavierStokesTheta)
   # Get the dynamic nonlinear solver
@@ -2959,9 +3004,26 @@ if (TestFlow):
       # Get the dynamic linear solver
       DynamicSolverAdvection.DynamicLinearSolverGet(LinearSolverAdvection)
 
-  # Finish the creation of the problem solver
-  problem.SolversCreateFinish()
-else:
+  if (CoupledBioheatFlow):
+    # Create problem solver
+    solverEnergy = iron.Solver()
+    LinearSolverEnergy = iron.Solver()
+
+    solverTissue = iron.Solver()
+    LinearSolverTissue = iron.Solver()
+
+    problem.SolverGet([simpleBioheatLoop,iron.ControlLoopIdentifiers.NODE],SolverEnergyUserNumber,solverEnergy)
+    problem.SolverGet([simpleBioheatLoop,iron.ControlLoopIdentifiers.NODE],SolverBioheatUserNumber,solverTissue)
+    solverEnergy.LabelSet('Arterial Energy Solver')
+    solverTissue.LabelSet('Tissue Energy Solver')
+    #solver.outputType = iron.SolverOutputTypes.SOLVER
+    solverEnergy.DynamicLinearSolverGet(LinearSolverEnergy)
+    solverTissue.DynamicLinearSolverGet(LinearSolverTissue)
+    #solver.linearType = iron.LinearSolverTypes.ITERATIVE
+    #solver.linearIterativeAbsoluteTolerance = 1.0E-12
+    #solver.linearIterativeRelativeTolerance = 1.0E-12
+
+elif(Bioheat):
   # Create problem solver
   solverEnergy = iron.Solver()
   LinearSolverEnergy = iron.Solver()
@@ -2969,7 +3031,6 @@ else:
   solverTissue = iron.Solver()
   LinearSolverTissue = iron.Solver()
 
-  problem.SolversCreateStart()
   problem.SolverGet([iron.ControlLoopIdentifiers.NODE],2,solverEnergy)
   problem.SolverGet([iron.ControlLoopIdentifiers.NODE],3,solverTissue)
   solverEnergy.LabelSet('Arterial Energy Solver')
@@ -2980,12 +3041,10 @@ else:
   #solver.linearType = iron.LinearSolverTypes.ITERATIVE
   #solver.linearIterativeAbsoluteTolerance = 1.0E-12
   #solver.linearIterativeRelativeTolerance = 1.0E-12
-  problem.SolversCreateFinish()
 
-# =================================
-# F L O W
-#if (CoupledBioheatFlow or TestFlow):
-# =================================
+# Finish the creation of the problem solver
+problem.SolversCreateFinish()
+
 
 print('\033[1;32m'+'Solvers           COMPLETED'+'\033[0m',"{0:4.2f}".format(time.time()-t))
 #================================================================================================================================
@@ -2995,7 +3054,9 @@ print('\033[1;32m'+'Solvers           COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 if (ProgressDiagnostics):
     print( " == >> SOLVER EQUATIONS << == ")
 
-if (TestFlow):
+problem.SolverEquationsCreateStart()
+
+if (TestFlow or CoupledBioheatFlow):
   if (ProgressDiagnostics):
     print( " == >> SOLVER EQUATIONS << == ")
 
@@ -3011,7 +3072,7 @@ if (TestFlow):
       DynamicSolverAdvection    = iron.Solver()
       SolverEquationsAdvection  = iron.SolverEquations()
 
-  problem.SolverEquationsCreateStart()
+
 
   #------------------
 
@@ -3045,8 +3106,13 @@ if (TestFlow):
       problem.SolverGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
       iron.ControlLoopIdentifiers.NODE],SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
   else:
-      problem.SolverGet([Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
-      SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
+      if(TestFlow):
+        problem.SolverGet([Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+        SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
+      elif(CoupledBioheatFlow):
+        problem.SolverGet([conidtionalWhileLoop,timeLoopFlow,Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+        SolverCharacteristicUserNumber,NonlinearSolverCharacteristic)
+
   NonlinearSolverCharacteristic.SolverEquationsGet(SolverEquationsCharacteristic)
   SolverEquationsCharacteristic.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
   # Add in the equations set
@@ -3059,8 +3125,13 @@ if (TestFlow):
       problem.SolverGet([Iterative1d0dControlLoopNumber,Iterative1dControlLoopNumber,
       iron.ControlLoopIdentifiers.NODE],SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
   else:
-      problem.SolverGet([Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
-      SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
+      if(TestFlow):
+        problem.SolverGet([Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+        SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
+      elif(CoupledBioheatFlow):
+        problem.SolverGet([conidtionalWhileLoop,timeLoopFlow,Iterative1dControlLoopNumber,iron.ControlLoopIdentifiers.NODE],
+        SolverNavierStokesUserNumber,DynamicSolverNavierStokes)
+
   DynamicSolverNavierStokes.SolverEquationsGet(SolverEquationsNavierStokes)
   SolverEquationsNavierStokes.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
   # Add in the equations set
@@ -3077,8 +3148,34 @@ if (TestFlow):
       # Add in the equations set
       EquationsSetAdvection = SolverEquationsAdvection.EquationsSetAdd(EquationsSetAdvection)
 
-  # Finish the creation of the problem solver equations
-  problem.SolverEquationsCreateFinish()
+  if(CoupledBioheatFlow):
+    # Create solver equations and add equations set to solver equations
+    solverEnergy = iron.Solver()
+    solverTissue = iron.Solver()
+    cellMLSolver = iron.Solver()
+
+    solverEquationsEnergy = iron.SolverEquations()
+    solverEquationsTissue = iron.SolverEquations()
+    cellMLEquations = iron.CellMLEquations()
+
+    #   problem.SolverEquationsCreateStart()
+    problem.CellMLEquationsCreateStart()
+
+    problem.SolverGet([simpleControlLoop,iron.ControlLoopIdentifiers.NODE],SolverControlUserNumber,cellMLSolver)
+    problem.SolverGet([simpleBioheatLoop,iron.ControlLoopIdentifiers.NODE],SolverEnergyUserNumber,solverEnergy)
+    problem.SolverGet([simpleBioheatLoop,iron.ControlLoopIdentifiers.NODE],SolverBioheatUserNumber,solverTissue)
+
+    cellMLSolver.CellMLEquationsGet(cellMLEquations)
+    solverEnergy.SolverEquationsGet(solverEquationsEnergy)
+    solverTissue.SolverEquationsGet(solverEquationsTissue)
+
+    solverEquationsEnergy.sparsityType = iron.SolverEquationsSparsityTypes.SPARSE
+    equationsSetIndex1 = cellMLEquations.CellMLAdd(CellMLShiv)
+    equationsSetIndex2 = solverEquationsEnergy.EquationsSetAdd(equationsSetEnergy)
+    equationsSetIndex3 = solverEquationsTissue.EquationsSetAdd(equationsSetTissue)
+
+    #   problem.SolverEquationsCreateFinish()
+    problem.CellMLEquationsCreateFinish()
 else:
   # Create solver equations and add equations set to solver equations
   solverEnergy = iron.Solver()
@@ -3089,10 +3186,10 @@ else:
   solverEquationsTissue = iron.SolverEquations()
   cellMLEquations = iron.CellMLEquations()
 
-  problem.SolverEquationsCreateStart()
+#   problem.SolverEquationsCreateStart()
   problem.CellMLEquationsCreateStart()
 
-  problem.SolverGet([iron.ControlLoopIdentifiers.NODE],1,cellMLSolver)
+  problem.SolverGet([simpleBioheatLoop,iron.ControlLoopIdentifiers.NODE],1,cellMLSolver)
   problem.SolverGet([iron.ControlLoopIdentifiers.NODE],2,solverEnergy)
   problem.SolverGet([iron.ControlLoopIdentifiers.NODE],3,solverTissue)
 
@@ -3105,9 +3202,11 @@ else:
   equationsSetIndex2 = solverEquationsEnergy.EquationsSetAdd(equationsSetEnergy)
   equationsSetIndex3 = solverEquationsTissue.EquationsSetAdd(equationsSetTissue)
 
-  problem.SolverEquationsCreateFinish()
+#   problem.SolverEquationsCreateFinish()
   problem.CellMLEquationsCreateFinish()
 
+# Finish the creation of the problem solver equations
+problem.SolverEquationsCreateFinish()
 # =================================
 # F L O W
 #if (CoupledBioheatFlow or TestFlow):
@@ -3121,7 +3220,7 @@ print('\033[1;32m'+'Solver Equations  COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 if (ProgressDiagnostics):
     print( " == >> BOUNDARY CONDITIONS << == ")
 
-if (not TestFlow):
+if (CoupledBioheatFlow or Bioheat):
   boundaryConditionsEnergy = iron.BoundaryConditions()
   boundaryConditionsTissue = iron.BoundaryConditions()
 
