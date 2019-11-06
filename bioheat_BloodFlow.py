@@ -121,9 +121,9 @@ meshOrigin = [0.0,0.0,0.0]
 #if (CoupledBioheatFlow or TestFlow):
 # =================================
 # Only one of these could be true.
-TestFlow = True
+TestFlow = False
 Bioheat = False
-CoupledBioheatFlow = False
+CoupledBioheatFlow = True
 if (CoupledBioheatFlow):
   Bioheat = False
   TestFlow = False
@@ -3189,7 +3189,7 @@ else:
 #   problem.SolverEquationsCreateStart()
   problem.CellMLEquationsCreateStart()
 
-  problem.SolverGet([simpleBioheatLoop,iron.ControlLoopIdentifiers.NODE],1,cellMLSolver)
+  problem.SolverGet([iron.ControlLoopIdentifiers.NODE],1,cellMLSolver)
   problem.SolverGet([iron.ControlLoopIdentifiers.NODE],2,solverEnergy)
   problem.SolverGet([iron.ControlLoopIdentifiers.NODE],3,solverTissue)
 
