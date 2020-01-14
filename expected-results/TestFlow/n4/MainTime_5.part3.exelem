@@ -1,0 +1,1472 @@
+ Group name: ArterialSystem
+ Shape.  Dimension=1
+ #Scale factor sets= 1
+ q.Lagrange, #Scale factors=3
+ #Nodes=           3
+ #Fields=12
+ 1) Coordinates, coordinate, rectangular cartesian, #Components=3
+   x.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   y.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   z.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 2) W2Initialise, field,  rectangular cartesian, #Components=1
+   1.   constant, no modify, grid based.
+     #xi1=0
+ 3) Penalty Coefficient, field,  rectangular cartesian, #Components=1
+   1.   constant, no modify, grid based.
+     #xi1=0
+ 4) General, field,  rectangular cartesian, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 5) Derivatives, field,  rectangular cartesian, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 6) Characteristics, field,  rectangular cartesian, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 7) , field,  real, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 8) Pressure, field,  real, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 9) MaterialsConstants, field,  rectangular cartesian, #Components=8
+   1.   constant, no modify, grid based.
+     #xi1=0
+   2.   constant, no modify, grid based.
+     #xi1=0
+   3.   constant, no modify, grid based.
+     #xi1=0
+   4.   constant, no modify, grid based.
+     #xi1=0
+   5.   constant, no modify, grid based.
+     #xi1=0
+   6.   constant, no modify, grid based.
+     #xi1=0
+   7.   constant, no modify, grid based.
+     #xi1=0
+   8.   constant, no modify, grid based.
+     #xi1=0
+ 10) MaterialsVariables, field,  real, #Components=3
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   3.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 11) Normal Wave Direction, field,  rectangular cartesian, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 12) Input Flow, field,  rectangular cartesian, #Components=2
+   1.   constant, no modify, grid based.
+     #xi1=0
+   2.   constant, no modify, grid based.
+     #xi1=0
+ Element:            7 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+          13          14          15
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            122 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         243         244         245
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            123 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         245         246         247
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            124 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         247         248         249
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            125 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         249         250         251
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            126 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         251         252         253
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            127 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         253         254         255
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            129 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         257         258         259
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            130 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         259         260         261
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            131 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         261         262         263
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            132 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         263         264         265
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            135 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         269         270         271
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            136 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         271         272         273
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            137 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         273         274         275
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            139 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         277         278         279
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            140 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         279         280         281
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            141 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         281         282         283
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            143 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         285         286         287
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            144 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         287         288         289
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            146 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         291         292         293
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            148 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         295         296         297
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            149 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         297         298         299
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            150 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         299         300         301
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            152 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         303         304         305
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            156 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         311         312         313
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            157 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         313         314         315
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            159 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         317         318         319
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            161 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         321         322         323
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            162 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         323         324         325
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            163 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         325         326         327
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ #Scale factor sets= 1
+ q.Lagrange, #Scale factors=3
+ #Nodes=           3
+ #Fields=12
+ 1) Coordinates, coordinate, rectangular cartesian, #Components=3
+   x.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   y.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   z.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 2) W2Initialise, field,  rectangular cartesian, #Components=1
+   1.   constant, no modify, grid based.
+     #xi1=0
+ 3) Penalty Coefficient, field,  rectangular cartesian, #Components=1
+   1.   constant, no modify, grid based.
+     #xi1=0
+ 4) General, field,  rectangular cartesian, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 5) Derivatives, field,  rectangular cartesian, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 6) Characteristics, field,  rectangular cartesian, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 7) , field,  real, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 8) Pressure, field,  real, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 9) MaterialsConstants, field,  rectangular cartesian, #Components=8
+   1.   constant, no modify, grid based.
+     #xi1=0
+   2.   constant, no modify, grid based.
+     #xi1=0
+   3.   constant, no modify, grid based.
+     #xi1=0
+   4.   constant, no modify, grid based.
+     #xi1=0
+   5.   constant, no modify, grid based.
+     #xi1=0
+   6.   constant, no modify, grid based.
+     #xi1=0
+   7.   constant, no modify, grid based.
+     #xi1=0
+   8.   constant, no modify, grid based.
+     #xi1=0
+ 10) MaterialsVariables, field,  real, #Components=3
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   3.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 11) Normal Wave Direction, field,  rectangular cartesian, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     2
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 12) Input Flow, field,  rectangular cartesian, #Components=2
+   1.   constant, no modify, grid based.
+     #xi1=0
+   2.   constant, no modify, grid based.
+     #xi1=0
+ Element:            134 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         267         268         269
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            121 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         241         242         243
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            128 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         255         256         257
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            120 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+          15         240         241
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            158 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         315         316         317
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            145 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         289         290         291
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ #Scale factor sets= 1
+ q.Lagrange, #Scale factors=3
+ #Nodes=           3
+ #Fields=12
+ 1) Coordinates, coordinate, rectangular cartesian, #Components=3
+   x.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   y.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   z.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 2) W2Initialise, field,  rectangular cartesian, #Components=1
+   1.   constant, no modify, grid based.
+     #xi1=0
+ 3) Penalty Coefficient, field,  rectangular cartesian, #Components=1
+   1.   constant, no modify, grid based.
+     #xi1=0
+ 4) General, field,  rectangular cartesian, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 5) Derivatives, field,  rectangular cartesian, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 6) Characteristics, field,  rectangular cartesian, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 7) , field,  real, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 8) Pressure, field,  real, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 9) MaterialsConstants, field,  rectangular cartesian, #Components=8
+   1.   constant, no modify, grid based.
+     #xi1=0
+   2.   constant, no modify, grid based.
+     #xi1=0
+   3.   constant, no modify, grid based.
+     #xi1=0
+   4.   constant, no modify, grid based.
+     #xi1=0
+   5.   constant, no modify, grid based.
+     #xi1=0
+   6.   constant, no modify, grid based.
+     #xi1=0
+   7.   constant, no modify, grid based.
+     #xi1=0
+   8.   constant, no modify, grid based.
+     #xi1=0
+ 10) MaterialsVariables, field,  real, #Components=3
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   3.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 11) Normal Wave Direction, field,  rectangular cartesian, #Components=2
+   1.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+   2.   q.Lagrange, no modify, standard node based.
+     #Nodes= 3
+     1.  #Values=1
+      Value indices:     3
+      Scale factor indices:    1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:    2
+     3.  #Values=1
+      Value indices:     1
+      Scale factor indices:    3
+ 12) Input Flow, field,  rectangular cartesian, #Components=2
+   1.   constant, no modify, grid based.
+     #xi1=0
+   2.   constant, no modify, grid based.
+     #xi1=0
+ Element:            151 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         241         302         303
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            142 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+          15         284         285
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            160 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         315         320         321
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            138 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         267         276         277
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            147 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         289         294         295
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            133 0 0
+   Values:
+     1.0000000000000000E+00
+     1.0000000000000000E+04
+     3.9999999999999998E-06
+     1.0499999999999999E-03
+     1.3000000000000000E+00
+     0.0000000000000000E+00
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     1.0000000000000000E+03
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+     0.0000000000000000E+00
+   Nodes:
+         255         266         267
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00   1.0000000000000000E+00

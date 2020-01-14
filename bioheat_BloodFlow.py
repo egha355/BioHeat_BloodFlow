@@ -121,8 +121,8 @@ meshOrigin = [0.0,0.0,0.0]
 #if (CoupledBioheatFlow or TestFlow):
 # =================================
 # Only one of these could be true.
-TestFlow = False
-Bioheat = True
+TestFlow = True
+Bioheat = False
 CoupledBioheatFlow = False
 if (CoupledBioheatFlow):
   Bioheat = False
@@ -876,7 +876,7 @@ if (CoupledBioheatFlow or TestFlow):
   LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE     = iron.SolverOutputTypes.NONE
   # (NONE/TIMING/SOLVER/MATRIX)
   CMISS_SOLVER_OUTPUT_TYPE = iron.SolverOutputTypes.NONE
-  DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY = 10
+  DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY = 1
 
   # Set the time parameters
   numberOfPeriods = 1
