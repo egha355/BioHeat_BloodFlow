@@ -121,8 +121,8 @@ meshOrigin = [0.0,0.0,0.0]
 #if (CoupledBioheatFlow or TestFlow):
 # =================================
 # Only one of these could be true.
-TestFlow = True
-Bioheat = False
+TestFlow = False
+Bioheat = True
 CoupledBioheatFlow = False
 if (CoupledBioheatFlow):
   Bioheat = False
@@ -555,7 +555,7 @@ if (CoupledBioheatFlow or TestFlow):
       print( " == >> Reading geometry from files... << == ")
 
   # Read the node file
-  with open('input/Node.csv','r') as csvfile:
+  with open('input/Flow/Node.csv','r') as csvfile:
       reader = csv.reader(csvfile, delimiter=',')
   #    workSpace(vars())
       rownum = 0
@@ -642,7 +642,7 @@ if (CoupledBioheatFlow or TestFlow):
   #------------------
 
   # Read the element file
-  with open('input/Element.csv','r') as csvfile:
+  with open('input/Flow/Element.csv','r') as csvfile:
       reader = csv.reader(csvfile, delimiter=',')
       rownum = 0
       i = 0
@@ -1170,7 +1170,7 @@ meshElementsTissue.CreateStart(meshTissue, meshComponentNumber, basisTissue)
 
 print( "Elapsed time before reading ele file is: ", time.time()-t)
 # reading elements and its local Nodes and setting elements.Nodes
-with open('elements2.csv') as elementscsv:
+with open('input/bioheat/elements2.csv') as elementscsv:
   reader = csv.reader(elementscsv)
   # next(elementscsv)
   elementNumber=0
@@ -1440,7 +1440,7 @@ print( numberOfNodes)
 
 print( "Elapsed time before reading node file is: ", time.time()-t)
 
-FileName_node = "nodes.csv"
+FileName_node = "input/bioheat/nodes.csv"
 
 # X input file is mm. if you want to keep it that way you need to multiply k and rho*c by factors of 10^-3 and 10^-9 respectively.
 Units = 1e0
@@ -1481,7 +1481,7 @@ with open(FileName_node) as nodescsv:
 
 
 
-with open('boundary_nodes.csv') as csvFile:
+with open('input/bioheat/boundary_nodes.csv') as csvFile:
   reader = csv.reader(csvFile)
   # next(elementscsv)
   for row in reader:
@@ -2356,7 +2356,7 @@ if (not TestFlow):
   CellMLShiv.CreateStart(cellMLUserNumberTissue,regionTissue)
 
   # Shivering model
-  ShiveringIdx = CellMLShiv.ModelImport("Shivering3.cellml")
+  ShiveringIdx = CellMLShiv.ModelImport("input/bioheat/CellML/Shivering3.cellml")
 
   # Flag for known and wanted variables
   # Variables imported from OpenCMISS
