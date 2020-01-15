@@ -15,5 +15,5 @@ data1
 test.F90
 valgrind-out.txt
 
-Bioheat/Serial/
-
+src/python/expected-results/Bioheat/Serial/MainTime*
+src/python/expected-results/Bioheat/n4/MainTime*
