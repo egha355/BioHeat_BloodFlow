@@ -1,7 +1,5 @@
 # geometry files
-boundary_nodes.csv
-elements2.csv
-nodes.csv
+
 
 # output Detalis
 output/
@@ -12,9 +10,10 @@ outputDiffusion/
 *~
 
 # temporary files
-
-
 data
 data1
 test.F90
 valgrind-out.txt
+
+Bioheat/Serial/
+
