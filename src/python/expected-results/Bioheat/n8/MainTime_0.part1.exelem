@@ -1,0 +1,93 @@
+ Group name: Energy
+ Shape.  Dimension=1
+ #Scale factor sets= 1
+ l.Lagrange, #Scale factors=2
+ #Nodes=           2
+ #Fields=6
+ 1) Artery Coordinates, coordinate, rectangular cartesian, #Components=3
+   x.   l.Lagrange, no modify, standard node based.
+     #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:   -1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:   -1
+   y.   l.Lagrange, no modify, standard node based.
+     #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:   -1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:   -1
+   z.   l.Lagrange, no modify, standard node based.
+     #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:   -1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:   -1
+ 2) Blood Temperature, field,  rectangular cartesian, #Components=1
+   1.   l.Lagrange, no modify, standard node based.
+     #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:   -1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:   -1
+ 3) Blood Temperature Gradient, field,  rectangular cartesian, #Components=1
+   1.   l.Lagrange, no modify, standard node based.
+     #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:   -1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:   -1
+ 4) Blood Properties, field,  rectangular cartesian, #Components=2
+   1.   constant, no modify, grid based.
+     #xi1=0
+   2.   constant, no modify, grid based.
+     #xi1=0
+ 5) Source, field,  rectangular cartesian, #Components=1
+   1.   constant, no modify, grid based.
+     #xi1=0
+ 6) , field,  rectangular cartesian, #Components=1
+   1.   l.Lagrange, no modify, standard node based.
+     #Nodes= 2
+     1.  #Values=1
+      Value indices:     1
+      Scale factor indices:   -1
+     2.  #Values=1
+      Value indices:     1
+      Scale factor indices:   -1
+ Element:            4 0 0
+   Values:
+     1.2814434178658840E-01
+     8.5986086033664227E-02
+     3.1814851832455764E+00
+   Nodes:
+           4           5
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            5 0 0
+   Values:
+     1.2814434178658840E-01
+     1.1659685483324106E-01
+     4.3140836288299189E+00
+   Nodes:
+           5           6
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00
+ Element:            16 0 0
+   Values:
+     1.2814434178658840E-01
+     1.4717016762469839E-01
+     5.4452962021138402E+00
+   Nodes:
+           6          17
+   Scale factors:
+     1.0000000000000000E+00   1.0000000000000000E+00

@@ -745,7 +745,7 @@ startTimeBioheat       = 0.0
 stopTimeBioheat        = 8200
 
 # Set the output parameters
-DYNAMIC_SOLVER_DIFFUSION_OUTPUT_FREQUENCY = 100
+DYNAMIC_SOLVER_DIFFUSION_OUTPUT_FREQUENCY = 1
 
 # Set the solver parameters
 #relativeTolerance   = 1.0E-05  # default: 1.0E-05

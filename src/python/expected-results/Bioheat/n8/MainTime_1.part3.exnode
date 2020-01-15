@@ -1,0 +1,33 @@
+ Group name: Energy
+ #Fields=4
+ 1) Artery Coordinates, coordinate, rectangular cartesian, #Components=3
+   x.  Value index= 1, #Derivatives= 0
+   y.  Value index= 2, #Derivatives= 0
+   z.  Value index= 3, #Derivatives= 0
+ 2) Blood Temperature, field,  rectangular cartesian, #Components=1
+   1.  Value index= 4, #Derivatives= 0
+ 3) Blood Temperature Gradient, field,  rectangular cartesian, #Components=1
+   1.  Value index= 5, #Derivatives= 0
+ 4) , field,  rectangular cartesian, #Components=1
+   1.  Value index= 6, #Derivatives= 0
+ Node:            10
+  2.5649000000000001E+02
+  -9.0242999999999995E+01
+  9.5423000000000002E+02
+  3.7000000000000000E+01
+  0.0000000000000000E+00
+  1.0000000000000000E+00
+ Node:            11
+  2.5676999999999998E+02
+  -8.5606999999999999E+01
+  9.3065999999999997E+02
+  3.7000000000000000E+01
+  0.0000000000000000E+00
+  1.0000000000000000E+00
+ Node:            12
+  2.5842000000000002E+02
+  -8.8335999999999999E+01
+  9.0540999999999997E+02
+  3.7000000000000000E+01
+  0.0000000000000000E+00
+  1.0000000000000000E+00
