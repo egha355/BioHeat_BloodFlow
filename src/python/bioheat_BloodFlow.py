@@ -122,8 +122,8 @@ meshOrigin = [0.0,0.0,0.0]
 # =================================
 # Only one of these could be true.
 TestFlow = False
-Bioheat = True
-CoupledBioheatFlow = False
+Bioheat = False
+CoupledBioheatFlow = True
 if (CoupledBioheatFlow):
   Bioheat = False
   TestFlow = False
@@ -701,51 +701,83 @@ if (CoupledBioheatFlow or TestFlow):
 # easily toggle kidney and see the results.
 # ===============================
 
+# =============== UNITS ==================
+
+# Base quantities units for the problem. The base units are SI units and corresponding values for them is 1
+Lsb  = 1000         # Length      (1000: m -> mm)
+Msb  = 1            # Mass        (kg)
+Tsb  = 1            # Time        (second)
+THsb = 1            # Temperature (Celcius)
+
+# Derived quantities units
+ACsb  = Lsb/(Tsb**2)           # Acceleration
+Nsb   = Msb*ACsb               # Force
+Esb   = Nsb*Lsb                # Energy
+POsb  = Esb/Tsb                 # Power
+
+# Ks   = Ms*Ls/(Ts**3*THs)    # Thermal conductivity 
+RHOsb = Msb/(Lsb**3)           # Density
+# CPs  = Ls**2/(Ts**2*THs)    # Specific heat
+# Hs   = Ms/(Ts**3*THs)       # Convection heat transfer coefficient
+Ksb = POsb/(Lsb*THsb)
+CPsb = Esb/(Msb*THsb)
+Hsb = POsb/(Lsb**2*THsb)
+
+# ==========================================
+
+# Set the time parameters
+#timeIncrement   = 0.5
+timeIncrementBioheat   = 10*Tsb
+startTimeBioheat       = 0.0*Tsb
+stopTimeBioheat        = 820*timeIncrementBioheat
+
+# Set the output parameters
+DYNAMIC_SOLVER_DIFFUSION_OUTPUT_FREQUENCY = 1
+
+
 # Artery =========
-k_bl               = 0.5*1e-3      # W/mm.K blood conductivity.
-rho_bl             = 1069.0*1e-9   # kg/mm3 blood density
-c_bl               = 3650.0        # J/Kg.K blood specific heat
-Alpha              = k_bl/(rho_bl*c_bl)       # mm2/s Diffusivity
+k_bl               = 0.5*Ksb      #  blood conductivity.
+rho_bl             = 1069.0*RHOsb   #  blood density
+c_bl               = 3650.0*CPsb       #  blood specific heat
+Alpha_b              = k_bl/(rho_bl*c_bl)       # Diffusivity
 # r                  = 1.5           # mm, inner radius of the artery
 # CArtery            = 4*Alpha/(r*r) # 0.27911 1/s
 # Tt                 = 37.0          # C
 
 # Tissue ==========
 
-rho_ms             = 1085.0*1e-9   # kg/mm3   muscle density
-c_ms               = 3768.0        # J/Kg.K   muscle specific heat
-rho_bn             = 1357.0*1e-9   # kg/mm3    bone density
-c_bn               = 1700.0        # J/Kg.K   bone specific heat
-rho_sk             = 1085.0*1e-9   # kg/mm3    skin density
-c_sk               = 3680.0        # J/Kg.K   skin specific heat
+rho_ms             = 1085.0*RHOsb   #   muscle density
+c_ms               = 3768.0*CPsb        # J/Kg.K   muscle specific heat
+rho_bn             = 1357.0*RHOsb   # kg/mm3    bone density
+c_bn               = 1700.0*CPsb        # J/Kg.K   bone specific heat
+rho_sk             = 1085.0*RHOsb   # kg/mm3    skin density
+c_sk               = 3680.0*CPsb        # J/Kg.K   skin specific heat
 
-k_ms               = 0.42*1e-3     # W/mm.K muscle conductivity.
-k_bn               = 0.75*1e-3     # W/mm.K bone conductivity.
-k_sk               = 0.47*1e-3     # W/mm.K skin conductivity.
+k_ms               = 0.42*Ksb     # W/mm.K muscle conductivity.
+k_bn               = 0.75*Ksb     # W/mm.K bone conductivity.
+k_sk               = 0.47*Ksb     # W/mm.K skin conductivity.
 
-h_conv             = 2.0*1e-6      # W/mm2.K
+h_conv             = 2.0*Hsb      # W/mm2.K
 #h_conv            = 200.0*1e-6    # W/mm2.K for water
-hr_rad             = 5.9*1e-6      # W/mm2.K See example 3.12 Incropera
+hr_rad             = 5.9*Hsb      # W/mm2.K See example 3.12 Incropera
 
 # R_arm              = 0.03          # m
 
-Tb                 = 37.0          # C blood temeprature
-Tair               = 17.7          # C
+Tb                 = 37.0*THsb          # C blood temeprature
+Tair               = 17.7*THsb          # C
 
-w                  = 5e-4          # 1/s terminal blood flow per volume of tissue.
+w                  = 5e-4*(1/Tsb)          # 1/s terminal blood flow per volume of tissue.
 
 cMuscle            = rho_bl*c_bl/(rho_ms*c_ms) *w   # 4.51128e-4 1/s
 
-cBone              = 0.0           #\see equations section
+cBone              = 0.0*CPsb           #\see equations section
+diff_ms            = k_ms/(rho_ms*c_ms)   # muscle diffusivity
+diff_bn            = k_bn/(rho_bn*c_bn)   # bone diffusivity
 
-# Set the time parameters
-#timeIncrement   = 0.5
-timeIncrementBioheat   = 10
-startTimeBioheat       = 0.0
-stopTimeBioheat        = 8200
+qm                 = 700*POsb/Lsb**3            # Basal metabolic heat
+# ================================================
 
-# Set the output parameters
-DYNAMIC_SOLVER_DIFFUSION_OUTPUT_FREQUENCY = 1
+
 
 # Set the solver parameters
 #relativeTolerance   = 1.0E-05  # default: 1.0E-05
@@ -880,7 +912,7 @@ if (CoupledBioheatFlow or TestFlow):
 
   # Set the time parameters
   numberOfPeriods = 1
-  timePeriod      = 800.0
+  timePeriod      = 1.1
   timeIncrement   = 0.1
   startTime       = 0.0
   stopTime  = numberOfPeriods*timePeriod
@@ -1443,14 +1475,10 @@ print( "Elapsed time before reading node file is: ", time.time()-t)
 FileName_node = "input/bioheat/nodes.csv"
 
 # X input file is mm. if you want to keep it that way you need to multiply k and rho*c by factors of 10^-3 and 10^-9 respectively.
-Units = 1e0
-kFactor= 1#1e-3
-rhoCFactor = 1#1e-9
-
-printHead = True
-printTail = True
-head = range(5)
-tail = range(numberOfNodes-4,numberOfNodes+1)
+# Units = 1e0
+# kFactor= 1#1e-3
+# rhoCFactor = 1#1e-9
+inputUnitsL=0.001*Lsb
 
 #nodePositions = False
 boundaryMarker=0
@@ -1467,9 +1495,9 @@ with open(FileName_node) as nodescsv:
       # for nodeIdx in range(numberOfLocalNodes):
       nodeNumber=nodeNumber+1
       # if(nodeNumber not in [23646,25193]):
-      x=float(row[0])
-      y=float(row[1])
-      z=float(row[2])
+      x=float(row[0])*inputUnitsL
+      y=float(row[1])*inputUnitsL
+      z=float(row[2])*inputUnitsL
       nodeDomain = decompositionTissue.NodeDomainGet(nodeNumber,1)
       if nodeDomain == computationalNodeNumber:
         geometricFieldTissue.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,1,
@@ -1713,7 +1741,7 @@ if (not TestFlow):
   equationsSetEnergy.DependentCreateFinish()
 
   # Initialise dependent field
-  dependentFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,37.0)
+  dependentFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,37.0*THsb)
 
   dependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
   dependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
@@ -1729,7 +1757,7 @@ if (not TestFlow):
   equationsSetTissue.DependentCreateFinish()
 
   # Initialise dependent field
-  dependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,36.3)
+  dependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,36.3*THsb)
 
   dependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
   dependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
@@ -1867,8 +1895,8 @@ if (not TestFlow):
   equationsSetEnergy.MaterialsCreateFinish()
 
   # Initialise the properties and source values
-  diffusivity=Alpha #+U*beta*le/2 #U*beta*le/2=0.000416667 almost 3000 times of the real diffusivity Pe=Ule/2a=0.2*0.05/12/2/0.0004=1
-  materialsFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,diffusivity)
+  diffusivity_b=Alpha_b #+U*beta*le/2 #U*beta*le/2=0.000416667 almost 3000 times of the real diffusivity Pe=Ule/2a=0.2*0.05/12/2/0.0004=1
+  materialsFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,diffusivity_b)
 
   for elemIdx in arteriesElements:
       elemDomain = decompositionEnergy.ElementDomainGet(elemIdx)
@@ -1943,11 +1971,11 @@ if (not TestFlow):
   #   elementNumber,4, cBone)
 
   materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,
-  k_ms*kFactor/(rho_ms*c_ms*rhoCFactor))
+  diff_ms)
   materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,2,
-  k_ms*kFactor/(rho_ms*c_ms*rhoCFactor))
+  diff_ms)
   materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,3,
-  k_ms*kFactor/(rho_ms*c_ms*rhoCFactor))
+  diff_ms)
   materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,4,cMuscle)
 
   materialsFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
@@ -2065,13 +2093,7 @@ if (not TestFlow):
 
   #FileName_cell = "MaxVol1000/ulnarArteryFromWholeUpLi"
 
-  #ulnarElementList=[]
-
-  #with open(FileName_cell, "r") as f:
-  #    target=f.readlines()
-  #    for lineNum,line in enumerate(target):
-  #        target[lineNum] = target[lineNum].rstrip('\n\r').replace("\t"," ").replace(","," ").split()
-  #    for lineNum,line in enumerate(target):
+  #ulnarElementList=[]Materials F
   #        if lineNum !=0:
   #          ulnarElementList.append(int(target[lineNum][0])+1) # plus one because we are taking vtk numbers and we need to add 1.
 
@@ -2120,7 +2142,7 @@ if (not TestFlow):
   #       sourceFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,0.0)
 
   sourceFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,
-  700.0e-9/(rho_ms*c_ms)+cMuscle*Tb)  # source=qm/rhoC+CTb-CT
+  qm/(rho_ms*c_ms)+cMuscle*Tb)  # source=qm/rhoC+CTb-CT
 
   #for elementNumber in ulnarElementList:
   #    elementDomain = decomposition.ElementDomainGet(elementNumber)
@@ -2219,9 +2241,9 @@ if (not TestFlow):
 
   # Set the parameters
   IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-    1,37.0)
+    1,37.0*THsb)
   IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-    2,37.0)
+    2,37.0*THsb)
   IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
     3,1)
 
@@ -3252,7 +3274,7 @@ if (CoupledBioheatFlow or Bioheat):
   nodeDomain = decompositionEnergy.NodeDomainGet(1,1)
   if nodeDomain == computationalNodeNumber:
       boundaryConditionsEnergy.SetNode(dependentFieldEnergy,iron.FieldVariableTypes.U,1,1,1,1,
-          iron.BoundaryConditionsTypes.FIXED,[37.0])
+          iron.BoundaryConditionsTypes.FIXED,[37.0*THsb])
 
   dependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
   dependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
@@ -3272,7 +3294,7 @@ if (CoupledBioheatFlow or Bioheat):
   hUnit   = 1#1e-6
 
 
-  Rtot=1/((h_conv+hr_rad)*hUnit)+3/k_sk # units terms has mm2 so no 1e6.
+  Rtot=1/((h_conv+hr_rad))+3/k_sk # units
 
   for nodeNumber in boundaryTissue:
     nodeDomain = decompositionTissue.NodeDomainGet(nodeNumber,1)
@@ -3280,7 +3302,7 @@ if (CoupledBioheatFlow or Bioheat):
       dependentFieldTissue.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
         1,1,nodeNumber,1,20.0)
       boundaryConditionsTissue.SetNode(dependentFieldTissue,iron.FieldVariableTypes.DELUDELN,1,1,nodeNumber,1,
-        iron.BoundaryConditionsTypes.ROBIN,[1.0/(rho_sk*c_sk*rhoCFactor*Rtot),1.0/(rho_sk*c_sk*rhoCFactor*Rtot)* Tair])
+        iron.BoundaryConditionsTypes.ROBIN,[1.0/(rho_sk*c_sk*Rtot),1.0/(rho_sk*c_sk*Rtot)* Tair])
 
 
   dependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
