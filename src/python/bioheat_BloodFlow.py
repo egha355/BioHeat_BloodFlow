@@ -708,12 +708,13 @@ Lsb  = 1000         # Length      (1000: m -> mm)
 Msb  = 1            # Mass        (kg)
 Tsb  = 1            # Time        (second)
 THsb = 1            # Temperature (Celcius)
-
+Esb  = 1            # Energy      (J)
+POsb = 1            # Power       (W)
 # Derived quantities units
-ACsb  = Lsb/(Tsb**2)           # Acceleration
-Nsb   = Msb*ACsb               # Force
-Esb   = Nsb*Lsb                # Energy
-POsb  = Esb/Tsb                 # Power
+# ACsb  = Lsb/(Tsb**2)           # Acceleration
+# Nsb   = Msb*ACsb               # Force
+# Esb   = Nsb*Lsb                # Energy
+# POsb  = Esb/Tsb                 # Power
 
 # Ks   = Ms*Ls/(Ts**3*THs)    # Thermal conductivity 
 RHOsb = Msb/(Lsb**3)           # Density
@@ -729,7 +730,7 @@ Hsb = POsb/(Lsb**2*THsb)
 #timeIncrement   = 0.5
 timeIncrementBioheat   = 10*Tsb
 startTimeBioheat       = 0.0*Tsb
-stopTimeBioheat        = 820*timeIncrementBioheat
+stopTimeBioheat        = 200*timeIncrementBioheat
 
 # Set the output parameters
 DYNAMIC_SOLVER_DIFFUSION_OUTPUT_FREQUENCY = 1
@@ -1200,7 +1201,7 @@ meshComponentNumber = 1
 meshElementsTissue.CreateStart(meshTissue, meshComponentNumber, basisTissue)
 
 
-print( "Elapsed time before reading ele file is: ", time.time()-t)
+# print( "Elapsed time before reading ele file is: ", time.time()-t)
 # reading elements and its local Nodes and setting elements.Nodes
 with open('input/bioheat/elements2.csv') as elementscsv:
   reader = csv.reader(elementscsv)
@@ -1217,7 +1218,7 @@ with open('input/bioheat/elements2.csv') as elementscsv:
       elif materialType == kidneyRight:
         kidneyElementsRight.append(elementNumber)
       meshElementsTissue.NodesSet(elementNumber,localNodes)
-print(kidneyElementsLeft[1],kidneyElementsRight[1],'Hi',len(kidneyElementsLeft),len(kidneyElementsRight))
+# print(kidneyElementsLeft[1],kidneyElementsRight[1],'Hi',len(kidneyElementsLeft),len(kidneyElementsRight))
 # elementscsv.close
 # with open(FileName_ele, "r") as f:
 #     target=f.readlines()
@@ -1252,7 +1253,7 @@ print(kidneyElementsLeft[1],kidneyElementsRight[1],'Hi',len(kidneyElementsLeft),
 # print( "number of muscle Elements = %d\nnumber of left Ulna elements = %d\ntotal number of elements = %d\n"%(len(muscleElements)
 # ,len(leftUlnaElements),len(muscleElements)+len(leftRadiusElements)+len(leftHumerusElements)+len(leftUlnaElements)))
 
-print( "Elapsed time after reading ele file is: ", time.time()-t)
+# print( "Elapsed time after reading ele file is: ", time.time()-t)
 #input("Press Enter to continue...")
 
 
@@ -1467,10 +1468,10 @@ geometricFieldTissue.CreateFinish()
 nodes = iron.Nodes()
 regionTissue.NodesGet(nodes)
 numberOfNodes = nodes.numberOfNodes
-print( numberOfNodes)
+# print( numberOfNodes)
 # Get or calculate geometric Parameters
 
-print( "Elapsed time before reading node file is: ", time.time()-t)
+# print( "Elapsed time before reading node file is: ", time.time()-t)
 
 FileName_node = "input/bioheat/nodes.csv"
 
@@ -1545,7 +1546,7 @@ with open('input/bioheat/boundary_nodes.csv') as csvFile:
 
 print( "number of boundary nodes = %d"%len(boundaryTissue))
 
-print( "Elapsed time after reading node file is: ", time.time()-t)
+# print( "Elapsed time after reading node file is: ", time.time()-t)
 
 # Update the geometric field
 geometricFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
@@ -1902,7 +1903,7 @@ if (not TestFlow):
       elemDomain = decompositionEnergy.ElementDomainGet(elemIdx)
       if elemDomain == computationalNodeNumber:
           # ra=(radius[elemIdx-1]+radius[elemIdx])/2
-          cArtery=4*Alpha/ra[elemIdx-1]**2
+          cArtery=4*Alpha_b/ra[elemIdx-1]**2
           materialsFieldEnergy.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
     elemIdx,2, cArtery)
 
@@ -2113,7 +2114,7 @@ if (not TestFlow):
       elemDomain = decompositionEnergy.ElementDomainGet(elemIdx)
       if elemDomain == computationalNodeNumber:
           # ra=(radius[elemIdx-1]+radius[elemIdx])/2
-          cArtery=4*Alpha/ra[elemIdx-1]**2
+          cArtery=4*Alpha_b/ra[elemIdx-1]**2
           sourceFieldEnergy.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elemIdx,1,cArtery*Tt[elemIdx])
 
   sourceFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
@@ -2141,8 +2142,24 @@ if (not TestFlow):
   #     if elementDomain == computationalNodeNumber:
   #       sourceFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elementNumber,1,0.0)
 
-  sourceFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,
-  qm/(rho_ms*c_ms)+cMuscle*Tb)  # source=qm/rhoC+CTb-CT
+
+#   sourceFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,
+#   qm/(rho_ms*c_ms)+cMuscle*Tb)  # source=qm/rhoC+CTb-CT
+
+#   delT = 0.3 #Celcius
+#   L_artery=10 #mm
+#   Velement=5*5*5/6 #mm^3
+#   flux=4*k_ms*delT*3.14*L_artery
+#   fluxperVol=flux/Velement
+#   elementDomain = decompositionTissue.ElementDomainGet(232137)
+#   print("element domain for 232137",elementDomain)
+#   print(qm,fluxperVol)
+#   if elementDomain == computationalNodeNumber:
+#     sourceFieldTissue.ParameterSetUpdateElementDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,232137,1,
+#     qm/(rho_ms*c_ms)+cMuscle*Tb+fluxperVol/(rho_ms*c_ms))  # source=qm/rhoC+CTb-CT
+
+
+
 
   #for elementNumber in ulnarElementList:
   #    elementDomain = decomposition.ElementDomainGet(elementNumber)
