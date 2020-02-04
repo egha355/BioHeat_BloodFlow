@@ -121,9 +121,9 @@ meshOrigin = [0.0,0.0,0.0]
 #if (CoupledBioheatFlow or TestFlow):
 # =================================
 # Only one of these could be true.
-TestFlow = False
+TestFlow = True
 Bioheat = False
-CoupledBioheatFlow = True
+CoupledBioheatFlow = False
 if (CoupledBioheatFlow):
   Bioheat = False
   TestFlow = False
@@ -746,7 +746,7 @@ Alpha_b              = k_bl/(rho_bl*c_bl)       # Diffusivity
 # Tt                 = 37.0          # C
 
 # Tissue ==========
-
+# Be careful these parameters should be consistent with the values in cellML model. Even slightly differece can make a big error.
 rho_ms             = 1085.0*RHOsb   #   muscle density
 c_ms               = 3768.0*CPsb        # J/Kg.K   muscle specific heat
 rho_bn             = 1357.0*RHOsb   # kg/mm3    bone density
@@ -766,7 +766,7 @@ hr_rad             = 5.9*Hsb      # W/mm2.K See example 3.12 Incropera
 
 Tb                 = 37.0*THsb          # C blood temeprature
 Tair               = 17.7*THsb          # C
-
+                                        
 w                  = 5e-4*(1/Tsb)          # 1/s terminal blood flow per volume of tissue.
 
 cMuscle            = rho_bl*c_bl/(rho_ms*c_ms) *w   # 4.51128e-4 1/s
@@ -913,7 +913,7 @@ if (CoupledBioheatFlow or TestFlow):
 
   # Set the time parameters
   numberOfPeriods = 1
-  timePeriod      = 1.1
+  timePeriod      = 1000
   timeIncrement   = 0.1
   startTime       = 0.0
   stopTime  = numberOfPeriods*timePeriod

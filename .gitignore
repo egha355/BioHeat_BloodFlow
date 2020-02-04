@@ -17,3 +17,8 @@ valgrind-out.txt
 
 src/python/expected-results/Bioheat/Serial/MainTime*
 src/python/expected-results/Bioheat/n4/MainTime*
+
+ambient0/
+ambient24/
+
+data23
