@@ -115,15 +115,14 @@ ProgressDiagnostics = False   # Set to diagnostics
 # tissueEnergySolve = True  # Set to solve energy equation
 meshOrigin = [0.0,0.0,0.0]
 
-
 # =================================
 # F L O W
 #if (CoupledBioheatFlow or TestFlow):
 # =================================
 # Only one of these could be true.
-TestFlow = True
+TestFlow = False
 Bioheat = False
-CoupledBioheatFlow = False
+CoupledBioheatFlow = True
 if (CoupledBioheatFlow):
   Bioheat = False
   TestFlow = False
@@ -265,135 +264,135 @@ if (CoupledBioheatFlow or TestFlow):
 
 # LENGTH = 0.5 # m
 # numberGlobalXElements = 192
-numberOfNodesEnergy    = 26
-numberOfElementsEnergy = 25
+# numberOfNodesEnergy    = 26
+# numberOfElementsEnergy = 25
 
 #ELEMENTS
-elementNodesEnergy= (numberOfElementsEnergy)*[2*[0]]
-#Brachial artery
-elementNodesEnergy[0]=[1,2]
-elementNodesEnergy[1]=[2,3]
-elementNodesEnergy[2]=[3,4]
-elementNodesEnergy[3]=[4,5]
-elementNodesEnergy[4]=[5,6]
+# elementNodesEnergy= (numberOfElementsEnergy)*[2*[0]]
+# #Brachial artery
+# elementNodesEnergy[0]=[1,2]
+# elementNodesEnergy[1]=[2,3]
+# elementNodesEnergy[2]=[3,4]
+# elementNodesEnergy[3]=[4,5]
+# elementNodesEnergy[4]=[5,6]
 
-#Radial
-elementNodesEnergy[5] =[6,7]
-elementNodesEnergy[6] =[7,8]
-elementNodesEnergy[7] =[8,9]
-elementNodesEnergy[8] =[9,10]
-elementNodesEnergy[9]=[10,11]
-elementNodesEnergy[10]=[11,12]
-elementNodesEnergy[11]=[12,13]
-elementNodesEnergy[12]=[13,14]
-elementNodesEnergy[13]=[14,15]
-elementNodesEnergy[14]=[15,16]
+# #Radial
+# elementNodesEnergy[5] =[6,7]
+# elementNodesEnergy[6] =[7,8]
+# elementNodesEnergy[7] =[8,9]
+# elementNodesEnergy[8] =[9,10]
+# elementNodesEnergy[9]=[10,11]
+# elementNodesEnergy[10]=[11,12]
+# elementNodesEnergy[11]=[12,13]
+# elementNodesEnergy[12]=[13,14]
+# elementNodesEnergy[13]=[14,15]
+# elementNodesEnergy[14]=[15,16]
 
-#Ulnar
-elementNodesEnergy[15]=[6,17]
-elementNodesEnergy[16]=[17,18]
-elementNodesEnergy[17]=[18,19]
-elementNodesEnergy[18]=[19,20]
-elementNodesEnergy[19]=[20,21]
-elementNodesEnergy[20]=[21,22]
-elementNodesEnergy[21]=[22,23]
-elementNodesEnergy[22]=[23,24]
-elementNodesEnergy[23]=[24,25]
-elementNodesEnergy[24]=[25,26]
+# #Ulnar
+# elementNodesEnergy[15]=[6,17]
+# elementNodesEnergy[16]=[17,18]
+# elementNodesEnergy[17]=[18,19]
+# elementNodesEnergy[18]=[19,20]
+# elementNodesEnergy[19]=[20,21]
+# elementNodesEnergy[20]=[21,22]
+# elementNodesEnergy[21]=[22,23]
+# elementNodesEnergy[22]=[23,24]
+# elementNodesEnergy[23]=[24,25]
+# elementNodesEnergy[24]=[25,26]
 
 #NODES
-xValues = numpy.zeros((numberOfNodesEnergy,1),dtype = numpy.float)
-yValues = numpy.zeros((numberOfNodesEnergy,1),dtype = numpy.float)
-zValues = numpy.zeros((numberOfNodesEnergy,1),dtype = numpy.float)
-radius= (numberOfNodesEnergy)*[1*[0]]
-ra=(numberOfElementsEnergy)*[1*[0]]
-Tt= (numberOfNodesEnergy)*[1*[0]]
-#brachial artery
-xValues[0]=152.12 #mm
-xValues[1]=164.04
-xValues[2]=179
-xValues[3]=187.37
-xValues[4]=195.89
-xValues[5]=215.5
+# xValues = numpy.zeros((numberOfNodesEnergy,1),dtype = numpy.float)
+# yValues = numpy.zeros((numberOfNodesEnergy,1),dtype = numpy.float)
+# zValues = numpy.zeros((numberOfNodesEnergy,1),dtype = numpy.float)
+# radius= (numberOfNodesEnergy)*[1*[0]]
+# ra=(numberOfElementsEnergy)*[1*[0]]
+# Tt= (numberOfNodesEnergy)*[1*[0]]
+# #brachial artery
+# xValues[0]=152.12 #mm
+# xValues[1]=164.04
+# xValues[2]=179
+# xValues[3]=187.37
+# xValues[4]=195.89
+# xValues[5]=215.5
 
-yValues[0]=-80.904
-yValues[1]=-76.816
-yValues[2]=-76.099
-yValues[3]=-82.713
-yValues[4]=-86.659
-yValues[5]=-85.043
+# yValues[0]=-80.904
+# yValues[1]=-76.816
+# yValues[2]=-76.099
+# yValues[3]=-82.713
+# yValues[4]=-86.659
+# yValues[5]=-85.043
 
-zValues[0]=1243.4
-zValues[1]=1214.5
-zValues[2]=1171
-zValues[3]=1123
-zValues[4]=1073.7
-zValues[5]=1022.5
+# zValues[0]=1243.4
+# zValues[1]=1214.5
+# zValues[2]=1171
+# zValues[3]=1123
+# zValues[4]=1073.7
+# zValues[5]=1022.5
 
-radius[0]=3.3062 #mm
-radius[1]=3.1344
-radius[2]=2.8703
-radius[3]=2.5923
-radius[4]=2.2908
-radius[5]=1.9026
+# radius[0]=3.3062 #mm
+# radius[1]=3.1344
+# radius[2]=2.8703
+# radius[3]=2.5923
+# radius[4]=2.2908
+# radius[5]=1.9026
 
-Tt[0]=37.0 #C
-#Tt[1]=36.77
-Tt[1]=37.0
-# Tt[2]=36.67
-Tt[2]=37.0
-#Tt[3]=36.57
-Tt[3]=37.0
-# Tt[4]=36.47
-Tt[4]=37.0
-# Tt[5]=36.37
-Tt[5]=37.0
+# Tt[0]=37.0 #C
+# #Tt[1]=36.77
+# Tt[1]=37.0
+# # Tt[2]=36.67
+# Tt[2]=37.0
+# #Tt[3]=36.57
+# Tt[3]=37.0
+# # Tt[4]=36.47
+# Tt[4]=37.0
+# # Tt[5]=36.37
+# Tt[5]=37.0
 
-#Radial
-# le   = xValues[1][0]
-xValues[6] =227.3
-xValues[7] =239.54
-xValues[8] =250.22
-xValues[9] =256.49
-xValues[10]=256.77
-xValues[11]=258.42
-xValues[12]=262.93
-xValues[13]=267.01
-xValues[14]=270.44
-xValues[15]=278.41
+# #Radial
+# # le   = xValues[1][0]
+# xValues[6] =227.3
+# xValues[7] =239.54
+# xValues[8] =250.22
+# xValues[9] =256.49
+# xValues[10]=256.77
+# xValues[11]=258.42
+# xValues[12]=262.93
+# xValues[13]=267.01
+# xValues[14]=270.44
+# xValues[15]=278.41
 
-yValues[6] =-90.085
-yValues[7] =-93.529
-yValues[8] =-93.818
-yValues[9] =-90.243
-yValues[10]=-85.607
-yValues[11]=-88.336
-yValues[12]=-100.68
-yValues[13]=-115.58
-yValues[14]=-121.21
-yValues[15]=-119.14
+# yValues[6] =-90.085
+# yValues[7] =-93.529
+# yValues[8] =-93.818
+# yValues[9] =-90.243
+# yValues[10]=-85.607
+# yValues[11]=-88.336
+# yValues[12]=-100.68
+# yValues[13]=-115.58
+# yValues[14]=-121.21
+# yValues[15]=-119.14
 
-zValues[6] =1008.6
-zValues[7] =992.83
-zValues[8] =975.58
-zValues[9] =954.23
-zValues[10]=930.66
-zValues[11]=905.41
-zValues[12]=877.61
-zValues[13]=852.92
-zValues[14]=823.34
-zValues[15]=792.14
+# zValues[6] =1008.6
+# zValues[7] =992.83
+# zValues[8] =975.58
+# zValues[9] =954.23
+# zValues[10]=930.66
+# zValues[11]=905.41
+# zValues[12]=877.61
+# zValues[13]=852.92
+# zValues[14]=823.34
+# zValues[15]=792.14
 
-radius[6] =1.8158 #mm
-radius[7] =1.7652
-radius[8] =1.7176
-radius[9] =1.6593
-radius[10]=1.6072
-radius[11]=1.5359
-radius[12]=1.4673
-radius[13]=1.3942
-radius[14]=1.305
-radius[15]=0.93851
+# radius[6] =1.8158 #mm
+# radius[7] =1.7652
+# radius[8] =1.7176
+# radius[9] =1.6593
+# radius[10]=1.6072
+# radius[11]=1.5359
+# radius[12]=1.4673
+# radius[13]=1.3942
+# radius[14]=1.305
+# radius[15]=0.93851
 
 #Tt[6] =36.26
 # Tt[6]=37.0
@@ -408,49 +407,49 @@ radius[15]=0.93851
 # Tt[15]=35.70
 
 #Ulnar
-xValues[16]=213.85
-xValues[17]=212.98
-xValues[18]=213.25
-xValues[19]=214.23
-xValues[20]=215.15
-xValues[21]=221.02
-xValues[22]=228.77
-xValues[23]=235.44
-xValues[24]=239.83
-xValues[25]=242.49
+# xValues[16]=213.85
+# xValues[17]=212.98
+# xValues[18]=213.25
+# xValues[19]=214.23
+# xValues[20]=215.15
+# xValues[21]=221.02
+# xValues[22]=228.77
+# xValues[23]=235.44
+# xValues[24]=239.83
+# xValues[25]=242.49
 
-yValues[16]=-80.244
-yValues[17]=-78.828
-yValues[18]=-85.493
-yValues[19]=-96.217
-yValues[20]=-101.56
-yValues[21]=-105.22
-yValues[22]=-111.98
-yValues[23]=-121.22
-yValues[24]=-128.52
-yValues[25]=-128.92
+# yValues[16]=-80.244
+# yValues[17]=-78.828
+# yValues[18]=-85.493
+# yValues[19]=-96.217
+# yValues[20]=-101.56
+# yValues[21]=-105.22
+# yValues[22]=-111.98
+# yValues[23]=-121.22
+# yValues[24]=-128.52
+# yValues[25]=-128.92
 
-zValues[16]=1009.5
-zValues[17]=999.14
-zValues[18]=982.26
-zValues[19]=962.45
-zValues[20]=928.98
-zValues[21]=893.59
-zValues[22]=868.46
-zValues[23]=844.1
-zValues[24]=820.37
-zValues[25]=795.86
+# zValues[16]=1009.5
+# zValues[17]=999.14
+# zValues[18]=982.26
+# zValues[19]=962.45
+# zValues[20]=928.98
+# zValues[21]=893.59
+# zValues[22]=868.46
+# zValues[23]=844.1
+# zValues[24]=820.37
+# zValues[25]=795.86
 
-radius[16]=1.8299
-radius[17]=1.797
-radius[18]=1.7584
-radius[19]=1.6931
-radius[20]=1.6111
-radius[21]=1.5121
-radius[22]=1.4446
-radius[23]=1.3709
-radius[24]=1.3085
-radius[25]=1.1698
+# radius[16]=1.8299
+# radius[17]=1.797
+# radius[18]=1.7584
+# radius[19]=1.6931
+# radius[20]=1.6111
+# radius[21]=1.5121
+# radius[22]=1.4446
+# radius[23]=1.3709
+# radius[24]=1.3085
+# radius[25]=1.1698
 
 # Tt[16]=36.26
 # Tt[17]=36.20
@@ -463,33 +462,33 @@ radius[25]=1.1698
 # Tt[24]=35.76
 # Tt[25]=35.70
 
-for nodeIdx in range(numberOfNodesEnergy):
-    Tt[nodeIdx]=37 #C
+# for nodeIdx in range(numberOfNodesEnergy):
+#     Tt[nodeIdx]=37 #C
 
-arteriesElements=range(1,numberOfElementsEnergy+1)
+# arteriesElements=range(1,numberOfElementsEnergy+1)
 
-for elemIdx in range(numberOfElementsEnergy):
-    ra[elemIdx]=(radius[elemIdx]+radius[elemIdx+1])/2
+# for elemIdx in range(numberOfElementsEnergy):
+#     ra[elemIdx]=(radius[elemIdx]+radius[elemIdx+1])/2
 
-ra[15]=(radius[5]+radius[16])/2 #ulnar nodes in bifurcation is different
+# ra[15]=(radius[5]+radius[16])/2 #ulnar nodes in bifurcation is different
 
 # print(ra)
-def elementLength(p1,p2):
-    length=math.sqrt((p1[0]-p2[0])**2+(p1[1]-p2[1])**2+(p1[2]-p2[2])**2)
-    return length
+# def elementLength(p1,p2):
+#     length=math.sqrt((p1[0]-p2[0])**2+(p1[1]-p2[1])**2+(p1[2]-p2[2])**2)
+#     return length
 
-le= (numberOfElementsEnergy)*[1*[0]]
-for i in range(numberOfElementsEnergy):
-    p1=[xValues[i],yValues[i],zValues[i]]
-    p2=[xValues[i+1],yValues[i+1],zValues[i+1]]
-    le[i]=elementLength(p1,p2) #mm
+# le= (numberOfElementsEnergy)*[1*[0]]
+# for i in range(numberOfElementsEnergy):
+#     p1=[xValues[i],yValues[i],zValues[i]]
+#     p2=[xValues[i+1],yValues[i+1],zValues[i+1]]
+#     le[i]=elementLength(p1,p2) #mm
 
-brachialElements=[1,2,3,4,5]
-radialElements  =[6,7,8,9,10,11,12,13,14,15]
-ulnarElements   =[16,17,18,19,20,21,22,23,24,25]
-xValuesEnergy=xValues
-yValuesEnergy=yValues
-zValuesEnergy=zValues
+# brachialElements=[1,2,3,4,5]
+# radialElements  =[6,7,8,9,10,11,12,13,14,15]
+# ulnarElements   =[16,17,18,19,20,21,22,23,24,25]
+# xValuesEnergy=xValues
+# yValuesEnergy=yValues
+# zValuesEnergy=zValues
 # # ================ VTK to csv file =================
 # def vtkTocsv():
 #   vtkFile='body.1.vtk'
@@ -677,6 +676,8 @@ if (CoupledBioheatFlow or TestFlow):
       print( " Trifurcations at nodes: " + str(trifurcationNodeNumber))
       print( " Terminal at nodes: " + str(coupledNodeNumber))
       print( " == >> Finished reading geometry... << == ")
+
+
 # =================================
 
 #================================================================================================================================
@@ -776,6 +777,7 @@ diff_ms            = k_ms/(rho_ms*c_ms)   # muscle diffusivity
 diff_bn            = k_bn/(rho_bn*c_bn)   # bone diffusivity
 
 qm                 = 700*POsb/Lsb**3            # Basal metabolic heat
+Nu                 = 4.0                        # Nusselt number for artery
 # ================================================
 
 
@@ -790,6 +792,7 @@ MAXIMUM_ITERATIONS   = 1000   # default: 100000
 # =================================
 # F L O W
 if (CoupledBioheatFlow or TestFlow):
+
   # Set the material parameters
   Rho  = 1050.0                                 # Rho         (kg/m3)
   Mu   = 0.004                                  # Mu          (Pa.s)
@@ -913,7 +916,7 @@ if (CoupledBioheatFlow or TestFlow):
 
   # Set the time parameters
   numberOfPeriods = 1
-  timePeriod      = 1000
+  timePeriod      = 0.1 # 1 cycle is 1000 ms.
   timeIncrement   = 0.1
   startTime       = 0.0
   stopTime  = numberOfPeriods*timePeriod
@@ -997,6 +1000,8 @@ if (CoupledBioheatFlow or TestFlow):
           EquationsSetCharacteristicSubtype = iron.EquationsSetSubtypes.CHARACTERISTIC
           if (TestFlow):
             ProblemSubtype = iron.ProblemSubtypes.TRANSIENT1D_NAVIER_STOKES
+
+equationsSetEnergySubtype = iron.EquationsSetSubtypes.ADVECTION_DIFFUSION            
 # =================================
 if (Bioheat):
   # Navier-Stokes solver
@@ -1034,11 +1039,11 @@ if (ProgressDiagnostics):
     print( " == >> COORDINATE SYSTEM << == ")
 
 # Start the creation of Energy region
-regionEnergy = iron.Region()
-regionEnergy.CreateStart(regionUserNumberEnergy,iron.WorldRegion)
-regionEnergy.LabelSet("Energy")
-regionEnergy.CoordinateSystemSet(CoordinateSystem)
-regionEnergy.CreateFinish()
+# regionEnergy = iron.Region()
+# regionEnergy.CreateStart(regionUserNumberEnergy,iron.WorldRegion)
+# regionEnergy.LabelSet("Energy")
+# regionEnergy.CoordinateSystemSet(CoordinateSystem)
+# regionEnergy.CreateFinish()
 
 # Start the creation of Tissue region
 regionTissue = iron.Region()
@@ -1075,14 +1080,14 @@ if (ProgressDiagnostics):
     print( " == >> BASIS << == ")
 
 # Start the creation of bases for blood energy equaiton
-basisXiGaussSpace = 3
-basisEnergy = iron.Basis()
-basisEnergy.CreateStart(basisUserNumberEnergy)
-basisEnergy.TypeSet(iron.BasisTypes.LAGRANGE_HERMITE_TP)
-basisEnergy.NumberOfXiSet(numberOfDimensionsEnergy)
-basisEnergy.InterpolationXiSet([iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE])
-basisEnergy.QuadratureNumberOfGaussXiSet([basisXiGaussSpace])
-basisEnergy.CreateFinish()
+# basisXiGaussSpace = 3
+# basisEnergy = iron.Basis()
+# basisEnergy.CreateStart(basisUserNumberEnergy)
+# basisEnergy.TypeSet(iron.BasisTypes.LAGRANGE_HERMITE_TP)
+# basisEnergy.NumberOfXiSet(numberOfDimensionsEnergy)
+# basisEnergy.InterpolationXiSet([iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE])
+# basisEnergy.QuadratureNumberOfGaussXiSet([basisXiGaussSpace])
+# basisEnergy.CreateFinish()
 
 
 # Create a tri-linear Simplex basis
@@ -1128,9 +1133,9 @@ if (ProgressDiagnostics):
     print( " == >> NODES << == ")
 #
 # # Start the creation of mesh nodes
-NodesEnergy = iron.Nodes()
-NodesEnergy.CreateStart(regionEnergy,numberOfNodesEnergy)
-NodesEnergy.CreateFinish()
+# NodesEnergy = iron.Nodes()
+# NodesEnergy.CreateStart(regionEnergy,numberOfNodesEnergy)
+# NodesEnergy.CreateFinish()
 
 # Define nodes for the tissue mesh
 nodesTissue = iron.Nodes()
@@ -1171,21 +1176,21 @@ if (ProgressDiagnostics):
 #
 # meshEnergy = iron.Mesh()
 # generatedMesh.CreateFinish(meshUserNumberEnergy,meshEnergy)
-meshEnergy = iron.Mesh()
-meshEnergy.CreateStart(meshUserNumberEnergy,regionEnergy,3)
-meshEnergy.NumberOfElementsSet(numberOfElementsEnergy)
-meshEnergy.NumberOfComponentsSet(1)
+# meshEnergy = iron.Mesh()
+# meshEnergy.CreateStart(meshUserNumberEnergy,regionEnergy,3)
+# meshEnergy.NumberOfElementsSet(numberOfElementsEnergy)
+# meshEnergy.NumberOfComponentsSet(1)
 
 # Start the creation of mesh elements for energy
-meshElementsEnergy  = iron.MeshElements()
-meshComponentNumber = 1
-meshElementsEnergy.CreateStart(meshEnergy,meshComponentNumber,basisEnergy)
+# meshElementsEnergy  = iron.MeshElements()
+# meshComponentNumber = 1
+# meshElementsEnergy.CreateStart(meshEnergy,meshComponentNumber,basisEnergy)
 
-for elemIdx in range(0,numberOfElementsEnergy):
-    meshElementsEnergy.NodesSet(elemIdx+1,elementNodesEnergy[elemIdx])
-meshElementsEnergy.CreateFinish()
+# for elemIdx in range(0,numberOfElementsEnergy):
+#     meshElementsEnergy.NodesSet(elemIdx+1,elementNodesEnergy[elemIdx])
+# meshElementsEnergy.CreateFinish()
 
-meshEnergy.CreateFinish()
+# meshEnergy.CreateFinish()
 
 
 # Start the creation of tissue mesh
@@ -1367,12 +1372,12 @@ if (ProgressDiagnostics):
     print( " == >> MESH DECOMPOSITION << == ")
 
 # Create a decomposition for artery energy mesh
-decompositionEnergy = iron.Decomposition()
-decompositionEnergy.CreateStart(decompositionUserNumberEnergy,meshEnergy)
-decompositionEnergy.TypeSet(iron.DecompositionTypes.CALCULATED)
-decompositionEnergy.NumberOfDomainsSet(numberOfComputationalNodes)
-# decompositionEnergy.CalculateFacesSet(True)
-decompositionEnergy.CreateFinish()
+# decompositionEnergy = iron.Decomposition()
+# decompositionEnergy.CreateStart(decompositionUserNumberEnergy,meshEnergy)
+# decompositionEnergy.TypeSet(iron.DecompositionTypes.CALCULATED)
+# decompositionEnergy.NumberOfDomainsSet(numberOfComputationalNodes)
+# # decompositionEnergy.CalculateFacesSet(True)
+# decompositionEnergy.CreateFinish()
 
 # Start the creation of Tissue mesh decomposition =======
 decompositionTissue = iron.Decomposition()
@@ -1415,38 +1420,38 @@ if (ProgressDiagnostics):
     print( " == >> GEOMETRIC FIELD << == ")
 
 # Start the creation of geometric field for artery energy
-geometricFieldEnergy = iron.Field()
-geometricFieldEnergy.CreateStart(geometricFieldUserNumberEnergy,regionEnergy)
-geometricFieldEnergy.LabelSet('Geometric Field')
-geometricFieldEnergy.MeshDecompositionSet(decompositionEnergy)
-geometricFieldEnergy.NumberOfVariablesSet(1)
-geometricFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'Artery Coordinates')
-geometricFieldEnergy.TypeSet(iron.FieldTypes.GEOMETRIC)
-geometricFieldEnergy.ScalingTypeSet(iron.FieldScalingTypes.NONE)
+# geometricFieldEnergy = iron.Field()
+# geometricFieldEnergy.CreateStart(geometricFieldUserNumberEnergy,regionEnergy)
+# geometricFieldEnergy.LabelSet('Geometric Field')
+# geometricFieldEnergy.MeshDecompositionSet(decompositionEnergy)
+# geometricFieldEnergy.NumberOfVariablesSet(1)
+# geometricFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'Artery Coordinates')
+# geometricFieldEnergy.TypeSet(iron.FieldTypes.GEOMETRIC)
+# geometricFieldEnergy.ScalingTypeSet(iron.FieldScalingTypes.NONE)
 
-for componentNumber in range(1,CoordinateSystem.dimension+1):
-    geometricFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,componentNumber,1)
+# for componentNumber in range(1,CoordinateSystem.dimension+1):
+#     geometricFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,componentNumber,1)
 # geometricFieldEnergy.CreateFinish()
 # generatedMesh.GeometricParametersCalculate(geometricFieldEnergy)
 
-geometricFieldEnergy.CreateFinish()
+# geometricFieldEnergy.CreateFinish()
 
 # Set the geometric field values for version 1
-versionIdx = 1
-derivIdx = 1
-for nodeIdx in range(0,numberOfNodesEnergy):
-    nodeDomain = decompositionEnergy.NodeDomainGet(nodeIdx+1,1)
-    if (nodeDomain == computationalNodeNumber):
-        geometricFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-         versionIdx,derivIdx,nodeIdx+1,1,xValuesEnergy[nodeIdx][0])
-        geometricFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-         versionIdx,derivIdx,nodeIdx+1,2,yValuesEnergy[nodeIdx][0])
-        geometricFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-         versionIdx,derivIdx,nodeIdx+1,3,zValuesEnergy[nodeIdx][0])
+# versionIdx = 1
+# derivIdx = 1
+# for nodeIdx in range(0,numberOfNodesEnergy):
+#     nodeDomain = decompositionEnergy.NodeDomainGet(nodeIdx+1,1)
+#     if (nodeDomain == computationalNodeNumber):
+#         geometricFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+#          versionIdx,derivIdx,nodeIdx+1,1,xValuesEnergy[nodeIdx][0])
+#         geometricFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+#          versionIdx,derivIdx,nodeIdx+1,2,yValuesEnergy[nodeIdx][0])
+#         geometricFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+#          versionIdx,derivIdx,nodeIdx+1,3,zValuesEnergy[nodeIdx][0])
 
 # Finish the parameter update
-geometricFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-geometricFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+# geometricFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+# geometricFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
 
 # Start the creation of geometric field for Tissue
@@ -1561,6 +1566,7 @@ if (CoupledBioheatFlow or TestFlow):
   # Start the creation of SPACE geometric field
   GeometricField = iron.Field()
   GeometricField.CreateStart(GeometricFieldUserNumber,Region)
+  GeometricField.LabelSet('Geometric Field')
   GeometricField.NumberOfVariablesSet(1)
   GeometricField.VariableLabelSet(iron.FieldVariableTypes.U,'Coordinates')
   GeometricField.TypeSet = iron.FieldTypes.GEOMETRIC
@@ -1639,18 +1645,18 @@ if (ProgressDiagnostics):
     print( " == >> EQUATIONS SET << == ")
 
 if (not TestFlow):
-  # Create the equations set for advection diffusion in arteries
-  # dT/dt+u dT/dx-alpha d2T/dx2-(b-cT)=0
-  equationsSetEnergy = iron.EquationsSet()
-  equationsSetFieldEnergy = iron.Field()
-  # Set the equations set to be a dynamic linear problem
-  equationsSetEnergySpecification = [iron.EquationsSetClasses.CLASSICAL_FIELD,
-    iron.EquationsSetTypes.ADVECTION_EQUATION,
-    equationsSetEnergySubtype]
-  equationsSetEnergy.CreateStart(equationsSetUserNumberEnergy,regionEnergy,geometricFieldEnergy,
-  equationsSetEnergySpecification,equationsSetFieldUserNumberEnergy,equationsSetFieldEnergy)
-  equationsSetEnergy.LabelSet('Advec Diffusion Equation')
-  equationsSetEnergy.CreateFinish()
+#   # Create the equations set for advection diffusion in arteries
+#   # dT/dt+u dT/dx-alpha d2T/dx2-(b-cT)=0
+#   equationsSetEnergy = iron.EquationsSet()
+#   equationsSetFieldEnergy = iron.Field()
+#   # Set the equations set to be a dynamic linear problem
+#   equationsSetEnergySpecification = [iron.EquationsSetClasses.CLASSICAL_FIELD,
+#     iron.EquationsSetTypes.ADVECTION_EQUATION,
+#     equationsSetEnergySubtype]
+#   equationsSetEnergy.CreateStart(equationsSetUserNumberEnergy,regionEnergy,geometricFieldEnergy,
+#   equationsSetEnergySpecification,equationsSetFieldUserNumberEnergy,equationsSetFieldEnergy)
+#   equationsSetEnergy.LabelSet('Advec Diffusion Equation')
+#   equationsSetEnergy.CreateFinish()
 
 
   # Create standard Diffusion equations set
@@ -1670,6 +1676,19 @@ if (not TestFlow):
 if (CoupledBioheatFlow or TestFlow):
   if (ProgressDiagnostics):
     print( " == >> EQUATIONS SET << == ")
+
+  # Create the equations set for advection diffusion in arteries
+  # dT/dt+u dT/dx-alpha d2T/dx2-(b-cT)=0
+  equationsSetEnergy = iron.EquationsSet()
+  equationsSetFieldEnergy = iron.Field()
+  # Set the equations set to be a dynamic linear problem
+  equationsSetEnergySpecification = [iron.EquationsSetClasses.CLASSICAL_FIELD,
+    iron.EquationsSetTypes.ADVECTION_EQUATION,
+    equationsSetEnergySubtype]
+  equationsSetEnergy.CreateStart(equationsSetUserNumberEnergy,Region,GeometricField,
+  equationsSetEnergySpecification,equationsSetFieldUserNumberEnergy,equationsSetFieldEnergy)
+  equationsSetEnergy.LabelSet('Advec Diffusion Equation')
+  equationsSetEnergy.CreateFinish()
 
   # Create the equations set for STREE
   if (streeBoundaries):
@@ -1731,21 +1750,21 @@ if (ProgressDiagnostics):
     print( " == >> DEPENDENT FIELD << == ")
 
 if (not TestFlow):
-  # Create the equations set dependent field variables
-  dependentFieldEnergy = iron.Field()
-  equationsSetEnergy.DependentCreateStart(dependentFieldUserNumberEnergy,dependentFieldEnergy)
-  dependentFieldEnergy.LabelSet('Dependent Field')
-  dependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'Blood Temperature')
-  dependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.DELUDELN,'Blood Temperature Gradient')
-  dependentFieldEnergy.DOFOrderTypeSet(iron.FieldVariableTypes.U,iron.FieldDOFOrderTypes.SEPARATED)
-  dependentFieldEnergy.DOFOrderTypeSet(iron.FieldVariableTypes.DELUDELN,iron.FieldDOFOrderTypes.SEPARATED)
-  equationsSetEnergy.DependentCreateFinish()
+#   # Create the equations set dependent field variables
+#   dependentFieldEnergy = iron.Field()
+#   equationsSetEnergy.DependentCreateStart(dependentFieldUserNumberEnergy,dependentFieldEnergy)
+#   dependentFieldEnergy.LabelSet('Dependent Field')
+#   dependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'Blood Temperature')
+#   dependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.DELUDELN,'Blood Temperature Gradient')
+#   dependentFieldEnergy.DOFOrderTypeSet(iron.FieldVariableTypes.U,iron.FieldDOFOrderTypes.SEPARATED)
+#   dependentFieldEnergy.DOFOrderTypeSet(iron.FieldVariableTypes.DELUDELN,iron.FieldDOFOrderTypes.SEPARATED)
+#   equationsSetEnergy.DependentCreateFinish()
 
-  # Initialise dependent field
-  dependentFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,37.0*THsb)
+#   # Initialise dependent field
+#   dependentFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,37.0*THsb)
 
-  dependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-  dependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+#   dependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+#   dependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
 
   # Create dependent field
@@ -1768,6 +1787,23 @@ if (not TestFlow):
 if (CoupledBioheatFlow or TestFlow):
   if (ProgressDiagnostics):
     print( " == >> DEPENDENT FIELD << == ")
+
+  # Create the equations set dependent field variables
+  dependentFieldEnergy = iron.Field()
+  equationsSetEnergy.DependentCreateStart(dependentFieldUserNumberEnergy,dependentFieldEnergy)
+  dependentFieldEnergy.LabelSet('Dependent Field')
+  dependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'Blood Temperature')
+  dependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.DELUDELN,'Blood Temperature Gradient')
+#   dependentFieldEnergy.DOFOrderTypeSet(iron.FieldVariableTypes.U,iron.FieldDOFOrderTypes.SEPARATED)
+#   dependentFieldEnergy.DOFOrderTypeSet(iron.FieldVariableTypes.DELUDELN,iron.FieldDOFOrderTypes.SEPARATED)
+  dependentFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,meshComponentNumberSpace)
+  equationsSetEnergy.DependentCreateFinish()
+
+  # Initialise dependent field
+  dependentFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,37.0*THsb)
+
+  dependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  dependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
   # STREE
   if (streeBoundaries):
@@ -1887,28 +1923,28 @@ if (ProgressDiagnostics):
     print( " == >> MATERIALS FIELD << == ")
 
 if (not TestFlow):
-  # Create the equations set material field variables for artery energy
-  materialsFieldEnergy = iron.Field()
-  equationsSetEnergy.MaterialsCreateStart(materialsFieldUserNumberEnergy,materialsFieldEnergy)
-  materialsFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'Blood Properties')
-  materialsFieldEnergy.ComponentLabelSet(iron.FieldVariableTypes.U,1,'Blood Diffusivity')
-  materialsFieldEnergy.ComponentLabelSet(iron.FieldVariableTypes.U,2,'Source Tb coeff.')
-  equationsSetEnergy.MaterialsCreateFinish()
+#   # Create the equations set material field variables for artery energy
+#   materialsFieldEnergy = iron.Field()
+#   equationsSetEnergy.MaterialsCreateStart(materialsFieldUserNumberEnergy,materialsFieldEnergy)
+#   materialsFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'Blood Properties')
+#   materialsFieldEnergy.ComponentLabelSet(iron.FieldVariableTypes.U,1,'Blood Diffusivity')
+#   materialsFieldEnergy.ComponentLabelSet(iron.FieldVariableTypes.U,2,'Source Tb coeff.')
+#   equationsSetEnergy.MaterialsCreateFinish()
 
-  # Initialise the properties and source values
-  diffusivity_b=Alpha_b #+U*beta*le/2 #U*beta*le/2=0.000416667 almost 3000 times of the real diffusivity Pe=Ule/2a=0.2*0.05/12/2/0.0004=1
-  materialsFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,diffusivity_b)
+#   # Initialise the properties and source values
+#   diffusivity_b=Alpha_b #+U*beta*le/2 #U*beta*le/2=0.000416667 almost 3000 times of the real diffusivity Pe=Ule/2a=0.2*0.05/12/2/0.0004=1
+#   materialsFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,diffusivity_b)
 
-  for elemIdx in arteriesElements:
-      elemDomain = decompositionEnergy.ElementDomainGet(elemIdx)
-      if elemDomain == computationalNodeNumber:
-          # ra=(radius[elemIdx-1]+radius[elemIdx])/2
-          cArtery=4*Alpha_b/ra[elemIdx-1]**2
-          materialsFieldEnergy.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-    elemIdx,2, cArtery)
+#   for elemIdx in arteriesElements:
+#       elemDomain = decompositionEnergy.ElementDomainGet(elemIdx)
+#       if elemDomain == computationalNodeNumber:
+#           # ra=(radius[elemIdx-1]+radius[elemIdx])/2
+#           cArtery=4*Alpha_b/ra[elemIdx-1]**2
+#           materialsFieldEnergy.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+#     elemIdx,2, cArtery)
 
-  materialsFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-  materialsFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+#   materialsFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+#   materialsFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
 
 
@@ -1987,6 +2023,31 @@ if (not TestFlow):
 if (CoupledBioheatFlow or TestFlow):
   if (ProgressDiagnostics):
     print( " == >> MATERIALS FIELD << == ")
+
+  # Create the equations set material field variables for artery energy
+  materialsFieldEnergy = iron.Field()
+  equationsSetEnergy.MaterialsCreateStart(materialsFieldUserNumberEnergy,materialsFieldEnergy)
+  materialsFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'Blood Properties')
+  materialsFieldEnergy.ComponentLabelSet(iron.FieldVariableTypes.U,1,'Blood Diffusivity')
+  materialsFieldEnergy.ComponentLabelSet(iron.FieldVariableTypes.U,2,'Source Tb coeff.')
+  equationsSetEnergy.MaterialsCreateFinish()
+
+  # Initialise the properties and source values
+  diffusivity_b=Alpha_b #+U*beta*le/2 #U*beta*le/2=0.000416667 almost 3000 times of the real diffusivity Pe=Ule/2a=0.2*0.05/12/2/0.0004=1
+  materialsFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,diffusivity_b)
+  materialsFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,2,
+    math.pi*Nu*diffusivity_b) # mm2/s. b-cT. b=pi*Nu*alpha/A * Tw and c = pi*Nu*alpha/A. We still need to divide by cross-section area.
+    
+#   for elemIdx in arteriesElements:
+#       elemDomain = decompositionEnergy.ElementDomainGet(elemIdx)
+#       if elemDomain == computationalNodeNumber:
+#           # ra=(radius[elemIdx-1]+radius[elemIdx])/2
+#           cArtery=4*Alpha_b/ra[elemIdx-1]**2
+#           materialsFieldEnergy.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+#     elemIdx,2, cArtery)
+
+  materialsFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  materialsFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
   # STREE
   if (streeBoundaries):
@@ -2087,6 +2148,7 @@ print('\033[1;32m'+'Materials Field   COMPLETED'+'\033[0m',"{0:4.2f}".format(tim
 #  Source Field
 #================================================================================================================================
 
+
 if (not TestFlow):
   #------------------------------
   #creating ulnar artery
@@ -2101,7 +2163,8 @@ if (not TestFlow):
   if (ProgressDiagnostics):
       print( " == >> SOURCE FIELD << == ")
 
-  # Create source field for artery energy
+# We do not need source term.
+  # Create source field for artery energy. 
   sourceFieldEnergy = iron.Field()
   equationsSetEnergy.SourceCreateStart(sourceFieldUserNumberEnergy,sourceFieldEnergy)
   equationsSetEnergy.SourceCreateFinish()
@@ -2110,12 +2173,12 @@ if (not TestFlow):
   # So it is in 2nd component of the materials field.
 
   #sourceFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,cArtery*Tt)
-  for elemIdx in arteriesElements:
-      elemDomain = decompositionEnergy.ElementDomainGet(elemIdx)
-      if elemDomain == computationalNodeNumber:
-          # ra=(radius[elemIdx-1]+radius[elemIdx])/2
-          cArtery=4*Alpha_b/ra[elemIdx-1]**2
-          sourceFieldEnergy.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elemIdx,1,cArtery*Tt[elemIdx])
+#   for elemIdx in arteriesElements:
+#       elemDomain = decompositionEnergy.ElementDomainGet(elemIdx)
+#       if elemDomain == computationalNodeNumber:
+#           # ra=(radius[elemIdx-1]+radius[elemIdx])/2
+#           cArtery=4*Alpha_b/ra[elemIdx-1]**2
+#           sourceFieldEnergy.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,elemIdx,1,cArtery*Tt[elemIdx])
 
   sourceFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
   sourceFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
@@ -2173,7 +2236,10 @@ if (not TestFlow):
 
   sourceFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
   sourceFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-
+else:
+    sourceFieldEnergy = iron.Field()
+    equationsSetEnergy.SourceCreateStart(sourceFieldUserNumberEnergy,sourceFieldEnergy)
+    equationsSetEnergy.SourceCreateFinish()
 # =================================
 # F L O W
 #if (CoupledBioheatFlow or TestFlow):
@@ -2188,23 +2254,23 @@ if (ProgressDiagnostics):
     print (" == >> INDEPENDENT FIELD << == ")
 
 if (not TestFlow):
-  # Create the equations set independent field variables
-  IndependentFieldEnergy = iron.Field()
-  #IndependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'flow velocity')
-  # Set the mesh component to be used by the field components.
-  #IndependentFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,1)
+#   # Create the equations set independent field variables
+#   IndependentFieldEnergy = iron.Field()
+#   #IndependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'flow velocity')
+#   # Set the mesh component to be used by the field components.
+#   #IndependentFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,1)
 
-  # NAVIER-STOKES
-  equationsSetEnergy.IndependentCreateStart(independentFieldUserNumberEnergy,IndependentFieldEnergy)
-  equationsSetEnergy.IndependentCreateFinish()
+#   # NAVIER-STOKES
+#   equationsSetEnergy.IndependentCreateStart(independentFieldUserNumberEnergy,IndependentFieldEnergy)
+#   equationsSetEnergy.IndependentCreateFinish()
 
-  # Set the velocity
-  IndependentFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-    1,1.0)
+#   # Set the velocity
+#   IndependentFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+#     1,1.0)
 
-  # Finish the parameter update
-  IndependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
-  IndependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+#   # Finish the parameter update
+#   IndependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+#   IndependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
 
   # Tissue independent field =================
   IndependentFieldTissue = iron.Field()
@@ -2288,6 +2354,99 @@ if (not TestFlow):
 if (CoupledBioheatFlow or TestFlow):
   if (ProgressDiagnostics):
     print( " == >> INDEPENDENT FIELD << == ")
+
+    # Create the equations set independent field variables
+  IndependentFieldEnergy = iron.Field()
+  
+
+
+  # NAVIER-STOKES
+  equationsSetEnergy.IndependentCreateStart(independentFieldUserNumberEnergy,IndependentFieldEnergy)
+  IndependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'Q and A data')
+  # Set the mesh component to be used by the field components.
+  IndependentFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,meshComponentNumberSpace)
+  IndependentFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,2,meshComponentNumberSpace)
+  equationsSetEnergy.IndependentCreateFinish()
+
+  # Set the velocity
+    # Read Q and A data from the file
+  with open('input/Flow/QAextracted.csv','r') as csvfile:
+      reader = csv.reader(csvfile, delimiter=',')
+
+      rownum = 0
+      timeStep = 0
+      for row in reader:
+          if (rownum == 0):
+              # Read the header row
+              header = row
+          else:
+              # Read the value
+              nodeIdx = int(row[0])
+              if (nodeIdx == 1):
+                  timeStep+=1
+                  comp1=timeStep*2-1
+                  comp2=timeStep*2
+              nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+              if (nodeDomain == computationalNodeNumber):              
+                Qdata=float(row[1]) # Flow rate   (mm3/s)
+                Adata=float(row[2]) # Area        (mm2)
+                IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    1,derivIdx,nodeIdx,comp1,Qdata)
+                IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    1,derivIdx,nodeIdx,comp2,Adata)                
+                if (row[3]):
+                  Qdata1=float(row[1]) # Flow rate   (mm3/s)
+                  Qdata2=float(row[2]) # Flow rate   (mm3/s)
+                  Qdata3=float(row[3]) # Flow rate   (mm3/s)
+                  Adata1=float(row[4]) # Cross-section area   (mm3/s)
+                  Adata2=float(row[5]) # Cross-section area   (mm3/s)
+                  Adata3=float(row[6]) # Cross-section area   (mm3/s)                                                                        
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    1,derivIdx,nodeIdx,comp1,Qdata1)
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    2,derivIdx,nodeIdx,comp1,Qdata2)   
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    3,derivIdx,nodeIdx,comp1,Qdata3)
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    1,derivIdx,nodeIdx,comp2,Adata1)
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    2,derivIdx,nodeIdx,comp2,Adata2)
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    3,derivIdx,nodeIdx,comp2,Adata3)                   
+                if (row[7]):
+                  Qdata1=float(row[1]) # Flow rate   (mm3/s)    
+                  Qdata2=float(row[2]) # Flow rate   (mm3/s)
+                  Qdata3=float(row[3]) # Flow rate   (mm3/s)
+                  Qdata4=float(row[4]) # Flow rate   (mm3/s)                  
+                  Adata1=float(row[5]) # Cross-section area   (mm3/s)
+                  Adata2=float(row[6]) # Cross-section area   (mm3/s)
+                  Adata3=float(row[7]) # Cross-section area   (mm3/s)                                   
+                  Adata4=float(row[8]) # Cross-section area   (mm3/s)
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    1,derivIdx,nodeIdx,comp1,Qdata1)
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    2,derivIdx,nodeIdx,comp1,Qdata2)
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    3,derivIdx,nodeIdx,comp1,Qdata3)
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    4,derivIdx,nodeIdx,comp1,Qdata4)   
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    1,derivIdx,nodeIdx,comp2,Adata1)
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    2,derivIdx,nodeIdx,comp2,Adata2)
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    3,derivIdx,nodeIdx,comp2,Adata3)
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                    4,derivIdx,nodeIdx,comp2,Adata4)                                                     
+
+          # Next line
+          rownum+=1
+
+
+  # Finish the parameter update
+  IndependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  IndependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)		
+
 
   # CHARACTERISTIC
   # Create the equations set independent field variables
@@ -2670,12 +2829,12 @@ if (ProgressDiagnostics):
     print( " == >> EQUATIONS << == ")
 
 if (not TestFlow):
-  # Create equations for artery energy
-  equationsEnergy = iron.Equations()
-  equationsSetEnergy.EquationsCreateStart(equationsEnergy)
-  equationsEnergy.sparsityType = iron.EquationsSparsityTypes.SPARSE
-  equationsEnergy.outputType = iron.EquationsOutputTypes.NONE
-  equationsSetEnergy.EquationsCreateFinish()
+#   # Create equations for artery energy
+#   equationsEnergy = iron.Equations()
+#   equationsSetEnergy.EquationsCreateStart(equationsEnergy)
+#   equationsEnergy.sparsityType = iron.EquationsSparsityTypes.SPARSE
+#   equationsEnergy.outputType = iron.EquationsOutputTypes.NONE
+#   equationsSetEnergy.EquationsCreateFinish()
 
     # I want to solve this type of equation, dT/dt-div(Sigma grad(T))-(b-cT)=0.
     # Sigma in my case is Sigma=k/rhoC.
@@ -2694,6 +2853,13 @@ if (not TestFlow):
 if (CoupledBioheatFlow or TestFlow):
   if (ProgressDiagnostics):
     print( " == >> EQUATIONS << == ")
+  # Create equations for artery energy
+  equationsEnergy = iron.Equations()
+  equationsSetEnergy.EquationsCreateStart(equationsEnergy)
+  equationsEnergy.sparsityType = iron.EquationsSparsityTypes.SPARSE
+  equationsEnergy.outputType = iron.EquationsOutputTypes.NONE
+  equationsSetEnergy.EquationsCreateFinish()
+
 
   # 1th Equations Set - STREE
   if (streeBoundaries):
@@ -3288,7 +3454,7 @@ if (CoupledBioheatFlow or Bioheat):
 
   solverEquationsEnergy.BoundaryConditionsCreateStart(boundaryConditionsEnergy)
 
-  nodeDomain = decompositionEnergy.NodeDomainGet(1,1)
+  nodeDomain = Decomposition.NodeDomainGet(1,meshComponentNumberSpace)
   if nodeDomain == computationalNodeNumber:
       boundaryConditionsEnergy.SetNode(dependentFieldEnergy,iron.FieldVariableTypes.U,1,1,1,1,
           iron.BoundaryConditionsTypes.FIXED,[37.0*THsb])
@@ -3317,7 +3483,7 @@ if (CoupledBioheatFlow or Bioheat):
     nodeDomain = decompositionTissue.NodeDomainGet(nodeNumber,1)
     if nodeDomain == computationalNodeNumber:
       dependentFieldTissue.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-        1,1,nodeNumber,1,20.0)
+        1,1,nodeNumber,1,20.0) # Initialise skin temperature
       boundaryConditionsTissue.SetNode(dependentFieldTissue,iron.FieldVariableTypes.DELUDELN,1,1,nodeNumber,1,
         iron.BoundaryConditionsTypes.ROBIN,[1.0/(rho_sk*c_sk*Rtot),1.0/(rho_sk*c_sk*Rtot)* Tair])
 
