@@ -729,7 +729,7 @@ Hsb = POsb/(Lsb**2*THsb)
 
 # Set the time parameters
 #timeIncrement   = 0.5
-timeIncrementBioheat   = 10*Tsb
+timeIncrementBioheat   = 0.1*Tsb
 startTimeBioheat       = 0.0*Tsb
 stopTimeBioheat        = 200*timeIncrementBioheat
 
@@ -1178,7 +1178,7 @@ if (ProgressDiagnostics):
 # generatedMesh.CreateFinish(meshUserNumberEnergy,meshEnergy)
 # meshEnergy = iron.Mesh()
 # meshEnergy.CreateStart(meshUserNumberEnergy,regionEnergy,3)
-# meshEnergy.NumberOfElementsSet(numberOfElementsEnergy)
+# meshEnergy.NumberOfElementsSet(totalNumberOfElements)
 # meshEnergy.NumberOfComponentsSet(1)
 
 # Start the creation of mesh elements for energy
@@ -1287,7 +1287,7 @@ if (CoupledBioheatFlow or TestFlow):
   Mesh = iron.Mesh()
   Mesh.CreateStart(MeshUserNumber,Region,numberOfDimensionsFlow)
   Mesh.NumberOfElementsSet(totalNumberOfElements)
-  if (coupledAdvection):
+  if (coupledAdvection or CoupledBioheatFlow):
       meshNumberOfComponents = 2
       Mesh.NumberOfComponentsSet(meshNumberOfComponents)
       # Specify the mesh components
@@ -1336,7 +1336,7 @@ if (CoupledBioheatFlow or TestFlow):
   #------------------
 
   # Specify the CONCENTRATION mesh component
-  if (coupledAdvection):
+  if (coupledAdvection or CoupledBioheatFlow):
       MeshElementsConc.CreateStart(Mesh,meshComponentNumberConc,BasisSpace)
       for elemIdx in range(1,totalNumberOfElements+1):
           MeshElementsConc.NodesSet(elemIdx,elementNodes[elemIdx])
@@ -1796,7 +1796,8 @@ if (CoupledBioheatFlow or TestFlow):
   dependentFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.DELUDELN,'Blood Temperature Gradient')
 #   dependentFieldEnergy.DOFOrderTypeSet(iron.FieldVariableTypes.U,iron.FieldDOFOrderTypes.SEPARATED)
 #   dependentFieldEnergy.DOFOrderTypeSet(iron.FieldVariableTypes.DELUDELN,iron.FieldDOFOrderTypes.SEPARATED)
-  dependentFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,meshComponentNumberSpace)
+  dependentFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,meshComponentNumberConc)
+  dependentFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.DELUDELN,1,meshComponentNumberConc)
   equationsSetEnergy.DependentCreateFinish()
 
   # Initialise dependent field
@@ -2028,6 +2029,8 @@ if (CoupledBioheatFlow or TestFlow):
   materialsFieldEnergy = iron.Field()
   equationsSetEnergy.MaterialsCreateStart(materialsFieldUserNumberEnergy,materialsFieldEnergy)
   materialsFieldEnergy.VariableLabelSet(iron.FieldVariableTypes.U,'Blood Properties')
+  materialsFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,meshComponentNumberSpace)
+  materialsFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,2,meshComponentNumberSpace)
   materialsFieldEnergy.ComponentLabelSet(iron.FieldVariableTypes.U,1,'Blood Diffusivity')
   materialsFieldEnergy.ComponentLabelSet(iron.FieldVariableTypes.U,2,'Source Tb coeff.')
   equationsSetEnergy.MaterialsCreateFinish()
@@ -3454,7 +3457,7 @@ if (CoupledBioheatFlow or Bioheat):
 
   solverEquationsEnergy.BoundaryConditionsCreateStart(boundaryConditionsEnergy)
 
-  nodeDomain = Decomposition.NodeDomainGet(1,meshComponentNumberSpace)
+  nodeDomain = Decomposition.NodeDomainGet(1,meshComponentNumberConc)
   if nodeDomain == computationalNodeNumber:
       boundaryConditionsEnergy.SetNode(dependentFieldEnergy,iron.FieldVariableTypes.U,1,1,1,1,
           iron.BoundaryConditionsTypes.FIXED,[37.0*THsb])
