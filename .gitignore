@@ -25,3 +25,11 @@ data23
 energyEquation.py
 
 energyData.csv
+
+docs/
+
+ignoredFilesValgring/
+
+src/python/input/__pycache__/
+
+src/python/input/bioheat/mesh2/
