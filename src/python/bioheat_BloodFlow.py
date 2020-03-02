@@ -57,6 +57,8 @@ from scipy.sparse  import linalg
 from scipy.linalg  import inv,eig
 from scipy.special import jn
 
+from input.parameters import Problem_Params
+
 t=time.time()
 # Diagnostics
 #iron.DiagnosticsSetOn(iron.DiagnosticTypes.IN,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"])
@@ -115,17 +117,18 @@ ProgressDiagnostics = False   # Set to diagnostics
 # tissueEnergySolve = True  # Set to solve energy equation
 meshOrigin = [0.0,0.0,0.0]
 
+problemParams = Problem_Params()
 # =================================
 # F L O W
 #if (CoupledBioheatFlow or TestFlow):
 # =================================
 # Only one of these could be true.
-TestFlow = False
-Bioheat = False
-CoupledBioheatFlow = True
-if (CoupledBioheatFlow):
-  Bioheat = False
-  TestFlow = False
+TestFlow = problemParams.testFlow
+Bioheat = problemParams.bioheat
+CoupledBioheatFlow = problemParams.CoupledBioheatFlow
+# if (CoupledBioheatFlow):
+#   Bioheat = False
+#   TestFlow = False
 # ENERGY=1
 # TISSUE=2
 # FLOW=3
@@ -509,9 +512,21 @@ if (CoupledBioheatFlow or TestFlow):
 # Tissue mesh
 # vtkTocsv()
 # FileName_ele = "MaxVol1000/WholeLeftArm.1.ele"
-numberOfNodesTissue    = 58557
-numberOfElementsTissue = 253489
-numberOfLocalNodes = 4
+tissueMeshNumber = problemParams.tissueMeshNumber
+# if tissueMeshNumber==1:
+#     numberOfNodesTissue    = 58557
+#     numberOfElementsTissue = 253489
+# elif tissueMeshNumber==2:
+#     numberOfNodesTissue    = 48083
+#     numberOfElementsTissue = 248166
+# elif tissueMeshNumber==3:
+numberOfNodesTissue    = problemParams.numberOfNodesTissue
+numberOfElementsTissue = problemParams.numberOfElementsTissue
+
+
+numberOfLocalNodes = problemParams.numberOfElementNodes
+# if tissueMeshNumber==3:
+#     numberOfLocalNodes = 8
 # offset = 1 # offset is 1 if nodes and elements number begin from 0, offset for default = 0
 
 # Printing the head and tail to see if we are reading the information correctly.
@@ -729,18 +744,18 @@ Hsb = POsb/(Lsb**2*THsb)
 
 # Set the time parameters
 #timeIncrement   = 0.5
-timeIncrementBioheat   = 0.1*Tsb
-startTimeBioheat       = 0.0*Tsb
-stopTimeBioheat        = 200*timeIncrementBioheat
+timeIncrementBioheat   = problemParams.timeIncrementBioheat*Tsb
+startTimeBioheat       = problemParams.startTimeBioheat*Tsb
+stopTimeBioheat        = problemParams.timeStepsBioheat*timeIncrementBioheat
 
 # Set the output parameters
-DYNAMIC_SOLVER_DIFFUSION_OUTPUT_FREQUENCY = 1
+DYNAMIC_SOLVER_DIFFUSION_OUTPUT_FREQUENCY = problemParams.diffusionOutputFrequency
 
 
 # Artery =========
-k_bl               = 0.5*Ksb      #  blood conductivity.
-rho_bl             = 1069.0*RHOsb   #  blood density
-c_bl               = 3650.0*CPsb       #  blood specific heat
+k_bl               = problemParams.conductivity_blood*Ksb      #  blood conductivity.
+rho_bl             = problemParams.rho_blood*RHOsb   #  blood density
+c_bl               = problemParams.c_blood*CPsb       #  blood specific heat
 Alpha_b              = k_bl/(rho_bl*c_bl)       # Diffusivity
 # r                  = 1.5           # mm, inner radius of the artery
 # CArtery            = 4*Alpha/(r*r) # 0.27911 1/s
@@ -748,27 +763,27 @@ Alpha_b              = k_bl/(rho_bl*c_bl)       # Diffusivity
 
 # Tissue ==========
 # Be careful these parameters should be consistent with the values in cellML model. Even slightly differece can make a big error.
-rho_ms             = 1085.0*RHOsb   #   muscle density
-c_ms               = 3768.0*CPsb        # J/Kg.K   muscle specific heat
-rho_bn             = 1357.0*RHOsb   # kg/mm3    bone density
-c_bn               = 1700.0*CPsb        # J/Kg.K   bone specific heat
-rho_sk             = 1085.0*RHOsb   # kg/mm3    skin density
-c_sk               = 3680.0*CPsb        # J/Kg.K   skin specific heat
+rho_ms             = problemParams.rho_muscle*RHOsb   #   muscle density
+c_ms               = problemParams.c_muscle*CPsb        # J/Kg.K   muscle specific heat
+rho_bn             = problemParams.rho_bone*RHOsb   # kg/mm3    bone density
+c_bn               = problemParams.c_bone*CPsb        # J/Kg.K   bone specific heat
+rho_sk             = problemParams.rho_skin*RHOsb   # kg/mm3    skin density
+c_sk               = problemParams.c_skin*CPsb        # J/Kg.K   skin specific heat
 
-k_ms               = 0.42*Ksb     # W/mm.K muscle conductivity.
-k_bn               = 0.75*Ksb     # W/mm.K bone conductivity.
-k_sk               = 0.47*Ksb     # W/mm.K skin conductivity.
+k_ms               = problemParams.k_muscle*Ksb     # W/mm.K muscle conductivity.
+k_bn               = problemParams.k_bone*Ksb     # W/mm.K bone conductivity.
+k_sk               = problemParams.k_skin*Ksb     # W/mm.K skin conductivity.
 
-h_conv             = 2.0*Hsb      # W/mm2.K
+h_conv             = problemParams.h_conv*Hsb      # W/mm2.K
 #h_conv            = 200.0*1e-6    # W/mm2.K for water
-hr_rad             = 5.9*Hsb      # W/mm2.K See example 3.12 Incropera
+hr_rad             = problemParams.hr_rad*Hsb      # W/mm2.K See example 3.12 Incropera
 
 # R_arm              = 0.03          # m
 
-Tb                 = 37.0*THsb          # C blood temeprature
-Tair               = 17.7*THsb          # C
+Tb                 = problemParams.Tblood*THsb          # C blood temeprature
+Tair               = problemParams.Tair*THsb          # C
                                         
-w                  = 5e-4*(1/Tsb)          # 1/s terminal blood flow per volume of tissue.
+w                  = problemParams.w_perfusion*(1/Tsb)          # 1/s terminal blood flow per volume of tissue.
 
 cMuscle            = rho_bl*c_bl/(rho_ms*c_ms) *w   # 4.51128e-4 1/s
 
@@ -776,8 +791,8 @@ cBone              = 0.0*CPsb           #\see equations section
 diff_ms            = k_ms/(rho_ms*c_ms)   # muscle diffusivity
 diff_bn            = k_bn/(rho_bn*c_bn)   # bone diffusivity
 
-qm                 = 700*POsb/Lsb**3            # Basal metabolic heat
-Nu                 = 4.0                        # Nusselt number for artery
+qm                 = problemParams.qm_0*POsb/Lsb**3            # Basal metabolic heat
+Nu                 = problemParams.Nusselt                        # Nusselt number for artery
 # ================================================
 
 
@@ -912,14 +927,15 @@ if (CoupledBioheatFlow or TestFlow):
   LINEAR_SOLVER_NAVIER_STOKES_OUTPUT_TYPE     = iron.SolverOutputTypes.NONE
   # (NONE/TIMING/SOLVER/MATRIX)
   CMISS_SOLVER_OUTPUT_TYPE = iron.SolverOutputTypes.NONE
-  DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY = 1
+  DYNAMIC_SOLVER_NAVIER_STOKES_OUTPUT_FREQUENCY = problemParams.flowOutputFrequency
 
   # Set the time parameters
   numberOfPeriods = 1
-  timePeriod      = 0.1 # 1 cycle is 1000 ms.
-  timeIncrement   = 0.1
-  startTime       = 0.0
-  stopTime  = numberOfPeriods*timePeriod
+  timePeriod      = 1 # 1 cycle is 1000 ms.
+  timeIncrement   = problemParams.timeIncrementFlow
+  startTime       = problemParams.startTimeFlow
+  timeSteps = problemParams.timeStepsFlow
+  stopTime  = numberOfPeriods*timePeriod*timeSteps*timeIncrement
   dynamicSolverNavierStokesTheta = [1.0]
   dynamicSolverAdvectionTheta    = [0.5]
 
@@ -1089,15 +1105,24 @@ if (ProgressDiagnostics):
 # basisEnergy.QuadratureNumberOfGaussXiSet([basisXiGaussSpace])
 # basisEnergy.CreateFinish()
 
-
+if tissueMeshNumber==3:
+    basisXiGaussSpace = 3
+    basisTissue = iron.Basis()
+    basisTissue.CreateStart(BasisUserNumberTissue)
+    basisTissue.TypeSet(iron.BasisTypes.LAGRANGE_HERMITE_TP)
+    basisTissue.NumberOfXiSet(3)
+    basisTissue.InterpolationXiSet([iron.BasisInterpolationSpecifications.LINEAR_LAGRANGE]*3)
+    # basisTissue.QuadratureNumberOfGaussXiSet([basisXiGaussSpace])
+    basisTissue.CreateFinish()
+else:
 # Create a tri-linear Simplex basis
-basisTissue = iron.Basis()
-basisTissue.CreateStart(BasisUserNumberTissue)
-basisTissue.TypeSet(iron.BasisTypes.SIMPLEX)
-basisTissue.NumberOfXiSet(3)
-basisTissue.InterpolationXiSet([iron.BasisInterpolationSpecifications.LINEAR_SIMPLEX]*3)
-basisTissue.QuadratureOrderSet(2)
-basisTissue.CreateFinish()
+    basisTissue = iron.Basis()
+    basisTissue.CreateStart(BasisUserNumberTissue)
+    basisTissue.TypeSet(iron.BasisTypes.SIMPLEX)
+    basisTissue.NumberOfXiSet(3)
+    basisTissue.InterpolationXiSet([iron.BasisInterpolationSpecifications.LINEAR_SIMPLEX]*3)
+    basisTissue.QuadratureOrderSet(2)
+    basisTissue.CreateFinish()
 
 # =================================
 # F L O W
@@ -1208,7 +1233,14 @@ meshElementsTissue.CreateStart(meshTissue, meshComponentNumber, basisTissue)
 
 # print( "Elapsed time before reading ele file is: ", time.time()-t)
 # reading elements and its local Nodes and setting elements.Nodes
-with open('input/bioheat/elements2.csv') as elementscsv:
+# if tissueMeshNumber==1:
+#     tissueElementsFile='input/bioheat/elements2.csv'
+# elif tissueMeshNumber==2:
+#     tissueElementsFile='input/bioheat/mesh2/elements.csv'    
+# elif tissueMeshNumber==3:
+tissueElementsFile = problemParams.tissueElementsFile 
+
+with open(tissueElementsFile) as elementscsv:
   reader = csv.reader(elementscsv)
   # next(elementscsv)
   elementNumber=0
@@ -1477,8 +1509,12 @@ numberOfNodes = nodes.numberOfNodes
 # Get or calculate geometric Parameters
 
 # print( "Elapsed time before reading node file is: ", time.time()-t)
-
-FileName_node = "input/bioheat/nodes.csv"
+# if tissueMeshNumber==1:
+#     tissueNodesFile = "input/bioheat/nodes.csv"
+# elif tissueMeshNumber==2:
+#     tissueNodesFile = "input/bioheat/mesh2/nodes.csv"
+# elif tissueMeshNumber==3:
+tissueNodesFile = problemParams.tissueNodesFile
 
 # X input file is mm. if you want to keep it that way you need to multiply k and rho*c by factors of 10^-3 and 10^-9 respectively.
 # Units = 1e0
@@ -1493,7 +1529,7 @@ nodeNumber = 0
 boundaryTissue = []
 skinMarker = 2
 
-with open(FileName_node) as nodescsv:
+with open(tissueNodesFile) as nodescsv:
   reader = csv.reader(nodescsv)
   # next(elementscsv)
   nodeNumber=0
@@ -1514,8 +1550,14 @@ with open(FileName_node) as nodescsv:
         nodeNumber,3,z)
 
 
+# if tissueMeshNumber==1:
+#     boundaryFile='input/bioheat/boundary_nodes.csv'
+# elif tissueMeshNumber==2:
+#     boundaryFile='input/bioheat/mesh2/boundary_nodes.csv'
+# elif tissueMeshNumber==3:
+boundaryFile = problemParams.boundaryNodesFile
 
-with open('input/bioheat/boundary_nodes.csv') as csvFile:
+with open(boundaryFile) as csvFile:
   reader = csv.reader(csvFile)
   # next(elementscsv)
   for row in reader:
@@ -1777,7 +1819,8 @@ if (not TestFlow):
   equationsSetTissue.DependentCreateFinish()
 
   # Initialise dependent field
-  dependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,36.3*THsb)
+  Tinit_t=problemParams.Tinit_tissue*THsb
+  dependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,Tinit_t)
 
   dependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
   dependentFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
@@ -1801,7 +1844,8 @@ if (CoupledBioheatFlow or TestFlow):
   equationsSetEnergy.DependentCreateFinish()
 
   # Initialise dependent field
-  dependentFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,37.0*THsb)
+  Tinit_b=problemParams.Tinit_blood*THsb
+  dependentFieldEnergy.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,Tinit_b)
 
   dependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
   dependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
@@ -3457,10 +3501,11 @@ if (CoupledBioheatFlow or Bioheat):
 
   solverEquationsEnergy.BoundaryConditionsCreateStart(boundaryConditionsEnergy)
 
+  Tinlet=problemParams.Tinlet_bl*THsb
   nodeDomain = Decomposition.NodeDomainGet(1,meshComponentNumberConc)
   if nodeDomain == computationalNodeNumber:
       boundaryConditionsEnergy.SetNode(dependentFieldEnergy,iron.FieldVariableTypes.U,1,1,1,1,
-          iron.BoundaryConditionsTypes.FIXED,[37.0*THsb])
+          iron.BoundaryConditionsTypes.FIXED,[Tinlet])
 
   dependentFieldEnergy.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
   dependentFieldEnergy.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
@@ -3479,14 +3524,15 @@ if (CoupledBioheatFlow or Bioheat):
   q_hUnit = 1#1e-6
   hUnit   = 1#1e-6
 
+  L_sk = problemParams.skin_L # mm
+  Rtot=1/((h_conv+hr_rad))+L_sk/k_sk # units
 
-  Rtot=1/((h_conv+hr_rad))+3/k_sk # units
-
+  Tinit_sk = problemParams.Tinit_skin*THsb
   for nodeNumber in boundaryTissue:
     nodeDomain = decompositionTissue.NodeDomainGet(nodeNumber,1)
     if nodeDomain == computationalNodeNumber:
       dependentFieldTissue.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-        1,1,nodeNumber,1,20.0) # Initialise skin temperature
+        1,1,nodeNumber,1,Tinit_sk) # Initialise skin temperature
       boundaryConditionsTissue.SetNode(dependentFieldTissue,iron.FieldVariableTypes.DELUDELN,1,1,nodeNumber,1,
         iron.BoundaryConditionsTypes.ROBIN,[1.0/(rho_sk*c_sk*Rtot),1.0/(rho_sk*c_sk*Rtot)* Tair])
 
@@ -3760,14 +3806,9 @@ start = time.time()
 problem.Solve()
 end = time.time()
 elapsed = end - start
-print( "Total Number of Elements = %d " %totalNumberOfElements)
-print( "Total Number of nodes = %d " %numberOfNodes)
 print( "Calculation Time = %3.4f" %elapsed)
 print( "Problem solved!")
 print( "#")
-print( "number of muscle Elements = %d\nnumber of left radius elements = %d\nHumerus=%d\nUlna=%d\ntotal number of elements = %d\n"%(
-len(muscleElements),len(leftRadiusElements),len(leftHumerusElements),len(leftUlnaElements),len(muscleElements)+
-len(leftRadiusElements)+len(leftHumerusElements)+len(leftUlnaElements)))
 # print( "number of boundary nodes = %d"%len(boundary))
 print( '\033[1;31m'+"Elapsed time: "+'\033[0m', time.time()-t)
 #!# Export results
