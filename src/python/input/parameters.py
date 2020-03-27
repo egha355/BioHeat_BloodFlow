@@ -2,14 +2,14 @@ class Problem_Params:
     def __init__(self):
         self.coupled = 3 # CoupledBioheatFlow
         self.coupled_set(self.coupled)
-        self.tissueMeshNumber=3
+        self.tissueMeshNumber=2
         self.numberOfElementNodes = 4
         self.number_of_element_nodes_set(self.tissueMeshNumber)
         # time parameters, bioheat
-        self.timeIncrementBioheat = 0.01
+        self.timeIncrementBioheat = 10
         self.startTimeBioheat = 0.0
-        self.timeStepsBioheat = 1501
-        self.diffusionOutputFrequency = 1
+        self.timeStepsBioheat = 301
+        self.diffusionOutputFrequency = 100
         # time parameters, flow
         self.flowOutputFrequency = 1
         self.startTimeFlow = 0.0
