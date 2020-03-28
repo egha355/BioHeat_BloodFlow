@@ -569,7 +569,8 @@ if (CoupledBioheatFlow or TestFlow):
       print( " == >> Reading geometry from files... << == ")
 
   # Read the node file
-  with open('input/Flow/Node.csv','r') as csvfile:
+  flowNodeFile = problemParams.flowNodeFile
+  with open(flowNodeFile,'r') as csvfile:
       reader = csv.reader(csvfile, delimiter=',')
   #    workSpace(vars())
       rownum = 0
@@ -656,7 +657,8 @@ if (CoupledBioheatFlow or TestFlow):
   #------------------
 
   # Read the element file
-  with open('input/Flow/Element.csv','r') as csvfile:
+  flowElementFile = problemParams.flowElementFile
+  with open(flowElementFile,'r') as csvfile:
       reader = csv.reader(csvfile, delimiter=',')
       rownum = 0
       i = 0
@@ -2415,79 +2417,95 @@ if (CoupledBioheatFlow or TestFlow):
   IndependentFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,2,meshComponentNumberSpace)
   equationsSetEnergy.IndependentCreateFinish()
 
-  # Set the velocity
-    # Read Q and A data from the file
-  with open('input/Flow/QAextracted.csv','r') as csvfile:
-      reader = csv.reader(csvfile, delimiter=',')
+  singleVessel=True
+  if (singleVessel) :
+    Qflow=[4.44, -0.269, 22.9, 119.0, 89.0, 21.3, -18.2, -9.02, 2.62, 10.1, 4.44]
 
-      rownum = 0
-      timeStep = 0
-      for row in reader:
-          if (rownum == 0):
-              # Read the header row
-              header = row
-          else:
-              # Read the value
-              nodeIdx = int(row[0])
-              if (nodeIdx == 1):
-                  timeStep+=1
-                  comp1=timeStep*2-1
-                  comp2=timeStep*2
-              nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
-              if (nodeDomain == computationalNodeNumber):              
-                Qdata=float(row[1]) # Flow rate   (mm3/s)
-                Adata=float(row[2]) # Area        (mm2)
-                IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    1,derivIdx,nodeIdx,comp1,Qdata)
-                IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    1,derivIdx,nodeIdx,comp2,Adata)                
-                if (row[3]):
-                  Qdata1=float(row[1]) # Flow rate   (mm3/s)
-                  Qdata2=float(row[2]) # Flow rate   (mm3/s)
-                  Qdata3=float(row[3]) # Flow rate   (mm3/s)
-                  Adata1=float(row[4]) # Cross-section area   (mm3/s)
-                  Adata2=float(row[5]) # Cross-section area   (mm3/s)
-                  Adata3=float(row[6]) # Cross-section area   (mm3/s)                                                                        
-                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    1,derivIdx,nodeIdx,comp1,Qdata1)
-                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    2,derivIdx,nodeIdx,comp1,Qdata2)   
-                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    3,derivIdx,nodeIdx,comp1,Qdata3)
-                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    1,derivIdx,nodeIdx,comp2,Adata1)
-                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    2,derivIdx,nodeIdx,comp2,Adata2)
-                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    3,derivIdx,nodeIdx,comp2,Adata3)                   
-                if (row[7]):
-                  Qdata1=float(row[1]) # Flow rate   (mm3/s)    
-                  Qdata2=float(row[2]) # Flow rate   (mm3/s)
-                  Qdata3=float(row[3]) # Flow rate   (mm3/s)
-                  Qdata4=float(row[4]) # Flow rate   (mm3/s)                  
-                  Adata1=float(row[5]) # Cross-section area   (mm3/s)
-                  Adata2=float(row[6]) # Cross-section area   (mm3/s)
-                  Adata3=float(row[7]) # Cross-section area   (mm3/s)                                   
-                  Adata4=float(row[8]) # Cross-section area   (mm3/s)
-                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    1,derivIdx,nodeIdx,comp1,Qdata1)
-                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    2,derivIdx,nodeIdx,comp1,Qdata2)
-                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    3,derivIdx,nodeIdx,comp1,Qdata3)
-                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    4,derivIdx,nodeIdx,comp1,Qdata4)   
-                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    1,derivIdx,nodeIdx,comp2,Adata1)
-                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    2,derivIdx,nodeIdx,comp2,Adata2)
-                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    3,derivIdx,nodeIdx,comp2,Adata3)
-                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-                    4,derivIdx,nodeIdx,comp2,Adata4)                                                     
+    # Set the velocity
+    for nodeIdx in range(1,numberOfNodesSpace+1):
+      nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+      if (nodeDomain == computationalNodeNumber):
+        for timeStep in range(1,12):
+            comp2flow=timeStep*2
+            comp1flow=comp2flow-1
+            IndependentFieldEnergy.ParameterSetUpdateNode(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+            1,derivIdx,nodeIdx,comp1flow,Qflow[timeStep-1]) # flow rate in ml/s
+            IndependentFieldEnergy.ParameterSetUpdateNode(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+            1,derivIdx,nodeIdx,comp2flow,10.0)     # A is 10 mm2
+  else:
+    # Set the velocity
+      # Read Q and A data from the file
+    with open('input/Flow/QAextracted.csv','r') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
 
-          # Next line
-          rownum+=1
+        rownum = 0
+        timeStep = 0
+        for row in reader:
+            if (rownum == 0):
+                # Read the header row
+                header = row
+            else:
+                # Read the value
+                nodeIdx = int(row[0])
+                if (nodeIdx == 1):
+                    timeStep+=1
+                    comp1=timeStep*2-1
+                    comp2=timeStep*2
+                nodeDomain = Decomposition.NodeDomainGet(nodeIdx,meshComponentNumberSpace)
+                if (nodeDomain == computationalNodeNumber):              
+                  Qdata=float(row[1]) # Flow rate   (ml/s)
+                  Adata=float(row[2]) # Area        (mm2)
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      1,derivIdx,nodeIdx,comp1,Qdata)
+                  IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      1,derivIdx,nodeIdx,comp2,Adata)                
+                  if (row[3]):
+                    Qdata1=float(row[1]) # Flow rate   (ml/s)
+                    Qdata2=float(row[2]) # Flow rate   (ml/s)
+                    Qdata3=float(row[3]) # Flow rate   (ml/s)
+                    Adata1=float(row[4]) # Cross-section area   (mm2)
+                    Adata2=float(row[5]) # Cross-section area   (mm2)
+                    Adata3=float(row[6]) # Cross-section area   (mm2)                                                                        
+                    IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      1,derivIdx,nodeIdx,comp1,Qdata1)
+                    IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      2,derivIdx,nodeIdx,comp1,Qdata2)   
+                    IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      3,derivIdx,nodeIdx,comp1,Qdata3)
+                    IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      1,derivIdx,nodeIdx,comp2,Adata1)
+                    IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      2,derivIdx,nodeIdx,comp2,Adata2)
+                    IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      3,derivIdx,nodeIdx,comp2,Adata3)                   
+                  if (row[7]):
+                    Qdata1=float(row[1]) # Flow rate   (ml/s)    
+                    Qdata2=float(row[2]) # Flow rate   (ml/s)
+                    Qdata3=float(row[3]) # Flow rate   (ml/s)
+                    Qdata4=float(row[4]) # Flow rate   (ml/s)                  
+                    Adata1=float(row[5]) # Cross-section area   (mm2)
+                    Adata2=float(row[6]) # Cross-section area   (mm2)
+                    Adata3=float(row[7]) # Cross-section area   (mm2)                                   
+                    Adata4=float(row[8]) # Cross-section area   (mm2)
+                    IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      1,derivIdx,nodeIdx,comp1,Qdata1)
+                    IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      2,derivIdx,nodeIdx,comp1,Qdata2)
+                    IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      3,derivIdx,nodeIdx,comp1,Qdata3)
+                    IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      4,derivIdx,nodeIdx,comp1,Qdata4)   
+                    IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      1,derivIdx,nodeIdx,comp2,Adata1)
+                    IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      2,derivIdx,nodeIdx,comp2,Adata2)
+                    IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      3,derivIdx,nodeIdx,comp2,Adata3)
+                    IndependentFieldEnergy.ParameterSetUpdateNodeDP(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+                      4,derivIdx,nodeIdx,comp2,Adata4)                                                     
+
+            # Next line
+            rownum+=1
 
 
   # Finish the parameter update
