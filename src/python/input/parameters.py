@@ -13,14 +13,14 @@ class Problem_Params:
         self.diffusionOutputFrequency = 1 # (4)
 
         # time parameters, flow
-        self.flowOutputFrequency = 1 # (5)
+        self.flowOutputFrequency = 20 # (5)
         self.startTimeFlow = 0.0
-        self.timeStepsFlow = 1 # (6)
-        self.timeIncrementFlow = 0.1 # (7)
+        self.timeStepsFlow = 2001 # (6)
+        self.timeIncrementFlow = 0.5 # (7)
        
         # input mesh files
-        self.flowNodeFile = 'input/node2.csv' # (8)
-        self.flowElementFile = 'input/element2.csv' # (9)
+        self.flowNodeFile = 'input/singleBifurcation/nodeBif.csv' # (8)
+        self.flowElementFile = 'input/singleBifurcation/elementBif.csv' # (9)
 
         # properties
         self.conductivity_blood   = 0.5
@@ -28,18 +28,18 @@ class Problem_Params:
         self.c_blood              = 3650.0
         self.rho_muscle           = 1085.0   #   muscle density
         self.c_muscle             = 3768.0        # J/Kg.K   muscle specific heat
-        self.rho_bone             = 1357.0   # kg/mm3    bone density
+        self.rho_bone             = 1357.0   # kg/m3    bone density
         self.c_bone               = 1700.0        # J/Kg.K   bone specific heat
-        self.rho_skin             = 1085.0   # kg/mm3    skin density
+        self.rho_skin             = 1085.0   # kg/m3    skin density
         self.c_skin               = 3680.0        # J/Kg.K   skin specific heat
 
-        self.k_muscle             = 0.42     # W/mm.K muscle conductivity.
-        self.k_bone               = 0.75     # W/mm.K bone conductivity.
-        self.k_skin               = 0.47     # W/mm.K skin conductivity.
+        self.k_muscle             = 0.42     # W/m.K muscle conductivity.
+        self.k_bone               = 0.75     # W/m.K bone conductivity.
+        self.k_skin               = 0.47     # W/m.K skin conductivity.
 
-        self.h_conv             = 2.0      # W/mm2.K
-        #h_conv            = 200.0*1e-6    # W/mm2.K for water
-        self.hr_rad             = 5.9      # W/mm2.K See example 3.12 Incropera
+        self.h_conv             = 2.0      # W/m2.K
+        #h_conv            = 200.0*1e-6    # W/m2.K for water
+        self.hr_rad             = 5.9      # W/m2.K See example 3.12 Incropera
 
         # R_arm              = 0.03          # m
 
@@ -55,7 +55,7 @@ class Problem_Params:
         self.w_perfusion        = 5e-4          # 1/s terminal blood flow per volume of tissue.
 
         self.qm_0                    = 700.0           # Basal metabolic heat
-        self.Nusselt                 = 4.0   
+        self.Nusselt                 = 4.0#*1.0*0.42/(0.42*1.0+4*0.5) # Tt fixed rather than Tw. Nu_new=Nu* kt/(kt+Nu*kb)  
 
         self.tissue_input_files_set(self.tissueMeshNumber)
 
