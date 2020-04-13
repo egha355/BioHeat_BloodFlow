@@ -34,3 +34,7 @@ src/python/input/__pycache__/
 
 src/python/input/bioheat/mesh2/
 n16mesh2/
+Poutlet.xlsx
+
+otherMeshes/
+src/python/expected-results/singleBifurcation/codes/
