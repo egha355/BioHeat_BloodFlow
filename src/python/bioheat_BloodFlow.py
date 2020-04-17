@@ -2417,7 +2417,7 @@ if (CoupledBioheatFlow or TestFlow):
   IndependentFieldEnergy.ComponentMeshComponentSet(iron.FieldVariableTypes.U,2,meshComponentNumberSpace)
   equationsSetEnergy.IndependentCreateFinish()
 
-  singleVessel=True
+  singleVessel=False
   if (singleVessel) :
     Qflow=[4.44, -0.269, 22.9, 119.0, 89.0, 21.3, -18.2, -9.02, 2.62, 10.1, 4.44]
 

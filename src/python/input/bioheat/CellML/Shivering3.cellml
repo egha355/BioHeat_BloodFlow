@@ -357,14 +357,6 @@ unit pascal {mult: 0.0075};-->
                 <ci>Qshivmax</ci>
                 <piecewise>
                     <piece>
-                        <cn cellml:units="dimensionless">0.0</cn>
-                        <apply>
-                            <gt/>
-                            <ci>Tcore</ci>
-                            <cn cellml:units="dimensionless">37.1</cn>
-                        </apply>
-                    </piece>
-                    <otherwise>
                         <apply>
                             <times/>
                             <apply>
@@ -415,6 +407,22 @@ unit pascal {mult: 0.0075};-->
                                 </apply>
                             </apply>
                         </apply>
+                        <apply>
+                            <and/>
+                            <apply>
+                                <geq/>
+                                <ci>Tcore</ci>
+                                <cn cellml:units="dimensionless">35.8</cn>
+                            </apply>
+                            <apply>
+                                <leq/>
+                                <ci>Tcore</ci>
+                                <cn cellml:units="dimensionless">37.1</cn>
+                            </apply>
+                        </apply>
+                    </piece>
+                    <otherwise>
+                        <cn cellml:units="dimensionless">0.0</cn>
                     </otherwise>
                 </piecewise>
             </apply>
@@ -491,9 +499,9 @@ unit pascal {mult: 0.0075};-->
         <variable name="rho_t" private_interface="in" units="dimensionless"/>
         <variable name="c_t" private_interface="in" units="dimensionless"/>
         <variable name="source" public_interface="out" units="dimensionless"/>
-        <!-- convert from mm3 to m3-->
-        <!--        vol = vol*1e-9{dimensionless};-->
-        <!-- Every parameter is in SI units. source unit is K/s. In OpenCMISS we use mm instead of m.-->
+        <!--var vol: dimensionless;-->
+        <!-- convert from mm3 to m3
+ Every parameter is in SI units. source unit is K/s. In OpenCMISS we use mm instead of m.-->
         <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
                 <eq/>
@@ -504,7 +512,16 @@ unit pascal {mult: 0.0075};-->
                         <plus/>
                         <apply>
                             <divide/>
-                            <ci>Qshiv</ci>
+                            <apply>
+                                <times/>
+                                <cn cellml:units="dimensionless">1.0</cn>
+                                <apply>
+                                    <power/>
+                                    <cn cellml:units="dimensionless">10</cn>
+                                    <cn cellml:units="dimensionless">9</cn>
+                                </apply>
+                                <ci>Qshiv</ci>
+                            </apply>
                             <ci>vol</ci>
                         </apply>
                         <ci>q_m0</ci>

@@ -2,25 +2,25 @@ class Problem_Params:
     def __init__(self):
         self.coupled = 3 # CoupledBioheatFlow
         self.coupled_set(self.coupled)
-        self.tissueMeshNumber=3 # (1)
+        self.tissueMeshNumber=2 # (1)
         self.numberOfElementNodes = 4
         self.number_of_element_nodes_set(self.tissueMeshNumber)
 
         # time parameters, bioheat
-        self.timeIncrementBioheat = 0.01 # (2)
+        self.timeIncrementBioheat = 10 # (2)
         self.startTimeBioheat = 0.0
-        self.timeStepsBioheat = 501 # (3)
-        self.diffusionOutputFrequency = 1 # (4)
+        self.timeStepsBioheat = 1601 # (3)
+        self.diffusionOutputFrequency = 100 # (4)
 
         # time parameters, flow
-        self.flowOutputFrequency = 20 # (5)
+        self.flowOutputFrequency = 100 # (5)
         self.startTimeFlow = 0.0
-        self.timeStepsFlow = 2001 # (6)
-        self.timeIncrementFlow = 0.5 # (7)
+        self.timeStepsFlow = 1 # (6)
+        self.timeIncrementFlow = 0.1 # (7)
        
         # input mesh files
-        self.flowNodeFile = 'input/singleBifurcation/nodeBif.csv' # (8)
-        self.flowElementFile = 'input/singleBifurcation/elementBif.csv' # (9)
+        self.flowNodeFile = 'input/Flow/Node.csv' # (8)
+        self.flowElementFile = 'input/Flow/Element.csv' # (9)
 
         # properties
         self.conductivity_blood   = 0.5
