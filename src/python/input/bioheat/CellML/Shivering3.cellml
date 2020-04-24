@@ -44,7 +44,7 @@ unit pascal {mult: 0.0075};-->
             <apply>
                 <eq/>
                 <ci>BloodTemperature</ci>
-                <cn cellml:units="dimensionless">37.0</cn>
+                <cn cellml:units="dimensionless">36.6</cn>
             </apply>
             <!--becauase we are forced to use otherwise I put muscle in otherwise hopefully I do not forget this shortcomming
 [1,2,3,4,5,6,7]=Skeletal muscle,Bone,Brain,Lung,Viscera,Fat,Skin-->

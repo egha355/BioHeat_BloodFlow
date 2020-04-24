@@ -7,10 +7,10 @@ class Problem_Params:
         self.number_of_element_nodes_set(self.tissueMeshNumber)
 
         # time parameters, bioheat
-        self.timeIncrementBioheat = 10 # (2)
+        self.timeIncrementBioheat = 100 # (2)
         self.startTimeBioheat = 0.0
-        self.timeStepsBioheat = 1601 # (3)
-        self.diffusionOutputFrequency = 100 # (4)
+        self.timeStepsBioheat = 61 # (3)
+        self.diffusionOutputFrequency = 1 # (4)
 
         # time parameters, flow
         self.flowOutputFrequency = 100 # (5)
@@ -31,26 +31,26 @@ class Problem_Params:
         self.rho_bone             = 1357.0   # kg/m3    bone density
         self.c_bone               = 1700.0        # J/Kg.K   bone specific heat
         self.rho_skin             = 1085.0   # kg/m3    skin density
-        self.c_skin               = 3680.0        # J/Kg.K   skin specific heat
+        self.c_skin               = 3768.0        # J/Kg.K   skin specific heat
 
         self.k_muscle             = 0.42     # W/m.K muscle conductivity.
         self.k_bone               = 0.75     # W/m.K bone conductivity.
-        self.k_skin               = 0.47     # W/m.K skin conductivity.
+        self.k_skin               = 0.42     # W/m.K skin conductivity.
 
-        self.h_conv             = 2.0      # W/m2.K
+        self.h_conv             = 100000.0      # W/m2.K
         #h_conv            = 200.0*1e-6    # W/m2.K for water
         self.hr_rad             = 5.9      # W/m2.K See example 3.12 Incropera
 
         # R_arm              = 0.03          # m
 
-        self.Tblood             = 37.0          # C blood temeprature
-        self.Tair               = 17.7          # C
-        self.Tinit_tissue       = 36.3 
-        self.Tinit_skin         = 20.0
+        #self.Tblood             = 36.6          # C blood temeprature
+        self.Tair               = 33.7          # C
+        self.Tinit_tissue       = 36.8 
+        self.Tinit_skin         = 33.7
         self.Tinit_blood        = 37.0
         self.Tinlet_bl          = 37.0
 
-        self.skin_L             = 3
+        self.skin_L             = 0.0 # no clothing resistance if 0.
 
         self.w_perfusion        = 5e-4          # 1/s terminal blood flow per volume of tissue.
 
@@ -84,7 +84,13 @@ class Problem_Params:
             self.numberOfElementsTissue = 128
             self.tissueElementsFile = 'input/bioheat/mesh3/elements.csv' 
             self.tissueNodesFile    = "input/bioheat/mesh3/nodes.csv"
-            self.boundaryNodesFile  = 'input/bioheat/mesh3/boundary_nodes.csv'   
+            self.boundaryNodesFile  = 'input/bioheat/mesh3/boundary_nodes.csv'
+        elif value==4:
+            self.numberOfNodesTissue    = 10143
+            self.numberOfElementsTissue = 33247
+            self.tissueElementsFile = 'input/bioheat/mesh4/elements.csv' 
+            self.tissueNodesFile    = "input/bioheat/mesh4/nodes.csv"
+            self.boundaryNodesFile  = 'input/bioheat/mesh4/boundary_nodes.csv' 			
 
     def number_of_element_nodes_set(self, value): 
         if value == 3:

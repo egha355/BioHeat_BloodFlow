@@ -61,8 +61,8 @@ from input.parameters import Problem_Params
 
 t=time.time()
 # Diagnostics
-#iron.DiagnosticsSetOn(iron.DiagnosticTypes.IN,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"])
-#iron.DiagnosticsSetOn(iron.DiagnosticTypes.ALL,[1,2,3,4,5],"Diagnostics",[""])
+# iron.DiagnosticsSetOn(iron.DiagnosticTypes.IN,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"])
+# iron.DiagnosticsSetOn(iron.DiagnosticTypes.ALL,[1,2,3,4,5],"Diagnostics",["DOMAIN_MAPPINGS_LOCAL_FROM_GLOBAL_CALCULATE"])
 #iron.ErrorHandlingModeSet(iron.ErrorHandlingModes.TRAP_ERROR)
 #iron.OutputSetOn("Testing")
 
@@ -782,7 +782,7 @@ hr_rad             = problemParams.hr_rad*Hsb      # W/mm2.K See example 3.12 In
 
 # R_arm              = 0.03          # m
 
-Tb                 = problemParams.Tblood*THsb          # C blood temeprature
+#Tb                 = problemParams.Tblood*THsb          # C blood temeprature
 Tair               = problemParams.Tair*THsb          # C
                                         
 w                  = problemParams.w_perfusion*(1/Tsb)          # 1/s terminal blood flow per volume of tissue.
@@ -3863,7 +3863,7 @@ print( '\033[1;31m'+"Elapsed time: "+'\033[0m', time.time()-t)
 #!  WRITE(*,'(A)') "Program successfully completed."
 
 #!  STOP
-iron.Finalise()
+#iron.Finalise()
 #!END PROGRAM DIFFUSIONCONSTANTSOURCEEXAMPLE
 
 
