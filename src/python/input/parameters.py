@@ -7,10 +7,10 @@ class Problem_Params:
         self.number_of_element_nodes_set(self.tissueMeshNumber)
 
         # time parameters, bioheat
-        self.timeIncrementBioheat = 100 # (2)
+        self.timeIncrementBioheat = 10 # (2)
         self.startTimeBioheat = 0.0
-        self.timeStepsBioheat = 61 # (3)
-        self.diffusionOutputFrequency = 1 # (4)
+        self.timeStepsBioheat = 721 # (3)
+        self.diffusionOutputFrequency = 10 # (4)
 
         # time parameters, flow
         self.flowOutputFrequency = 100 # (5)

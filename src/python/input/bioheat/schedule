@@ -1,0 +1,4 @@
+start,timeIncrement,timeSteps,outputFrequency,hc,qr
+2
+0.0,10,360,10,1.0,1.0
+3600.0,10,720,10,0.00022,0.0000848664688427
