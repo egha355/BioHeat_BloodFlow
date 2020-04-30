@@ -765,15 +765,25 @@ Alpha_b              = k_bl/(rho_bl*c_bl)       # Diffusivity
 
 # Tissue ==========
 # Be careful these parameters should be consistent with the values in cellML model. Even slightly differece can make a big error.
-rho_ms             = problemParams.rho_muscle*RHOsb   #   muscle density
-c_ms               = problemParams.c_muscle*CPsb        # J/Kg.K   muscle specific heat
-rho_bn             = problemParams.rho_bone*RHOsb   # kg/mm3    bone density
-c_bn               = problemParams.c_bone*CPsb        # J/Kg.K   bone specific heat
+tissueProperties = numpy.array(problemParams.properties)
+tissueProperties[:,0]*= Ksb            # W/mm.K
+tissueProperties[:,1]*= RHOsb          # kg/mm3
+tissueProperties[:,2]*= CPsb           # J/Kg.K
+tissueProperties[:,3]*= POsb/Lsb**3    # W/mm3
+tissueProperties[:,4]*= 1/Tsb          # 1/s
+
+# print(tissueProperties)
+
+
+# rho_ms             = problemParams.rho_muscle*RHOsb   #   muscle density
+# c_ms               = problemParams.c_muscle*CPsb        # J/Kg.K   muscle specific heat
+# rho_bn             = problemParams.rho_bone*RHOsb   # kg/mm3    bone density
+# c_bn               = problemParams.c_bone*CPsb        # J/Kg.K   bone specific heat
 rho_sk             = problemParams.rho_skin*RHOsb   # kg/mm3    skin density
 c_sk               = problemParams.c_skin*CPsb        # J/Kg.K   skin specific heat
 
-k_ms               = problemParams.k_muscle*Ksb     # W/mm.K muscle conductivity.
-k_bn               = problemParams.k_bone*Ksb     # W/mm.K bone conductivity.
+# k_ms               = problemParams.k_muscle*Ksb     # W/mm.K muscle conductivity.
+# k_bn               = problemParams.k_bone*Ksb     # W/mm.K bone conductivity.
 k_sk               = problemParams.k_skin*Ksb     # W/mm.K skin conductivity.
 
 h_conv             = problemParams.h_conv*Hsb      # W/mm2.K
@@ -785,16 +795,18 @@ hr_rad             = problemParams.hr_rad*Hsb      # W/mm2.K See example 3.12 In
 #Tb                 = problemParams.Tblood*THsb          # C blood temeprature
 Tair               = problemParams.Tair*THsb          # C
                                         
-w                  = problemParams.w_perfusion*(1/Tsb)          # 1/s terminal blood flow per volume of tissue.
+# w                  = problemParams.w_perfusion*(1/Tsb)          # 1/s terminal blood flow per volume of tissue.
 
-cMuscle            = rho_bl*c_bl/(rho_ms*c_ms) *w   # 4.51128e-4 1/s
+# cMuscle            = rho_bl*c_bl/(rho_ms*c_ms) *w   # 4.51128e-4 1/s
 
-cBone              = 0.0*CPsb           #\see equations section
-diff_ms            = k_ms/(rho_ms*c_ms)   # muscle diffusivity
-diff_bn            = k_bn/(rho_bn*c_bn)   # bone diffusivity
+# cBone              = 0.0*CPsb           #\see equations section
+# diff_ms            = k_ms/(rho_ms*c_ms)   # muscle diffusivity
+# diff_bn            = k_bn/(rho_bn*c_bn)   # bone diffusivity
 
-qm                 = problemParams.qm_0*POsb/Lsb**3            # Basal metabolic heat
+# qm                 = problemParams.qm_0*POsb/Lsb**3            # Basal metabolic heat
 Nu                 = problemParams.Nusselt                        # Nusselt number for artery
+
+
 # ================================================
 
 
@@ -1240,6 +1252,7 @@ meshElementsTissue.CreateStart(meshTissue, meshComponentNumber, basisTissue)
 # elif tissueMeshNumber==2:
 #     tissueElementsFile='input/bioheat/mesh2/elements.csv'    
 # elif tissueMeshNumber==3:
+tissueType=numpy.zeros(numberOfElementsTissue+1, dtype=int) 
 tissueElementsFile = problemParams.tissueElementsFile 
 
 with open(tissueElementsFile) as elementscsv:
@@ -1251,12 +1264,14 @@ with open(tissueElementsFile) as elementscsv:
       
       for elemIdx in range(numberOfLocalNodes):
         localNodes[elemIdx]=int(row[elemIdx])+1
-      materialType = int(row[numberOfLocalNodes])
-      if materialType == kidneyLeft:
-        kidneyElementsLeft.append(elementNumber)
-      elif materialType == kidneyRight:
-        kidneyElementsRight.append(elementNumber)
+        tissueType[elementNumber]=int(row[numberOfLocalNodes])
+      # materialType = int(row[numberOfLocalNodes])
+      # if materialType == kidneyLeft:
+      #   kidneyElementsLeft.append(elementNumber)
+      # elif materialType == kidneyRight:
+      #   kidneyElementsRight.append(elementNumber)
       meshElementsTissue.NodesSet(elementNumber,localNodes)
+
 # print(kidneyElementsLeft[1],kidneyElementsRight[1],'Hi',len(kidneyElementsLeft),len(kidneyElementsRight))
 # elementscsv.close
 # with open(FileName_ele, "r") as f:
@@ -2054,13 +2069,35 @@ if (not TestFlow):
   #       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
   #   elementNumber,4, cBone)
 
-  materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,
-  diff_ms)
-  materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,2,
-  diff_ms)
-  materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,3,
-  diff_ms)
-  materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,4,cMuscle)
+  for elemIdx in range(1,numberOfElementsTissue+1):
+    elementNumber=elemIdx
+    elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
+    if elementDomain == computationalNodeNumber:
+      typeOfTissue=tissueType[elementNumber]
+      kt=tissueProperties[typeOfTissue,0]
+      rhot=tissueProperties[typeOfTissue,1]
+      ct=tissueProperties[typeOfTissue,2]
+      w=tissueProperties[typeOfTissue,4]
+      tissueDiffusivity=kt/(rhot*ct)
+      c_param = rho_bl*c_bl/(rhot*ct)*w
+      materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+        elementNumber,1, tissueDiffusivity)
+      materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+        elementNumber,2, tissueDiffusivity)
+      materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+        elementNumber,3, tissueDiffusivity)
+      materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+        elementNumber,4, c_param)
+                
+
+
+  # materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,1,
+  # diff_ms)
+  # materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,2,
+  # diff_ms)
+  # materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,3,
+  # diff_ms)
+  # materialsFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,4,cMuscle)
 
   materialsFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
   materialsFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
@@ -2372,12 +2409,21 @@ if (not TestFlow):
   equationsSetTissue.IndependentCreateFinish()
 
   # Set the parameters
-  IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-    1,37.0*THsb)
-  IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-    2,37.0*THsb)
-  IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-    3,1)
+  # IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+    # 1,37.0*THsb)
+  # IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+    # 2,37.0*THsb)
+  # IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #   3,1)
+
+  for elemIdx in range(1,numberOfElementsTissue+1):
+    elementNumber=elemIdx
+    elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
+    if elementDomain == computationalNodeNumber:
+      typeOfTissue=tissueType[elementNumber]
+      tissue=tissueProperties[typeOfTissue,5]
+      IndependentFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+        elementNumber,3, tissue)
 
   # for elementNumber in kidneyElementsLeft:
   #   elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
@@ -2391,8 +2437,8 @@ if (not TestFlow):
   #     IndependentFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
   #       elementNumber,4,kidneyRight) 
 
-  IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
-    4,1)
+  #IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+  #  4,1)
 
   # Finish the parameter update
   IndependentFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
