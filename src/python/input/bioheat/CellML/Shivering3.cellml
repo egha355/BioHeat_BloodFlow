@@ -506,39 +506,69 @@ unit pascal {mult: 0.0075};-->
             <apply>
                 <eq/>
                 <ci>source</ci>
-                <apply>
-                    <divide/>
-                    <apply>
-                        <plus/>
+                <piecewise>
+                    <piece>
                         <apply>
                             <divide/>
                             <apply>
-                                <times/>
-                                <cn cellml:units="dimensionless">1.0</cn>
+                                <plus/>
                                 <apply>
-                                    <power/>
-                                    <cn cellml:units="dimensionless">10</cn>
-                                    <cn cellml:units="dimensionless">9</cn>
+                                    <divide/>
+                                    <apply>
+                                        <times/>
+                                        <cn cellml:units="dimensionless">1.0</cn>
+                                        <apply>
+                                            <power/>
+                                            <cn cellml:units="dimensionless">10</cn>
+                                            <cn cellml:units="dimensionless">9</cn>
+                                        </apply>
+                                        <ci>Qshiv</ci>
+                                    </apply>
+                                    <ci>vol</ci>
                                 </apply>
-                                <ci>Qshiv</ci>
+                                <ci>q_m0</ci>
+                                <apply>
+                                    <times/>
+                                    <ci>rho_b</ci>
+                                    <ci>c_b</ci>
+                                    <ci>w</ci>
+                                    <ci>T_b</ci>
+                                </apply>
                             </apply>
-                            <ci>vol</ci>
+                            <apply>
+                                <times/>
+                                <ci>rho_t</ci>
+                                <ci>c_t</ci>
+                            </apply>
                         </apply>
-                        <ci>q_m0</ci>
                         <apply>
-                            <times/>
-                            <ci>rho_b</ci>
-                            <ci>c_b</ci>
-                            <ci>w</ci>
-                            <ci>T_b</ci>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">1</cn>
                         </apply>
-                    </apply>
-                    <apply>
-                        <times/>
-                        <ci>rho_t</ci>
-                        <ci>c_t</ci>
-                    </apply>
-                </apply>
+                    </piece>
+                    <otherwise>
+                        <apply>
+                            <divide/>
+                            <apply>
+                                <plus/>
+                                <ci>q_m0</ci>
+                                <apply>
+                                    <times/>
+                                    <ci>rho_b</ci>
+                                    <ci>c_b</ci>
+                                    <ci>w</ci>
+                                    <ci>T_b</ci>
+                                </apply>
+                            </apply>
+                            <apply>
+                                <times/>
+                                <ci>rho_t</ci>
+                                <ci>c_t</ci>
+                            </apply>
+                        </apply>
+                    </otherwise>
+                </piecewise>
             </apply>
         </math>
     </component>
