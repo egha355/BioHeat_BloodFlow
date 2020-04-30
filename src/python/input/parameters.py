@@ -1,3 +1,5 @@
+import csv
+
 class Problem_Params:
     def __init__(self):
         self.coupled = 3 # CoupledBioheatFlow
@@ -9,7 +11,7 @@ class Problem_Params:
         # time parameters, bioheat
         self.timeIncrementBioheat = 10 # (2)
         self.startTimeBioheat = 0.0
-        self.timeStepsBioheat = 721 # (3)
+        self.timeStepsBioheat = 2881 # (3)
         self.diffusionOutputFrequency = 10 # (4)
 
         # time parameters, flow
@@ -22,6 +24,7 @@ class Problem_Params:
         self.flowNodeFile = 'input/Flow/Node.csv' # (8)
         self.flowElementFile = 'input/Flow/Element.csv' # (9)
 
+        self.properties_set('input/bioheat/mesh2/properties.csv')
         # properties
         self.conductivity_blood   = 0.5
         self.rho_blood            = 1069.0
@@ -97,5 +100,21 @@ class Problem_Params:
             self.numberOfElementNodes = 8
         else:
             self.numberOfElementNodes = 4
-
+            
+    def properties_set(self, file):
+		# Read the properties file
+        with open(file,'r') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',')
+            rownum = 0
+            for row in reader:
+                if (rownum == 0):
+                    # Read the header row
+                    header = row
+                    self.properties = (12)*[6*[0]]
+                else:	  
+                    # Read the properties
+                    self.properties[rownum] = [float(row[1]),float(row[2]),float(row[3]),float(row[4]),float(row[5]),int(row[6])]
+                # Next line	
+                rownum+=1
+					
 
