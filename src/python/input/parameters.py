@@ -62,6 +62,7 @@ class Problem_Params:
 
         self.tissue_input_files_set(self.tissueMeshNumber)
 
+        # self.schedule_create('input/bioheat/schedule.csv',self.rho_skin,self.c_skin)
 
 
     def coupled_set(self, value):
@@ -116,5 +117,35 @@ class Problem_Params:
                     self.properties[rownum] = [float(row[1]),float(row[2]),float(row[3]),float(row[4]),float(row[5]),int(row[6])]
                 # Next line	
                 rownum+=1
+
+    # def schedule_create(self, file,rhosk,csk):
+    #     # Read the schedule file
+    #     with open(file,'r') as csvfile, open('input/bioheat/schedule','w') as outfile:
+    #         reader = csv.reader(csvfile, delimiter=',')
+    #         rownum=0
+    #         for row in reader:
+    #             if (rownum==0):
+    #                 header = row
+    #             if (rownum==1):
+    #                 numberOfPhases=int(row[0])
+    #                 schedule=(numberOfPhases)*[6*[0]]
+    #             else:
+    #                 #Read the values
+    #                 schedule[rownum-2] = [float(row[0]),float(row[0]),int(row[0]),int(row[0]),float(row[0]),float(row[0])]
+    #             # Next line
+    #             rownum+=1
+    #         header2=header            
+    #         header2[4]='hmix/rhoc'
+    #         header2[5]='qr/rhoc'
+    #         csv_writer = csv.writer(outfile, delimiter=',')
+    #         csv_writer.writerow(header2)
+    #         csv_writer.writerow(numberOfPhases)
+    #         for idx in range(numberOfPhases):
+    #             schedule[idx][4]/=(rhosk*csk)
+    #             schedule[idx][5]*=schedule[idx][4]
+    #             csv_writer.writerow(schedule[idx])
+
+
+
 					
 

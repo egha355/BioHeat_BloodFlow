@@ -1,4 +1,4 @@
-start,timeIncrement,timeSteps,outputFrequency,hc,qr
+start,timeIncrement,timeSteps,outputFrequency,hmix/rhoc,qr/rhoc
 2
-0.0,10,360,10,1.0,1.0
-3600.0,10,720,10,0.00022,0.0000848664688427
+0.0,10,180,10,24.461607326308375,824.3561668965923
+1800.0,10,901,10,0.005381553611788,0.069960196953217
