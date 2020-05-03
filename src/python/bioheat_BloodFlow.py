@@ -2013,11 +2013,34 @@ if (not TestFlow):
   # Create the equations set material field variables for tissue
   materialsFieldTissue = iron.Field()
   equationsSetTissue.MaterialsCreateStart(materialsFieldUserNumberTissue,materialsFieldTissue)
+
+  materialsFieldTissue.VariableLabelSet(iron.FieldVariableTypes.V,'thermal properties')
+  # Set the dimension to scalar
+  materialsFieldTissue.DimensionSet(iron.FieldVariableTypes.V,iron.FieldDimensionTypes.VECTOR)
+  # Set number of components 3 for tissue density and specific heat and perfusion
+  materialsFieldTissue.NumberOfComponentsSet(iron.FieldVariableTypes.V,3)
+ # Set the labels for U variable
   materialsFieldTissue.VariableLabelSet(iron.FieldVariableTypes.U,'Materials')
   materialsFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,1,'Diffusivity 1')
   materialsFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,2,'Diffusivity 2')
   materialsFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,3,'Diffusivity 3')
   materialsFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,4,'Source T coeff.')
+ 
+
+  # Set the mesh component to be used by the field components.
+  materialsFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.V,1,1)
+  materialsFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.V,2,1)
+  materialsFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.V,3,1)
+  #Set the label for them
+  materialsFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.V,1,'rho')
+  materialsFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.V,2,'cp')
+  materialsFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.V,3,'perfusion')
+
+  # Set interpolation type
+  materialsFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.V,1,iron.FieldInterpolationTypes.ELEMENT_BASED)
+  materialsFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.V,2,iron.FieldInterpolationTypes.ELEMENT_BASED)
+  materialsFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.V,3,iron.FieldInterpolationTypes.ELEMENT_BASED)
+
   equationsSetTissue.MaterialsCreateFinish()
 
 
@@ -2088,6 +2111,14 @@ if (not TestFlow):
         elementNumber,3, tissueDiffusivity)
       materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
         elementNumber,4, c_param)
+        # set rhot and ct
+      materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES,
+        elementNumber,1, rhot)
+      materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES,
+        elementNumber,2, ct) 
+      materialsFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES,
+        elementNumber,3, w)               
+
                 
 
 
@@ -2101,6 +2132,8 @@ if (not TestFlow):
 
   materialsFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
   materialsFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES)
+  materialsFieldTissue.ParameterSetUpdateStart(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES)
+  materialsFieldTissue.ParameterSetUpdateFinish(iron.FieldVariableTypes.V,iron.FieldParameterSetTypes.VALUES)
 
 # =================================
 # F L O W

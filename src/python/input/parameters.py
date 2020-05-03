@@ -11,7 +11,7 @@ class Problem_Params:
         # time parameters, bioheat
         self.timeIncrementBioheat = 10 # (2)
         self.startTimeBioheat = 0.0
-        self.timeStepsBioheat = 2881 # (3)
+        self.timeStepsBioheat = 901 # (3)
         self.diffusionOutputFrequency = 10 # (4)
 
         # time parameters, flow
@@ -79,7 +79,7 @@ class Problem_Params:
         elif value==2:
             self.numberOfNodesTissue    = 48083
             self.numberOfElementsTissue = 248166
-            self.tissueElementsFile = 'input/bioheat/mesh2/elements.csv'
+            self.tissueElementsFile = 'input/bioheat/mesh2/elements2.csv'
             self.tissueNodesFile    = "input/bioheat/mesh2/nodes.csv"
             self.boundaryNodesFile  = 'input/bioheat/mesh2/boundary_nodes.csv'
         elif value==3:
@@ -110,7 +110,7 @@ class Problem_Params:
                 if (rownum == 0):
                     # Read the header row
                     header = row
-                    self.properties = (12)*[6*[0]]
+                    self.properties = (13)*[6*[0]]
                 else:	  
                     # Read the properties
                     self.properties[rownum] = [float(row[1]),float(row[2]),float(row[3]),float(row[4]),float(row[5]),int(row[6])]
