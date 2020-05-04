@@ -12,6 +12,8 @@ unit pascal {mult: 0.0075};-->
         <variable initial_value="37.0" name="Tcore" private_interface="out" units="dimensionless"/>
         <variable initial_value="1" name="OrganType" private_interface="out" units="dimensionless"/>
         <variable initial_value="1e6" name="MuscleVolume" private_interface="out" units="dimensionless"/>
+        <variable initial_value="13.0" name="Tair" private_interface="out" units="dimensionless"/>
+        <variable initial_value="5.0" name="Pv" private_interface="out" units="dimensionless"/>
         <!-- Variables we want to make available externally -->
         <variable name="source" private_interface="in" public_interface="out" units="dimensionless"/>
     </component>
@@ -483,13 +485,76 @@ unit pascal {mult: 0.0075};-->
         </math>
     </component>
     <!-- =====================================================================
+ Respiration
+ =====================================================================    -->
+    <component name="Respiration">
+        <variable name="Tair" public_interface="in" units="dimensionless"/>
+        <variable name="Pv" public_interface="in" units="dimensionless"/>
+        <variable name="qresp" public_interface="out" units="dimensionless"/>
+        <variable name="Vlung" units="dimensionless"/>
+        <variable name="Qmet" units="dimensionless"/>
+        <!-- W/m2-->
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+                <eq/>
+                <ci>Qmet</ci>
+                <cn cellml:units="dimensionless">58.2</cn>
+            </apply>
+            <!-- m3-->
+            <apply>
+                <eq/>
+                <ci>Vlung</ci>
+                <cn cellml:units="dimensionless">0.005631</cn>
+            </apply>
+            <!-- W/m3-->
+            <apply>
+                <eq/>
+                <ci>qresp</ci>
+                <apply>
+                    <times/>
+                    <apply>
+                        <divide/>
+                        <cn cellml:units="dimensionless">1</cn>
+                        <ci>Vlung</ci>
+                    </apply>
+                    <apply>
+                        <plus/>
+                        <apply>
+                            <times/>
+                            <cn cellml:units="dimensionless">0.0014</cn>
+                            <ci>Qmet</ci>
+                            <apply>
+                                <minus/>
+                                <cn cellml:units="dimensionless">34</cn>
+                                <ci>Tair</ci>
+                            </apply>
+                        </apply>
+                        <apply>
+                            <times/>
+                            <cn cellml:units="dimensionless">0.0173</cn>
+                            <ci>Qmet</ci>
+                            <apply>
+                                <minus/>
+                                <cn cellml:units="dimensionless">5.87</cn>
+                                <ci>Pv</ci>
+                            </apply>
+                        </apply>
+                    </apply>
+                </apply>
+            </apply>
+        </math>
+    </component>
+    <!-- =====================================================================
  source term update value 
  =====================================================================      -->
     <component name="Source">
         <variable name="Tskin" private_interface="out" public_interface="in" units="dimensionless"/>
         <variable name="Tcore" private_interface="out" public_interface="in" units="dimensionless"/>
+        <variable name="Tair" private_interface="out" public_interface="in" units="dimensionless"/>
+        <variable name="Pv" private_interface="out" public_interface="in" units="dimensionless"/>
         <variable name="OrganType" private_interface="out" public_interface="in" units="dimensionless"/>
         <variable name="Qshiv" private_interface="in" units="dimensionless"/>
+        <variable name="qresp" private_interface="in" units="dimensionless"/>
         <variable name="vol" public_interface="in" units="dimensionless"/>
         <variable name="q_m0" private_interface="in" units="dimensionless"/>
         <variable name="rho_b" private_interface="in" units="dimensionless"/>
@@ -547,6 +612,36 @@ unit pascal {mult: 0.0075};-->
                             <cn cellml:units="dimensionless">1</cn>
                         </apply>
                     </piece>
+                    <piece>
+                        <apply>
+                            <divide/>
+                            <apply>
+                                <plus/>
+                                <apply>
+                                    <minus/>
+                                    <ci>qresp</ci>
+                                </apply>
+                                <ci>q_m0</ci>
+                                <apply>
+                                    <times/>
+                                    <ci>rho_b</ci>
+                                    <ci>c_b</ci>
+                                    <ci>w</ci>
+                                    <ci>T_b</ci>
+                                </apply>
+                            </apply>
+                            <apply>
+                                <times/>
+                                <ci>rho_t</ci>
+                                <ci>c_t</ci>
+                            </apply>
+                        </apply>
+                        <apply>
+                            <eq/>
+                            <ci>OrganType</ci>
+                            <cn cellml:units="dimensionless">4</cn>
+                        </apply>
+                    </piece>
                     <otherwise>
                         <apply>
                             <divide/>
@@ -573,7 +668,7 @@ unit pascal {mult: 0.0075};-->
         </math>
     </component>
     <!-- =====================================================================
- Maping
+ Mapping
  =====================================================================-->
     <connection>
         <map_components component_1="interface" component_2="Source"/>
@@ -581,6 +676,8 @@ unit pascal {mult: 0.0075};-->
         <map_variables variable_1="Tcore" variable_2="Tcore"/>
         <map_variables variable_1="OrganType" variable_2="OrganType"/>
         <map_variables variable_1="MuscleVolume" variable_2="vol"/>
+        <map_variables variable_1="Tair" variable_2="Tair"/>
+        <map_variables variable_1="Pv" variable_2="Pv"/>
         <map_variables variable_1="source" variable_2="source"/>
     </connection>
     <connection>
@@ -588,6 +685,12 @@ unit pascal {mult: 0.0075};-->
         <map_variables variable_1="Tskin" variable_2="Tskin"/>
         <map_variables variable_1="Tcore" variable_2="Tcore"/>
         <map_variables variable_1="Qshiv" variable_2="Qshiv"/>
+    </connection>
+    <connection>
+        <map_components component_1="Source" component_2="Respiration"/>
+        <map_variables variable_1="Tair" variable_2="Tair"/>
+        <map_variables variable_1="Pv" variable_2="Pv"/>
+        <map_variables variable_1="qresp" variable_2="qresp"/>
     </connection>
     <connection>
         <map_components component_1="Source" component_2="thermophysicalProperties"/>
@@ -608,6 +711,7 @@ unit pascal {mult: 0.0075};-->
         <component_ref component="interface">
             <component_ref component="Source">
                 <component_ref component="Shivering"/>
+                <component_ref component="Respiration"/>
                 <component_ref component="thermophysicalProperties"/>
             </component_ref>
         </component_ref>

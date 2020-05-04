@@ -52,6 +52,7 @@ class Problem_Params:
         self.Tinit_skin         = 33.7
         self.Tinit_blood        = 37.0
         self.Tinlet_bl          = 37.0
+        self.Pv                 = 5.237    # kPa. water vapor pressure
 
         self.skin_L             = 0.0 # no clothing resistance if 0.
 
