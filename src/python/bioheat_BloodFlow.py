@@ -794,7 +794,7 @@ hr_rad             = problemParams.hr_rad*Hsb      # W/mm2.K See example 3.12 In
 
 #Tb                 = problemParams.Tblood*THsb          # C blood temeprature
 Tair               = problemParams.Tair*THsb          # C
-                                        
+Pvap                 = problemParams.Pv                                      
 # w                  = problemParams.w_perfusion*(1/Tsb)          # 1/s terminal blood flow per volume of tissue.
 
 # cMuscle            = rho_bl*c_bl/(rho_ms*c_ms) *w   # 4.51128e-4 1/s
@@ -2411,25 +2411,32 @@ if (not TestFlow):
   IndependentFieldTissue.VariableTypesSet([iron.FieldVariableTypes.U])
   # Set the dimension to scalar
   IndependentFieldTissue.DimensionSet(iron.FieldVariableTypes.U,iron.FieldDimensionTypes.VECTOR)
-  # Set number of components 2 for T_skin and T_core
-  IndependentFieldTissue.NumberOfComponentsSet(iron.FieldVariableTypes.U,4)
+  # Set number of components 4 for T_skin and T_core, tissue and volume
+  IndependentFieldTissue.NumberOfComponentsSet(iron.FieldVariableTypes.U,6)
   # Set the mesh component to be used by the field components.
   IndependentFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.U,1,1)
   IndependentFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.U,2,1)
   IndependentFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.U,3,1)
   IndependentFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.U,4,1)
+  IndependentFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.U,5,1)
+  IndependentFieldTissue.ComponentMeshComponentSet(iron.FieldVariableTypes.U,6,1)
 
   #Set the label for them
   IndependentFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,1,'T_skin')
   IndependentFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,2,'T_core')
   IndependentFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,3,'organ')
   IndependentFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,4,'volume')
+  IndependentFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,5,'T_air')
+  IndependentFieldTissue.ComponentLabelSet(iron.FieldVariableTypes.U,6,'Pv')
+  
 
   # Set interpolation type
   IndependentFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.U,1,iron.FieldInterpolationTypes.ELEMENT_BASED)
   IndependentFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.U,2,iron.FieldInterpolationTypes.ELEMENT_BASED)
   IndependentFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.U,3,iron.FieldInterpolationTypes.ELEMENT_BASED)
   IndependentFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.U,4,iron.FieldInterpolationTypes.ELEMENT_BASED)
+  IndependentFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.U,5,iron.FieldInterpolationTypes.ELEMENT_BASED)
+  IndependentFieldTissue.ComponentInterpolationSet(iron.FieldVariableTypes.U,6,iron.FieldInterpolationTypes.ELEMENT_BASED)
   # Set scaling type to none
   IndependentFieldTissue.ScalingTypeSet(iron.FieldScalingTypes.NONE)
 
@@ -2458,6 +2465,10 @@ if (not TestFlow):
       IndependentFieldTissue.ParameterSetUpdateElement(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
         elementNumber,3, tissue)
 
+  IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+    5,Tair)
+  IndependentFieldTissue.ComponentValuesInitialise(iron.FieldVariableTypes.U,iron.FieldParameterSetTypes.VALUES,
+    6,Pvap)    
   # for elementNumber in kidneyElementsLeft:
   #   elementDomain = decompositionTissue.ElementDomainGet(elementNumber)
   #   if elementDomain == computationalNodeNumber:
@@ -2706,6 +2717,8 @@ if (not TestFlow):
   CellMLShiv.VariableSetAsKnown(ShiveringIdx, "Shivering/Tcore")
   CellMLShiv.VariableSetAsKnown(ShiveringIdx, "thermophysicalProperties/OrganType")
   CellMLShiv.VariableSetAsKnown(ShiveringIdx, "Source/vol")
+  CellMLShiv.VariableSetAsKnown(ShiveringIdx, "Respiration/Tair")
+  CellMLShiv.VariableSetAsKnown(ShiveringIdx, "Respiration/Pv")
 
   # Variables to get from the CellML
   CellMLShiv.VariableSetAsWanted(ShiveringIdx, "Source/source")
@@ -2725,6 +2738,10 @@ if (not TestFlow):
                                 ShiveringIdx, "thermophysicalProperties/OrganType", iron.FieldParameterSetTypes.VALUES)                              
   CellMLShiv.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 4, iron.FieldParameterSetTypes.VALUES,
                                 ShiveringIdx, "Source/vol", iron.FieldParameterSetTypes.VALUES)                              
+  CellMLShiv.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 5, iron.FieldParameterSetTypes.VALUES,
+                                ShiveringIdx, "Respiration/Tair", iron.FieldParameterSetTypes.VALUES)  
+  CellMLShiv.CreateFieldToCellMLMap(IndependentFieldTissue, iron.FieldVariableTypes.U, 6, iron.FieldParameterSetTypes.VALUES,
+                                ShiveringIdx, "Respiration/Pv", iron.FieldParameterSetTypes.VALUES)                                                                  
 
   CellMLShiv.CreateCellMLToFieldMap(ShiveringIdx, "Source/source", iron.FieldParameterSetTypes.VALUES, sourceFieldTissue,
                                 iron.FieldVariableTypes.U,1,iron.FieldParameterSetTypes.VALUES)
